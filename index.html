@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Directory</title>
+    <style>
+        /* Same as before - provides a clean, responsive layout */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f6f8fa;
+            color: #24292e;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px 30px;
+            background-color: #ffffff;
+            border: 1px solid #d1d5da;
+            border-radius: 6px;
+        }
+        h1 {
+            color: #0366d6;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 10px;
+        }
+        p {
+            font-size: 1.1em;
+        }
+        .directory-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .directory-list li {
+            margin-bottom: 12px;
+        }
+        .directory-list a {
+            display: block;
+            padding: 15px 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #d1d5da;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #0366d6;
+            font-size: 1.2em;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+        .directory-list a:hover {
+            background-color: #0366d6;
+            color: #ffffff;
+            border-color: #0366d6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        /* Loading and error message styles */
+        .message {
+            font-size: 1.1em;
+            color: #586069;
+            font-style: italic;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #586069;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>My Project Showcase</h1>
+        <p>Welcome! This page automatically lists all project subdirectories in this repository.</p>
+
+        <!-- The JavaScript will automatically populate this list -->
+        <ul class="directory-list" id="directory-list">
+            <li class="message" id="loading-message">Loading projects...</li>
+        </ul>
+
+        <footer>
+            <p>Hosted on GitHub Pages</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- START OF CONFIGURATION ---
+        
+        // 1. MUST-EDIT: Your GitHub username
+        const USERNAME = "YOUR_USERNAME"; 
+        
+        // 2. MUST-EDIT: Your repository name
+        const REPO_NAME = "YOUR_REPO_NAME";
+
+        // 3. (Optional) List of directories to exclude from the list
+        const EXCLUDE_DIRS = [
+            ".git",
+            ".github",
+            "assets",
+            "images",
+            // Add any other directory names you want to hide
+        ];
+        
+        // --- END OF CONFIGURATION ---
+
+
+        // Function to fetch and display directories
+        async function fetchDirectories() {
+            const listElement = document.getElementById('directory-list');
+            const loadingMessage = document.getElementById('loading-message');
+            
+            // Construct the GitHub API URL
+            const apiUrl = `https://api.github.com/repos/defaultbob/vibe-coding/contents/`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch repository contents: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Filter for directories and exclude ones from our list
+                const projectDirs = data
+                    .filter(item => item.type === 'dir')
+                    .filter(dir => !EXCLUDE_DIRS.includes(dir.name));
+
+                // Clear the "Loading..." message
+                loadingMessage.style.display = 'none';
+
+                if (projectDirs.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = "No project directories found.";
+                    li.className = 'message';
+                    listElement.appendChild(li);
+                    return;
+                }
+
+                // Create and append links for each project directory
+                projectDirs.forEach(dir => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    
+                    // The link will be "./directory-name/"
+                    a.href = `./${dir.name}/`;
+                    
+                    // Format the text (e.g., "my-project-one" -> "My Project One")
+                    a.textContent = formatName(dir.name);
+                    
+                    li.appendChild(a);
+                    listElement.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error(error);
+                loadingMessage.textContent = "Could not load projects. (Check console for errors)";
+                loadingMessage.style.color = 'red';
+            }
+        }
+
+        // Helper function to format directory names into cleaner titles
+        function formatName(name) {
+            return name
+                .split('-') // Split by hyphen
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter
+                .join(' '); // Join with spaces
+        }
+
+        // Run the function when the page loads
+        document.addEventListener('DOMContentLoaded', fetchDirectories);
+    </script>
+
+</body>
+</html>

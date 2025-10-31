@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-Window Authentication Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .step-card {
+            border-left-width: 4px;
+            position: relative;
+            padding-left: 2rem;
+        }
+        .step-card:before {
+            content: '';
+            position: absolute;
+            left: -11px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Cross-Window Authentication Demo</h1>
+            <p class="mt-2 text-lg text-gray-600">Simulating session renewal without a page refresh.</p>
+        </header>
+
+        <div class="space-y-8">
+            <!-- Step 1: Initial State -->
+            <div id="step-1" class="step-card border-blue-500">
+                <div class="step-card-content bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h2 class="text-xl font-bold mb-2 text-blue-700">Step 1: User is Logged In</h2>
+                    <p class="mb-4">The application is loaded and has an authentication token stored in a cookie. All API calls will use this token.</p>
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <p class="font-semibold">Current Auth Cookie:</p>
+                        <code id="cookie-display" class="block w-full text-sm text-green-600 bg-gray-200 p-2 rounded break-all"></code>
+                    </div>
+                    <button id="simulate-api-call" class="mt-4 w-full md:w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300">
+                        Simulate API Call
+                    </button>
+                    <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-700 rounded-r-lg">
+                        <h4 class="font-bold">Technical Detail</h4>
+                        <p class="text-sm">The application state relies on an `HttpOnly` cookie containing a session token. For this demo, we'll simulate it with a client-side cookie managed via `document.cookie`.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Session Expires -->
+            <div id="step-2" class="step-card border-gray-300 hidden">
+                 <div class="step-card-content bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h2 class="text-xl font-bold mb-2 text-red-700">Step 2: Session Expired</h2>
+                    <p class="mb-4">The user performs an action (e.g., clicks a button) that makes an API call. The server responds with a `401 Unauthorized` error because the token has expired.</p>
+                    <div class="p-4 bg-red-50 border-l-4 border-red-400 text-red-700 rounded-r-lg">
+                        <h4 class="font-bold">User Action Required</h4>
+                        <p>The application's state is preserved. Instead of forcing a full-page reload and losing their work, the user is prompted to re-authenticate in a new window.</p>
+                    </div>
+                     <button id="re-authenticate" class="mt-4 w-full md:w-auto bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">
+                        Re-authenticate in Popup
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Re-authentication & Communication -->
+             <div id="step-3" class="step-card border-gray-300 hidden">
+                 <div class="step-card-content bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h2 class="text-xl font-bold mb-2 text-yellow-700">Step 3: Cross-Window Communication</h2>
+                    <p class="mb-4">A popup window is opened for login. After successful authentication, the popup needs to send the new token back to this main application window securely.</p>
+                    <div class="p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 rounded-r-lg">
+                        <h4 class="font-bold">Technical Detail: `window.postMessage()`</h4>
+                        <p class="text-sm">We use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage" target="_blank" class="underline">window.postMessage()</a> API. This is the most robust method for secure cross-window communication.</p>
+                        <ol class="list-decimal list-inside text-sm mt-2">
+                            <li>The main window adds an event listener for "message" events: `window.addEventListener('message', ...)`</li>
+                            <li>The popup sends the new token back to its opener: `window.opener.postMessage(newToken, '*')`.</li>
+                            <li>The main window's event listener receives the message and updates the cookie.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div id="step-4" class="step-card border-gray-300 hidden">
+                 <div class="step-card-content bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h2 class="text-xl font-bold mb-2 text-green-700">Step 4: Success! Cookie Updated</h2>
+                    <p class="mb-4">The main window received the new token from the popup and updated its cookie via JavaScript. The user's session is renewed, and they can continue their work without interruption.</p>
+                     <div class="bg-gray-100 p-4 rounded-lg">
+                        <p class="font-semibold">New Auth Cookie:</p>
+                        <code id="new-cookie-display" class="block w-full text-sm text-green-600 bg-gray-200 p-2 rounded break-all"></code>
+                    </div>
+                    <div class="mt-4 p-4 bg-green-50 border-l-4 border-green-400 text-green-700 rounded-r-lg">
+                        <h4 class="font-bold">Technical Detail</h4>
+                        <p class="text-sm">The `message` event handler in the main window executed `document.cookie = 'authToken=...'`. This updates the cookie in the browser's storage, and it will be sent with all subsequent API requests. The page did not need to reload.</p>
+                    </div>
+                     <button id="reset-demo" class="mt-4 w-full md-w-auto bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover-bg-gray-600 transition duration-300">
+                        Reset Demo
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const cookieDisplay = document.getElementById('cookie-display');
+        const newCookieDisplay = document.getElementById('new-cookie-display');
+        
+        const simulateApiCallBtn = document.getElementById('simulate-api-call');
+        const reAuthenticateBtn = document.getElementById('re-authenticate');
+        const resetDemoBtn = document.getElementById('reset-demo');
+
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const step3 = document.getElementById('step-3');
+        const step4 = document.getElementById('step-4');
+
+        // --- Core Logic ---
+        let authPopup = null; // Variable to hold the popup window reference
+
+        function generateToken() {
+            return `token_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+        }
+
+        // Reads a cookie value by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        
+        // Updates the UI by reading the current cookie value
+        function updateCookieDisplay() {
+            const token = getCookie('authToken');
+            const cookieString = token ? `authToken=${token}` : 'No auth cookie set.';
+            cookieDisplay.textContent = cookieString;
+            newCookieDisplay.textContent = cookieString;
+        }
+
+        // Sets the cookie and then updates the UI
+        function setCookie(token) {
+            document.cookie = `authToken=${token}; path=/; SameSite=Strict; max-age=3600`;
+            updateCookieDisplay();
+        }
+
+        function resetState() {
+            step1.classList.add('border-blue-500');
+            step1.classList.remove('border-gray-300');
+            step2.classList.add('hidden');
+            step2.classList.remove('border-red-500');
+            step3.classList.add('hidden');
+            step3.classList.remove('border-yellow-500');
+            step4.classList.add('hidden');
+            step4.classList.remove('border-green-500');
+            setCookie(generateToken());
+        }
+
+        simulateApiCallBtn.addEventListener('click', () => {
+            // "API Call" fails, move to step 2
+            step1.classList.remove('border-blue-500');
+            step1.classList.add('border-gray-300');
+            step2.classList.remove('hidden');
+            step2.classList.add('border-red-500');
+        });
+
+        reAuthenticateBtn.addEventListener('click', () => {
+            step2.classList.remove('border-red-500');
+            step2.classList.add('border-gray-300');
+            step3.classList.remove('hidden');
+            step3.classList.add('border-yellow-500');
+
+            const popupContent = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <title>Authenticate</title>
+                    <script src="https://cdn.tailwindcss.com"><\/script>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+                     <style> body { font-family: 'Inter', sans-serif; } </style>
+                </head>
+                <body class="bg-gray-100 flex items-center justify-center h-screen">
+                    <div class="text-center p-8 bg-white rounded-lg shadow-xl">
+                        <h1 class="text-2xl font-bold mb-4">Simulated Login</h1>
+                        <p class="text-gray-600 mb-6">Click the button below to generate a new token and send it back to the main app.</p>
+                        <button id="login-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 transition duration-300">
+                            Log In & Renew Session
+                        </button>
+                    </div>
+                    <script>
+                        document.getElementById('login-btn').addEventListener('click', () => {
+                            const newToken = \`token_\${Date.now()}_\${Math.random().toString(36).substring(2, 15)}\`;
+                            
+                            // Use postMessage for reliable and secure cross-window communication.
+                            // In a real app, you would replace '*' with your app's origin, e.g., 'https://yourapp.com'.
+                            if (window.opener) {
+                                window.opener.postMessage(newToken, '*');
+                            }
+
+                            window.close();
+                        });
+                    <\/script>
+                </body>
+                </html>
+            `;
+            authPopup = window.open('', '_blank', 'width=500,height=400');
+            authPopup.document.write(popupContent);
+            authPopup.document.close();
+        });
+
+        resetDemoBtn.addEventListener('click', resetState);
+
+        // --- The core receiver logic using postMessage ---
+        window.addEventListener('message', (event) => {
+            // Basic security check: ensure the message is from the popup we opened.
+            // A null check is needed because the popup is closed after the message.
+            if (!authPopup || event.source !== authPopup) {
+                // If the popup is already closed and we get a message, it might be from another source.
+                // For this demo, we can be a little lenient, but in a real app you'd be stricter.
+                 if (!event.data.startsWith('token_')) return;
+            }
+
+            console.log("Message received from popup via postMessage:", event.data);
+            const newToken = event.data;
+
+            // Check if the data is a string (our token format)
+            if (typeof newToken === 'string' && newToken.startsWith('token_')) {
+                // Update the cookie
+                setCookie(newToken);
+                
+                // Update the UI
+                step3.classList.remove('border-yellow-500');
+                step3.classList.add('border-gray-300');
+                step4.classList.remove('hidden');
+                step4.classList.add('border-green-500');
+
+                // Clear the reference to the closed popup
+                authPopup = null;
+            }
+        });
+
+
+        // --- Initial Setup ---
+        window.onload = resetState;
+    </script>
+
+</body>
+</html>
+
