@@ -28,7 +28,9 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen py-12">
 
     <div class="w-full max-w-2xl mx-auto p-6">
-        <h1 class="text-2xl font-semibold text-center text-gray-800 mb-4">Add Team Members</h1>
+        <div class="flex justify-center items-center gap-4 mb-4">
+            <h1 class="text-2xl font-semibold text-center text-gray-800">Add Users</h1>
+        </div>
         <p class="text-center text-gray-600 mb-6">
             Try pasting: 
             <code class="bg-gray-200 p-1 rounded text-sm">David Mills, Amy Duong, larry.jovanovic@veeva.com, Unknown Person</code>
@@ -57,7 +59,7 @@
             <button id="save-button" class="w-full max-w-xs px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors">
                 Save
             </button>
-            <div id="message-area" class="mt-4 text-sm h-5">
+            <div id="message-area" class="mt-4 text-sm h-5 text-center">
                 <!-- Validation messages will appear here -->
             </div>
         </div>
@@ -73,7 +75,7 @@
     <div id="modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 invisible opacity-0">
         <div id="modal-content" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md p-6 transform scale-95">
             <h2 class="text-lg font-semibold text-gray-800" id="modal-title">Select a Match</h2>
-            <p class="text-sm text-gray-600 mt-1" id="modal-subtitle">One input matched multiple people.</p>
+            <p class="text-sm text-gray-500 mt-1" id="modal-step-counter"></p>
             
             <div class="mt-4 space-y-2 max-h-60 overflow-y-auto" id="modal-options-container">
                 <!-- Radio button options will be injected here -->
@@ -85,6 +87,7 @@
             </div>
         </div>
     </div>
+
     <!-- Template for modal radio options -->
     <template id="modal-option-template">
         <label class="block p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -158,7 +161,7 @@
         const modal = document.getElementById('modal');
         const modalContent = document.getElementById('modal-content');
         const modalTitle = document.getElementById('modal-title');
-        const modalSubtitle = document.getElementById('modal-subtitle');
+        const modalStepCounter = document.getElementById('modal-step-counter');
         const modalOptionsContainer = document.getElementById('modal-options-container');
         const modalOptionTemplate = document.getElementById('modal-option-template');
         const modalConfirm = document.getElementById('modal-confirm');
@@ -167,6 +170,7 @@
         let values = []; // Stores the final selected user objects/unmatched inputs
         let currentModalResolver = null; // Stores the 'resolve' function for the modal's promise
         let ambiguousQueue = []; // Queue for the "wizard"
+        let totalAmbiguousCount = 0; // For the modal step counter
 
         // --- CORE FUNCTIONS ---
 
@@ -248,12 +252,12 @@
         /**
          * Shows the modal for ambiguous results and returns a Promise.
          */
-        function showDisambiguationModal(result) {
+        function showDisambiguationModal(result, currentStep, totalSteps) {
             return new Promise((resolve) => {
                 currentModalResolver = resolve; // Store the resolver
 
                 modalTitle.textContent = `Select a Match for "${result.input}"`;
-                modalSubtitle.textContent = `This matched ${result.matches.length} people.`;
+                modalStepCounter.textContent = `Resolving ${currentStep} of ${totalSteps}`;
                 modalOptionsContainer.innerHTML = ''; // Clear old options
 
                 // Populate options
@@ -317,7 +321,8 @@
             }
 
             const result = ambiguousQueue.shift(); // Get next item
-            const selectedUser = await showDisambiguationModal(result);
+            const currentStep = totalAmbiguousCount - ambiguousQueue.length;
+            const selectedUser = await showDisambiguationModal(result, currentStep, totalAmbiguousCount);
             
             if (selectedUser) {
                 // If they confirmed, create a 'matched' chip
@@ -328,7 +333,7 @@
             }
             
             // Process the next item in the queue
-            processAmbiguousQueue(); // No await here, but the function itself is async
+            processAmbiguousQueue();
         }
 
         /**
@@ -360,12 +365,14 @@
 
             // Start the wizard
             if (ambiguousQueue.length > 0) {
+                totalAmbiguousCount = ambiguousQueue.length;
                 processAmbiguousQueue(); // This will re-enable the input when done
             } else {
                 chipInput.disabled = false; // Re-enable if no wizard
                 chipInput.focus();
             }
         }
+
 
         // --- INPUT EVENT LISTENERS ---
 
@@ -421,7 +428,7 @@
 
             if (unmatchedChips.length > 0) {
                 // Validation Error
-                messageArea.textContent = 'Error: Please resolve all unmatched recipients before saving.';
+                messageArea.textContent = 'Error: Please remove all unmatched recipients before saving.';
                 messageArea.className = 'text-red-600 font-medium mt-4 text-center';
             } else {
                 // Validation Success
