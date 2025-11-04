@@ -39,13 +39,15 @@
         </div>
         <p class="text-center text-gray-600 mb-6">
             Try pasting: 
-            <code class="bg-gray-200 p-1 rounded text-sm">David Mills, Amy Duong, larry.jovanovic@veeva.com, Unknown Person</code>
+            <code class="bg-gray-200 p-1 rounded text-sm">David Mills, Amy Duong, larry.jovanovic@veeva.com</code>
+            or a column from Excel:
+            <code class="bg-gray-200 p-1 rounded text-sm">David Mills\nAmy Duong\nUnknown Person</code>
         </p>
 
         <div class="bg-white rounded-lg shadow-md p-4">
             <label for="chip-input" class="text-sm font-medium text-gray-700">Add recipients:</label>
             
-            <div id="input-wrapper" class="input-wrapper border border-gray-300 rounded-lg p-2 mt-2 flex flex-wrap items-center gap-2 cursor-text" onclick="focusInput()">
+            <div id="input-wrapper" class="relative input-wrapper border border-gray-300 rounded-lg p-2 mt-2 flex flex-wrap items-center gap-2 cursor-text" onclick="focusInput()">
                 
                 <div id="chip-container" class="flex flex-wrap gap-2">
                     <!-- Chips will be added here by JavaScript -->
@@ -55,8 +57,17 @@
                     type="text"
                     id="chip-input"
                     class="flex-1 outline-none p-1 min-w-[150px]"
-                    placeholder="Type name or email..."
+                    placeholder="Type name or username..."
                 />
+
+                <button id="copy-button" class="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600" title="Copy usernames (Cmd+C)">
+                    <svg id="copy-icon-svg" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <svg id="copy-success-svg" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </button>
             </div>
         </div>
 
@@ -75,11 +86,32 @@
             <h2 class="font-semibold text-gray-700">Collected Values (User Objects):</h2>
             <pre id="output" class="mt-2 text-sm text-gray-600 overflow-x-auto">[]</pre>
         </div>
+
+        <!-- Requirements Section -->
+        <div class="mt-6 bg-white rounded-lg shadow-md">
+            <details>
+                <summary class="font-semibold text-gray-700 p-6 cursor-pointer">
+                    Requirements Supported
+                </summary>
+                <ul class="list-disc list-inside space-y-2 text-sm text-gray-600 p-6 pt-0">
+                    <li>As a user, I can paste a list of recipients separated by commas, semicolons, or newlines (from Excel/Sheets).</li>
+                    <li>As a user, I can paste recipients from Gmail/Outlook (e.g., <code class="text-xs">"Name &lt;username&gt;"</code>) and have the app extract just the username.</li>
+                    <li>As a user, I can type a single name or username and press Enter to add it.</li>
+                    <li>As a user, the app searches for matches by both full name and username.</li>
+                    <li>As a user, if my input matches multiple people, I am shown a "wizard" to select the correct person for each ambiguous entry.</li>
+                    <li>As a user, if I paste duplicate recipients, the app only adds one.</li>
+                    <li>As a user, if my input doesn't match anyone, it appears as a red "unmatched" item.</li>
+                    <li>As a user, I am prevented from saving if I have any "unmatched" items, and I see a clear error message.</li>
+                    <li>As a user, I can click a copy icon to copy all validated usernames to my clipboard, separated by newlines.</li>
+                    <li>As a user, I can press Cmd+C or Ctrl+C to copy all validated usernames, formatted for pasting into Excel rows.</li>
+                </ul>
+            </details>
+        </div>
     </div>
 
     <!-- Disambiguation Modal -->
     <div id="modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 invisible opacity-0">
-        <div id="modal-content" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md p-6 transform scale-95">
+        <div id="modal-content" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-lg p-6 transform scale-95">
             <h2 class="text-lg font-semibold text-gray-800" id="modal-title">Select a Match</h2>
             <p class="text-sm text-gray-500 mt-1" id="modal-step-counter"></p>
             
@@ -108,26 +140,26 @@
         // --- FAKE BACKEND DATA ---
         const fakeDatabase = [
             // Single Matches
-            { id: 101, name: "Larry Jovanovic", email: "larry.jovanovic@veeva.com", department: "Engineering" },
-            { id: 102, name: "Andy Han", email: "andy.han@veeva.com", department: "Product" },
-            { id: 103, name: "Jesse Lund", email: "jesse.lund@veeva.com", department: "Strategy" },
+            { id: 101, name: "Larry Jovanovic", username: "larry.jovanovic@veeva.com", department: "Engineering" },
+            { id: 102, name: "Andy Han", username: "andy.han@veeva.com", department: "Product" },
+            { id: 103, name: "Jesse Lund", username: "jesse.lund@veeva.com", department: "Strategy" },
 
             // 5 David Mills
-            { id: 201, name: "David Mills", email: "david.mills@veeva.com", department: "Engineering" },
-            { id: 202, name: "David Mills", email: "d.mills@customer.com", department: "Sales (External)" },
-            { id: 203, name: "David Mills", email: "david.mills.dev@veeva.com", department: "DevOps" },
-            { id: 204, name: "David Mills", email: "dave.millsy@gmail.com", department: "Marketing" },
-            { id: 205, name: "David Mills", email: "david@mills-consulting.com", department: "Services (Partner)" },
+            { id: 201, name: "David Mills", username: "david.mills@veeva.com", department: "Engineering" },
+            { id: 202, name: "David Mills", username: "d.mills@customer.com", department: "Sales (External)" },
+            { id: 203, name: "David Mills", username: "david.mills.dev@veeva.com", department: "DevOps" },
+            { id: 204, name: "David Mills", username: "dave.millsy@gmail.com", department: "Marketing" },
+            { id: 205, name: "David Mills", username: "david@mills-consulting.com", department: "Services (Partner)" },
             
             // 3 Amy Duongs
-            { id: 301, name: "Amy Duong", email: "amy.duong@veeva.com", department: "HR" },
-            { id: 302, name: "Amy Duong", email: "amy.d@gmail.com", department: "Design (Contractor)" },
-            { id: 303, name: "Amy Duong", email: "duong.amy@customer.com", department: "Customer Success" },
+            { id: 301, name: "Amy Duong", username: "amy.duong@veeva.com", department: "HR" },
+            { id: 302, name: "Amy Duong", username: "amy.d@gmail.com", department: "Design (Contractor)" },
+            { id: 303, name: "Amy Duong", username: "duong.amy@customer.com", department: "Customer Success" },
         ];
 
         /**
-         * Simulates a backend API call to look up users by name OR email.
-         * @param {string[]} inputs - An array of name/email strings.
+         * Simulates a backend API call to look up users by name OR username.
+         * @param {string[]} inputs - An array of name/username strings.
          * @returns {Promise<object[]>} A promise that resolves with lookup results.
          */
         function fakeBackendLookup(inputs) {
@@ -137,9 +169,9 @@
                     const results = inputs.map(input => {
                         const normalizedInput = input.toLowerCase().trim();
                         
-                        // Find matches by email OR name
+                        // Find matches by username OR name
                         const matches = fakeDatabase.filter(user => 
-                            user.email.toLowerCase() === normalizedInput || 
+                            user.username.toLowerCase() === normalizedInput || 
                             user.name.toLowerCase() === normalizedInput
                         );
                         
@@ -162,6 +194,10 @@
         const output = document.getElementById('output');
         const saveButton = document.getElementById('save-button');
         const messageArea = document.getElementById('message-area');
+        const copyButton = document.getElementById('copy-button');
+        const copyIcon = document.getElementById('copy-icon-svg');
+        const copySuccessIcon = document.getElementById('copy-success-svg');
+        const inputWrapper = document.getElementById('input-wrapper');
         
         // Modal elements
         const modal = document.getElementById('modal');
@@ -277,7 +313,7 @@
                     if (index === 0) input.checked = true; // Default check
                     
                     nameSpan.textContent = match.name;
-                    detailSpan.textContent = `(${match.email} - ${match.department})`;
+                    detailSpan.textContent = `(${match.username} - ${match.department})`;
                     
                     modalOptionsContainer.appendChild(optionClone.firstElementChild);
                 });
@@ -402,16 +438,17 @@
             // Split by comma, semicolon, newline, or tab
             const individualInputs = pasteData.split(/[\n\t,;]+/);
             
-            const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+            // This regex is good at extracting email-like usernames from formats like "Name <user@name.com>"
+            const usernameExtractRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
 
             const valuesToLookup = individualInputs.map(input => {
                 const trimmedInput = input.trim();
                 if (trimmedInput.length === 0) return null;
 
-                // Check if the string *contains* an email (e.g., "Name <email@...>")
-                const emailMatch = trimmedInput.match(emailRegex);
-                if (emailMatch) {
-                    return emailMatch[0]; // Extract just the email
+                // Check if the string *contains* a username (e.g., "Name <username@...>")
+                const usernameMatch = trimmedInput.match(usernameExtractRegex);
+                if (usernameMatch) {
+                    return usernameMatch[0]; // Extract just the username
                 }
                 
                 // Otherwise, assume it's a name
@@ -424,6 +461,46 @@
             lookupAndCreateChips(uniqueValues);
         });
 
+        // --- COPY FUNCTIONALITY ---
+
+        function copyValuesToClipboard() {
+            const matchedUsernames = values
+                .filter(v => v.status === 'matched')
+                .map(v => v.data.username);
+            
+            if (matchedUsernames.length === 0) {
+                console.log("Nothing to copy.");
+                return;
+            }
+
+            const textToCopy = matchedUsernames.join('\n');
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Show success feedback
+                copyIcon.classList.add('hidden');
+                copySuccessIcon.classList.remove('hidden');
+                setTimeout(() => {
+                    copyIcon.classList.remove('hidden');
+                    copySuccessIcon.classList.add('hidden');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
+        copyButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent input from focusing
+            copyValuesToClipboard();
+        });
+
+        inputWrapper.addEventListener('keydown', (e) => {
+            // Check for Cmd+C or Ctrl+C
+            if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
+                e.preventDefault();
+                copyValuesToClipboard();
+            }
+        });
+
         // --- SAVE BUTTON LISTENER ---
         saveButton.addEventListener('click', () => {
             // Clear any previous message
@@ -434,7 +511,7 @@
 
             if (unmatchedChips.length > 0) {
                 // Validation Error
-                messageArea.textContent = 'Error: Please remove all unmatched recipients before saving.';
+                messageArea.textContent = 'Error: Please resolve all unmatched recipients before saving.';
                 messageArea.className = 'text-red-600 font-medium mt-4 text-center';
             } else {
                 // Validation Success
@@ -464,5 +541,4 @@
     </script>
 </body>
 </html>
-
 
