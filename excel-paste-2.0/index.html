@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Cache-busting meta tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Multi-Value Chip Input</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons for nice UI icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* Use Inter font */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        /* Custom focus style for the wrapper */
+        .input-wrapper:focus-within {
+            outline: 2px solid #3b82f6; /* blue-500 */
+            outline-offset: 2px;
+        }
+        /* Modal styles */
+        .modal {
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+        .modal-content {
+            transition: transform 0.2s ease;
+        }
+        /* Custom scrollbar for tables */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen py-12">
+
+    <div class="w-full max-w-3xl mx-auto p-6">
+        <div class="flex flex-col items-center justify-center gap-2 mb-6">
+            <h1 class="text-2xl font-semibold text-center text-gray-800">Add Users</h1>
+            <p class="text-sm text-gray-500">Paste up to 250 values from Excel or lists.</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <label for="chip-input" class="text-sm font-medium text-gray-700 block mb-2">Users</label>
+            
+            <div id="input-wrapper" class="relative input-wrapper border border-gray-300 rounded-lg p-2 min-h-[100px] flex flex-wrap items-start gap-2 cursor-text transition-colors bg-white hover:border-gray-400" onclick="focusInput()">
+                
+                <div id="chip-container" class="flex flex-wrap gap-2 w-full">
+                    <!-- Chips will be added here by JavaScript -->
+                    <input
+                        type="text"
+                        id="chip-input"
+                        class="flex-1 outline-none p-1 min-w-[150px] bg-transparent"
+                        placeholder="Paste list or type name..."
+                    />
+                </div>
+
+                <!-- Actions Top Right -->
+                <div class="absolute top-2 right-2 flex gap-1 bg-white pl-2">
+                     <button id="copy-button" class="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100" title="Copy valid usernames">
+                        <i class="ph ph-copy text-lg"></i>
+                    </button>
+                    <button id="clear-all-button" class="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-red-50" title="Clear all">
+                        <i class="ph ph-trash text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+             <p class="text-xs text-gray-400 mt-2 text-right">Supports ID, Username, Email</p>
+        </div>
+
+        <!-- Save Button -->
+        <div class="mt-6 flex flex-col items-center">
+            <button id="save-button" class="w-full max-w-xs px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors flex items-center justify-center gap-2">
+                <i class="ph ph-check-circle text-xl"></i>
+                Save Changes
+            </button>
+            <div id="message-area" class="mt-4 text-sm h-5 text-center font-medium"></div>
+        </div>
+    </div>
+
+    <!-- 1. LOADING SPINNER OVERLAY -->
+    <div id="loading-overlay" class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-white bg-opacity-80 invisible opacity-0 transition-all duration-300 backdrop-blur-sm">
+        <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+        <h3 class="text-lg font-medium text-gray-700">Processing Paste...</h3>
+        <p class="text-sm text-gray-500">Matching values against database</p>
+    </div>
+
+    <!-- 2. PASTE RESULTS MODAL (The Requirement 1.4) -->
+    <div id="results-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 invisible opacity-0">
+        <div id="results-modal-content" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-2xl p-0 transform scale-95 flex flex-col max-h-[90vh]">
+            
+            <!-- Header -->
+            <div class="p-6 border-b border-gray-100 flex justify-between items-start">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800">Paste Results</h2>
+                    <p class="text-sm text-gray-500 mt-1">Review the outcome of your paste operation.</p>
+                </div>
+                <!-- Summary Stats Pills -->
+                <div class="flex gap-3 text-sm font-medium">
+                    <div class="px-3 py-1 bg-green-100 text-green-700 rounded-full flex items-center gap-1">
+                        <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                        <span id="stat-success">0</span> Added
+                    </div>
+                    <div class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full flex items-center gap-1">
+                         <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                        <span id="stat-duplicate">0</span> Duplicates
+                    </div>
+                    <div class="px-3 py-1 bg-red-100 text-red-700 rounded-full flex items-center gap-1">
+                         <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                        <span id="stat-failed">0</span> Unsuccessful
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body: Unsuccessful List -->
+            <div class="p-6 overflow-hidden flex flex-col flex-1">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-medium text-gray-700">Unsuccessful Values</h3>
+                    <button id="copy-unsuccessful-btn" class="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium px-2 py-1 rounded hover:bg-blue-50 transition-colors">
+                        <i class="ph ph-copy"></i> Copy List
+                    </button>
+                </div>
+                
+                <div class="border rounded-lg overflow-hidden flex-1 relative bg-gray-50">
+                    <div class="absolute inset-0 overflow-auto custom-scrollbar">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-500 uppercase bg-gray-100 sticky top-0 z-10">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 font-medium">Pasted Value</th>
+                                    <th scope="col" class="px-4 py-3 font-medium">Issue Type</th>
+                                </tr>
+                            </thead>
+                            <tbody id="unsuccessful-tbody" class="divide-y divide-gray-200 bg-white">
+                                <!-- Rows injected here -->
+                            </tbody>
+                        </table>
+                        <!-- Empty state -->
+                        <div id="no-errors-msg" class="hidden flex flex-col items-center justify-center h-full text-gray-400 p-8">
+                            <i class="ph ph-check-circle text-4xl mb-2 text-green-400"></i>
+                            <p>All items processed successfully!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-100 bg-gray-50 rounded-b-lg flex justify-end gap-3">
+                <button id="results-cancel" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200">
+                    Cancel Paste
+                </button>
+                <button id="results-confirm" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                    Add Valid Values
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. ERROR ALERT (Limit Exceeded) -->
+    <div id="error-dialog" class="modal fixed inset-0 z-[70] flex items-center justify-center bg-black bg-opacity-20 invisible opacity-0">
+         <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-sm p-6 transform scale-95 text-center">
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph ph-warning text-2xl text-red-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Limit Exceeded</h3>
+            <p id="error-message" class="text-sm text-gray-600 mb-6">Cannot paste more than 250 values.</p>
+            <button onclick="hideErrorDialog()" class="w-full px-4 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900">
+                OK
+            </button>
+         </div>
+    </div>
+
+
+    <script>
+        // --- 1. CONFIG & DATA ---
+        const PASTE_LIMIT = 250;
+        
+        // Expanded Fake Database to test ID/Username/Email matching
+        const fakeDatabase = [
+            // Single Matches
+            { id: "101", name: "Larry Jovanovic", username: "larry.j", email: "larry.jovanovic@veeva.com", department: "Engineering" },
+            { id: "102", name: "Andy Han", username: "andy.h", email: "andy.han@veeva.com", department: "Product" },
+            { id: "103", name: "Jesse Lund", username: "jesse.l", email: "jesse.lund@veeva.com", department: "Strategy" },
+            { id: "105", name: "System Admin", username: "admin", email: "admin@veeva.com", department: "IT" },
+
+            // Ambiguous (David Mills)
+            { id: "201", name: "David Mills", username: "dmills.eng", email: "david.mills@veeva.com", department: "Engineering" },
+            { id: "202", name: "David Mills", username: "dmills.ext", email: "d.mills@customer.com", department: "Sales" },
+            
+            // Ambiguous (Amy Duong)
+            { id: "301", name: "Amy Duong", username: "amy.hr", email: "amy.duong@veeva.com", department: "HR" },
+            { id: "302", name: "Amy Duong", username: "amy.des", email: "amy.d@gmail.com", department: "Design" },
+        ];
+
+        let collectedValues = []; // Stores { id, data, displayLabel }
+        let pendingSuccessfulMatches = []; // Temporarily stores matches from paste modal
+
+        // --- 2. DOM ELEMENTS ---
+        const chipInput = document.getElementById('chip-input');
+        const chipContainer = document.getElementById('chip-container');
+        const saveButton = document.getElementById('save-button');
+        const messageArea = document.getElementById('message-area');
+        const clearAllButton = document.getElementById('clear-all-button');
+        const copyButton = document.getElementById('copy-button');
+        
+        // Loading Overlay
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        // Results Modal
+        const resultsModal = document.getElementById('results-modal');
+        const resultsContent = document.getElementById('results-modal-content');
+        const statSuccess = document.getElementById('stat-success');
+        const statDuplicate = document.getElementById('stat-duplicate');
+        const statFailed = document.getElementById('stat-failed');
+        const unsuccessfulTbody = document.getElementById('unsuccessful-tbody');
+        const noErrorsMsg = document.getElementById('no-errors-msg');
+        const resultsConfirmBtn = document.getElementById('results-confirm');
+        const resultsCancelBtn = document.getElementById('results-cancel');
+        const copyUnsuccessfulBtn = document.getElementById('copy-unsuccessful-btn');
+
+        // Error Dialog
+        const errorDialog = document.getElementById('error-dialog');
+        const errorMessage = document.getElementById('error-message');
+
+        // --- 3. UTILITY FUNCTIONS ---
+
+        function focusInput() {
+            chipInput.focus();
+        }
+
+        function showLoading() {
+            loadingOverlay.classList.remove('invisible', 'opacity-0');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('invisible', 'opacity-0');
+        }
+
+        function showErrorDialog(msg) {
+            errorMessage.textContent = msg;
+            errorDialog.classList.remove('invisible', 'opacity-0');
+            errorDialog.querySelector('.modal-content').classList.remove('scale-95');
+        }
+
+        window.hideErrorDialog = function() {
+            errorDialog.classList.add('invisible', 'opacity-0');
+            errorDialog.querySelector('.modal-content').classList.add('scale-95');
+        }
+
+        // --- 4. CORE LOGIC ---
+
+        /**
+         * Simulates backend lookup matching against ID, Username, or Email.
+         */
+        async function lookupValues(rawValues) {
+            // Simulate network delay
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const results = rawValues.map(val => {
+                        const input = val.trim();
+                        const lowerInput = input.toLowerCase();
+
+                        // 1. Exact match check (ID, Username, Email)
+                        // Requirement 1.3.3: Users: ID, username or email address
+                        const matches = fakeDatabase.filter(u => 
+                            u.id.toLowerCase() === lowerInput ||
+                            u.username.toLowerCase() === lowerInput ||
+                            u.email.toLowerCase() === lowerInput ||
+                            u.name.toLowerCase() === lowerInput // Keep name support for usability
+                        );
+
+                        if (matches.length === 1) {
+                            return { status: 'success', input: input, match: matches[0] };
+                        } else if (matches.length > 1) {
+                            return { status: 'ambiguous', input: input, matches: matches };
+                        } else {
+                            return { status: 'not_found', input: input };
+                        }
+                    });
+                    resolve(results);
+                }, 800); // 800ms simulated delay
+            });
+        }
+
+        /**
+         * Handles the paste event logic as per requirements.
+         */
+        async function handlePaste(e) {
+            e.preventDefault();
+            const pasteData = e.clipboardData.getData('text/plain');
+            if (!pasteData) return;
+
+            // 1.1 Split input (comma, newline, tab)
+            let rawValues = pasteData.split(/[\n\t,]+/)
+                .map(v => v.trim()) // 1.1.2 Remove quotes logic (simple trim first)
+                .map(v => v.replace(/^"|"$/g, '').replace(/^'|'$/g, '')) // Remove surrounding quotes
+                .filter(v => v.length > 0);
+
+            // 1.1.1 Limit Check
+            if (rawValues.length > PASTE_LIMIT) {
+                showErrorDialog(`Cannot paste more than ${PASTE_LIMIT} values.`);
+                return;
+            }
+
+            // 1.2 Remove duplicates within the paste
+            const uniquePasteValues = [...new Set(rawValues)];
+            // Note: We also calculate "duplicates" relative to what's already in the input later?
+            // Requirement 1.2 says "Remove any duplicate pasted values". This implies self-dedup.
+            // Requirement 1.4.1.2 "Duplicates" count in results dialog likely refers to 
+            // values that were pasted but ALREADY existed in the app or were duplicates in the paste.
+            
+            showLoading(); // 1.3.2 Dialog with spinner
+
+            // Perform Lookup
+            const results = await lookupValues(uniquePasteValues);
+            
+            hideLoading();
+            processResults(results, rawValues.length);
+        }
+
+        /**
+         * Processes lookup results and populates the Results Modal (Requirement 1.4)
+         */
+        function processResults(results, originalTotal) {
+            let successCount = 0;
+            let duplicateCount = 0;
+            let failedCount = 0;
+            let unsuccessfulList = []; // { value, type }
+
+            pendingSuccessfulMatches = [];
+
+            // Helper to check if a user is already in the main list
+            const isAlreadyAdded = (id) => collectedValues.some(c => c.id === id);
+
+            results.forEach(res => {
+                if (res.status === 'success') {
+                    if (isAlreadyAdded(res.match.id)) {
+                        duplicateCount++;
+                    } else {
+                        successCount++;
+                        pendingSuccessfulMatches.push(res.match);
+                    }
+                } else if (res.status === 'ambiguous') {
+                    failedCount++;
+                    unsuccessfulList.push({ value: res.input, type: 'Multiple Values' });
+                } else {
+                    failedCount++;
+                    unsuccessfulList.push({ value: res.input, type: 'Not Found' });
+                }
+            });
+
+            // Adjust duplicates logic: 
+            // If the user pasted "A, A, B" -> raw=3. unique=2. 
+            // Requirement 1.2 implies we just strip them silently before matching.
+            // However, 1.4.1.2 asks for a "Duplicates" count. 
+            // Let's assume Duplicates Count = (Items already in list) + (Items deduplicated during paste).
+            const pasteDedupCount = originalTotal - results.length;
+            duplicateCount += pasteDedupCount;
+
+            // Populate Modal UI
+            statSuccess.textContent = successCount;
+            statDuplicate.textContent = duplicateCount;
+            statFailed.textContent = failedCount;
+
+            // Populate Table
+            unsuccessfulTbody.innerHTML = '';
+            if (unsuccessfulList.length > 0) {
+                noErrorsMsg.classList.add('hidden');
+                unsuccessfulList.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = "border-b hover:bg-gray-50";
+                    row.innerHTML = `
+                        <td class="px-4 py-2 font-mono text-gray-600 truncate max-w-[200px]" title="${item.value}">${item.value}</td>
+                        <td class="px-4 py-2">
+                            <span class="px-2 py-0.5 rounded text-xs font-medium ${item.type === 'Not Found' ? 'bg-gray-100 text-gray-600' : 'bg-orange-100 text-orange-700'}">
+                                ${item.type}
+                            </span>
+                        </td>
+                    `;
+                    unsuccessfulTbody.appendChild(row);
+                });
+            } else {
+                noErrorsMsg.classList.remove('hidden');
+            }
+
+            // Update Confirm Button Text
+            resultsConfirmBtn.textContent = successCount > 0 ? `Add ${successCount} Values` : 'Close';
+
+            // Show Modal
+            resultsModal.classList.remove('invisible', 'opacity-0');
+            resultsContent.classList.remove('scale-95');
+        }
+
+        // --- 5. RESULTS MODAL HANDLERS ---
+
+        function closeResultsModal() {
+            resultsModal.classList.add('invisible', 'opacity-0');
+            resultsContent.classList.add('scale-95');
+            pendingSuccessfulMatches = [];
+        }
+
+        resultsCancelBtn.addEventListener('click', () => {
+            // 1.4.4.1 Abandons paste, no change
+            closeResultsModal();
+        });
+
+        resultsConfirmBtn.addEventListener('click', () => {
+            // 1.4.3.1 Adds successful values as pills
+            pendingSuccessfulMatches.forEach(user => {
+                createChip(user);
+            });
+            chipInput.value = '';
+            closeResultsModal();
+            // 1.4.3.2 Expand input (CSS flex-wrap handles this automatically)
+        });
+
+        copyUnsuccessfulBtn.addEventListener('click', () => {
+            // 1.4.2.3 Copy unsuccessful button
+            const rows = unsuccessfulTbody.querySelectorAll('tr');
+            if (rows.length === 0) return;
+            
+            const textToCopy = Array.from(rows)
+                .map(row => row.querySelector('td').innerText) // Get value from first cell
+                .join('\n'); // 1.4.2.3.1 Values separated by newline
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = copyUnsuccessfulBtn.innerHTML;
+                copyUnsuccessfulBtn.innerHTML = `<i class="ph ph-check"></i> Copied`;
+                setTimeout(() => copyUnsuccessfulBtn.innerHTML = originalText, 2000);
+            });
+        });
+
+
+        // --- 6. CHIP UI LOGIC ---
+
+        function createChip(user) {
+            // Avoid duplicates
+            if (collectedValues.some(c => c.id === user.id)) return;
+
+            const chipId = user.id;
+            collectedValues.push({ id: chipId, data: user });
+
+            const chip = document.createElement('div');
+            chip.className = 'flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-sm font-medium animate-fadeIn select-none group hover:bg-blue-100 transition-colors cursor-default';
+            
+            // Icon based on type (simulated)
+            const icon = '<i class="ph-fill ph-user"></i>';
+
+            chip.innerHTML = `
+                ${icon}
+                <span class="truncate max-w-[150px]">${user.name}</span>
+                <button type="button" class="ml-1 text-blue-400 hover:text-blue-600 focus:outline-none rounded-full p-0.5 hover:bg-blue-200 transition-colors" onclick="removeChip('${chipId}', this)">
+                    <i class="ph-bold ph-x text-xs block"></i>
+                </button>
+            `;
+
+            // Insert before the input
+            chipInput.parentNode.insertBefore(chip, chipInput);
+        }
+
+        window.removeChip = function(id, btnElement) {
+            collectedValues = collectedValues.filter(c => c.id !== id);
+            // Remove DOM element
+            const chip = btnElement.closest('div');
+            chip.remove();
+        }
+
+        // --- 7. EVENT LISTENERS ---
+
+        chipInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const text = chipInput.value.trim();
+                if (text) {
+                    showLoading();
+                    const results = await lookupValues([text]);
+                    hideLoading();
+                    
+                    // For single entry, we can keep it simple or use the modal.
+                    // To keep UX consistent with the requirement for "Paste", 
+                    // simple typing usually expects immediate feedback.
+                    // But if it fails, we might want to alert. 
+                    // Let's implement simple direct feedback for typing.
+                    const res = results[0];
+                    if (res.status === 'success') {
+                        createChip(res.match);
+                        chipInput.value = '';
+                    } else if (res.status === 'ambiguous') {
+                        showErrorDialog(`"${text}" matches multiple users. Please be more specific (e.g., use ID or Email).`);
+                    } else {
+                        showErrorDialog(`"${text}" not found.`);
+                    }
+                }
+            }
+        });
+
+        // 1. The main requirement: PASTE HANDLER
+        chipInput.addEventListener('paste', handlePaste);
+
+        clearAllButton.addEventListener('click', () => {
+            collectedValues = [];
+            // Remove all chips except input
+            const chips = chipContainer.querySelectorAll('div');
+            chips.forEach(c => c.remove());
+        });
+
+        saveButton.addEventListener('click', () => {
+            if (collectedValues.length === 0) {
+                messageArea.textContent = "No users to save.";
+                messageArea.className = "mt-4 text-sm h-5 text-center font-medium text-gray-400";
+                return;
+            }
+            messageArea.textContent = `Successfully saved ${collectedValues.length} users!`;
+            messageArea.className = "mt-4 text-sm h-5 text-center font-medium text-green-600";
+            setTimeout(() => { messageArea.textContent = ""; }, 3000);
+        });
+        
+        // Copy valid usernames functionality
+        copyButton.addEventListener('click', () => {
+            if (collectedValues.length === 0) return;
+            const text = collectedValues.map(c => c.data.username).join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                const originalIcon = copyButton.innerHTML;
+                copyButton.innerHTML = `<i class="ph ph-check text-lg text-green-600"></i>`;
+                setTimeout(() => copyButton.innerHTML = originalIcon, 2000);
+            });
+        });
+
+        // Add Animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
+            }
+            .animate-fadeIn {
+                animation: fadeIn 0.15s ease-out forwards;
+            }
+        `;
+        document.head.appendChild(style);
+
+    </script>
+</body>
+</html>
