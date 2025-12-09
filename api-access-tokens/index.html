@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vault - Token Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom transitions */
+        .fade-in {
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">My Profile</h1>
+            <div class="flex border-b border-gray-200 overflow-x-auto">
+                <button class="px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">General</button>
+                <button class="px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Security</button>
+                <button class="px-4 py-2 border-b-2 border-blue-600 text-blue-600 font-medium whitespace-nowrap">Access Tokens</button>
+                <button class="px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Audit Log</button>
+            </div>
+        </div>
+
+        <!-- Token Section Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+            <div>
+                <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                    <!-- Shield Icon -->
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    API Tokens
+                </h2>
+                <p class="text-sm text-gray-500 mt-1">
+                    Manage personal access tokens. These tokens inherit your permissions.
+                </p>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="text-sm text-gray-600 bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm whitespace-nowrap">
+                    <span id="activeCount" class="font-semibold text-blue-600">0</span> 
+                    <span class="text-gray-400 mx-1">/</span> 
+                    <span id="maxTokens">2</span> Active
+                </div>
+                
+                <button onclick="openModal()" id="createBtn" class="bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Generate New Token
+                </button>
+            </div>
+        </div>
+
+        <!-- Warning Limit Message (Hidden by default) -->
+        <div id="limitWarning" class="hidden mb-6 bg-amber-50 border border-amber-200 rounded-md p-4 flex items-start gap-3">
+            <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <div class="text-sm text-amber-800">
+                <span class="font-semibold">Token limit reached.</span> You must revoke an existing token before creating a new one.
+            </div>
+        </div>
+
+        <!-- Token Grid -->
+        <div id="tokenGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <!-- Tokens injected via JS -->
+        </div>
+
+        <!-- Empty State (Hidden by default) -->
+        <div id="emptyState" class="hidden text-center py-20 bg-white rounded-lg border border-gray-200 border-dashed">
+            <div class="mx-auto h-12 w-12 text-gray-300 mb-3 flex items-center justify-center">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">No tokens found</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by generating a new personal access token.</p>
+        </div>
+
+    </div>
+
+    <!-- Modal Backdrop -->
+    <div id="modalBackdrop" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden transform transition-all fade-in">
+            
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 id="modalTitle" class="text-lg font-semibold text-gray-900">Generate New Token</h3>
+                <button onclick="closeModal()" id="modalCloseBtn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content: Form -->
+            <div id="modalForm" class="p-6">
+                <form onsubmit="handleCreateToken(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Note / Description</label>
+                        <input type="text" id="tokenNameInput" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. CI/CD Integration...">
+                        <p class="text-xs text-gray-500 mt-1">What is this token used for?</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Expiration</label>
+                        <select id="tokenExpiryInput" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="30days">30 Days</option>
+                            <option value="6months" selected>6 Months (Default)</option>
+                            <option value="1year">1 Year</option>
+                            <option value="never">No Expiration</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-blue-50 p-3 rounded-md flex gap-3 items-start text-sm text-blue-800">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p>This token will have full read/write access based on your current user permissions.</p>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+                        <button type="button" onclick="closeModal()" class="bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-md font-medium">Cancel</button>
+                        <button type="submit" class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md font-medium">Generate Token</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Content: Success (Hidden by default) -->
+            <div id="modalSuccess" class="hidden p-6 space-y-6">
+                <div class="flex items-start gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div class="p-2 bg-green-100 rounded-full text-green-600 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-green-900 font-medium">Success!</h4>
+                        <p class="text-green-800 text-sm mt-1">Make sure to copy your personal access token now. You won't be able to see it again!</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Token Value</label>
+                    <div class="flex gap-2">
+                        <code id="newTokenValue" class="flex-1 block w-full p-3 bg-gray-900 text-green-400 font-mono text-sm rounded-md border border-gray-700 break-all"></code>
+                        <button onclick="copyToken()" class="bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 px-3 py-2 rounded-md shrink-0" title="Copy to Clipboard">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-4">
+                    <button onclick="closeModal()" class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md font-medium">I have copied it</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Logic -->
+    <script>
+        // --- State ---
+        const MAX_TOKENS = 2;
+        let tokens = [
+            {
+                id: 'tok_1',
+                name: 'CI/CD Pipeline',
+                createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+                createdBy: 'You',
+                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180).toISOString(),
+                status: 'active'
+            },
+            {
+                id: 'tok_2',
+                name: 'Local Development',
+                createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
+                createdBy: 'You',
+                expiresAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
+                status: 'expired'
+            }
+        ];
+        
+        let deleteConfirmId = null;
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTokens();
+        });
+
+        // --- Render ---
+        function renderTokens() {
+            const grid = document.getElementById('tokenGrid');
+            const emptyState = document.getElementById('emptyState');
+            const activeCountEl = document.getElementById('activeCount');
+            const limitWarning = document.getElementById('limitWarning');
+            const createBtn = document.getElementById('createBtn');
+
+            // Derived Data
+            const activeCount = tokens.filter(t => t.status !== 'deleted').length;
+            
+            // Update Headers
+            activeCountEl.innerText = activeCount;
+            activeCountEl.className = activeCount >= MAX_TOKENS ? 'font-semibold text-red-600' : 'font-semibold text-blue-600';
+            
+            if (activeCount >= MAX_TOKENS) {
+                limitWarning.classList.remove('hidden');
+                createBtn.disabled = true;
+                createBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                limitWarning.classList.add('hidden');
+                createBtn.disabled = false;
+                createBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            // Empty State Check
+            if (tokens.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            // Build Grid
+            grid.innerHTML = tokens.map(token => {
+                const isExpired = new Date(token.expiresAt) < new Date() || token.status === 'expired';
+                const createdDate = new Date(token.createdDate).toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric' });
+                const expiresDate = token.expiresAt ? new Date(token.expiresAt).toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric' }) : 'Never';
+                
+                // Badge Styles
+                const badgeClass = isExpired 
+                    ? "bg-gray-100 text-gray-800" 
+                    : "bg-green-50 text-green-700 border border-green-200";
+                const badgeText = isExpired ? "Expired" : "Active";
+                
+                // Card Classes
+                const cardClass = `bg-white rounded border shadow-sm transition-all hover:shadow-md hover:border-blue-300 flex flex-col p-4 ${isExpired ? 'border-gray-200 bg-gray-50 opacity-75' : 'border-gray-200'}`;
+                const titleClass = `font-bold text-gray-900 truncate ${isExpired ? 'line-through text-gray-500' : ''}`;
+
+                // Action Area (Delete vs Confirm)
+                let actionHtml = '';
+                if (deleteConfirmId === token.id) {
+                    actionHtml = `
+                        <div class="flex gap-1 animate-in fade-in ml-auto">
+                            <button onclick="confirmDelete('${token.id}')" class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Del</button>
+                            <button onclick="cancelDelete()" class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300">Cancel</button>
+                        </div>
+                    `;
+                } else {
+                    actionHtml = `
+                        <button onclick="initDelete('${token.id}')" class="text-gray-300 hover:text-red-500 transition-colors ml-auto" title="Revoke Token">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    `;
+                }
+
+                return `
+                <div class="${cardClass}">
+                    <div class="flex items-start justify-between mb-3 h-8">
+                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${badgeClass}">
+                            ${badgeText}
+                        </span>
+                        ${actionHtml}
+                    </div>
+                    
+                    <h3 class="${titleClass} text-sm mb-4" title="${token.name}">${token.name}</h3>
+
+                    <div class="space-y-1.5 text-xs mt-auto pt-3 border-t border-gray-100 border-dashed">
+                        <div class="flex justify-between text-gray-500">
+                            <span>Created</span>
+                            <span class="font-mono text-gray-700">${createdDate}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-500">
+                            <span>Expires</span>
+                            <span class="font-mono ${isExpired ? 'text-red-600' : 'text-gray-700'}">${expiresDate}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-500">
+                            <span>By</span>
+                            <span class="text-gray-700">${token.createdBy}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- Actions ---
+
+        function openModal() {
+            document.getElementById('modalBackdrop').classList.remove('hidden');
+            // Reset to form
+            document.getElementById('modalForm').classList.remove('hidden');
+            document.getElementById('modalSuccess').classList.add('hidden');
+            document.getElementById('modalCloseBtn').classList.remove('hidden');
+            document.getElementById('modalTitle').innerText = 'Generate New Token';
+            // Reset Inputs
+            document.getElementById('tokenNameInput').value = '';
+            document.getElementById('tokenExpiryInput').value = '6months';
+        }
+
+        function closeModal() {
+            document.getElementById('modalBackdrop').classList.add('hidden');
+        }
+
+        function handleCreateToken(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('tokenNameInput').value;
+            const expiryType = document.getElementById('tokenExpiryInput').value;
+            
+            // Calculate Expiry
+            let expiryDate = new Date();
+            if (expiryType === '30days') expiryDate.setDate(expiryDate.getDate() + 30);
+            else if (expiryType === '6months') expiryDate.setMonth(expiryDate.getMonth() + 6);
+            else if (expiryType === '1year') expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+            else expiryDate = null; // Never
+
+            // Create Token Object
+            const newToken = {
+                id: `tok_${Math.floor(Math.random() * 10000)}`,
+                name: name || 'Untitled Token',
+                createdDate: new Date().toISOString(),
+                createdBy: 'You',
+                expiresAt: expiryDate ? expiryDate.toISOString() : null,
+                status: 'active'
+            };
+
+            // Add to list
+            tokens.unshift(newToken);
+            renderTokens();
+
+            // Show Success State
+            const rawToken = `vlt_${Math.random().toString(36).substr(2, 9)}_${Math.random().toString(36).substr(2, 9)}`;
+            document.getElementById('modalForm').classList.add('hidden');
+            document.getElementById('modalSuccess').classList.remove('hidden');
+            document.getElementById('modalCloseBtn').classList.add('hidden'); // Prevent closing without acknowledging
+            document.getElementById('modalTitle').innerText = 'Token Generated';
+            document.getElementById('newTokenValue').innerText = rawToken;
+        }
+
+        function copyToken() {
+            const val = document.getElementById('newTokenValue').innerText;
+            // Modern copy
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(val);
+            } else {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = val;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+            alert('Copied to clipboard!');
+        }
+
+        function initDelete(id) {
+            deleteConfirmId = id;
+            renderTokens();
+        }
+
+        function cancelDelete() {
+            deleteConfirmId = null;
+            renderTokens();
+        }
+
+        function confirmDelete(id) {
+            tokens = tokens.filter(t => t.id !== id);
+            deleteConfirmId = null;
+            renderTokens();
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('modalBackdrop').addEventListener('click', function(e) {
+            if (e.target === this && !document.getElementById('modalSuccess').classList.contains('hidden') === false) {
+                closeModal();
+            }
+        });
+
+    </script>
+</body>
+</html>
