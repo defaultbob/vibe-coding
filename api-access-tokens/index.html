@@ -48,7 +48,7 @@
                 <div class="text-sm text-gray-600 bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm whitespace-nowrap">
                     <span id="activeCount" class="font-semibold text-blue-600">0</span> 
                     <span class="text-gray-400 mx-1">/</span> 
-                    <span id="maxTokens">2</span> Active
+                    <span id="maxTokensDisplay">25</span> Active
                 </div>
                 
                 <button onclick="openModal()" id="createBtn" class="bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center gap-2">
@@ -66,8 +66,8 @@
             </div>
         </div>
 
-        <!-- Token Grid -->
-        <div id="tokenGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <!-- Token List Container -->
+        <div id="tokenGrid" class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
             <!-- Tokens injected via JS -->
         </div>
 
@@ -157,33 +157,53 @@
 
     <!-- Logic -->
     <script>
-        // --- State ---
-        const MAX_TOKENS = 2;
-        let tokens = [
-            {
-                id: 'tok_1',
-                name: 'CI/CD Pipeline',
-                createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-                createdBy: 'You',
-                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180).toISOString(),
-                status: 'active'
-            },
-            {
-                id: 'tok_2',
-                name: 'Local Development',
-                createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
-                createdBy: 'You',
-                expiresAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
-                status: 'expired'
-            }
-        ];
+        // --- Configuration ---
+        // User preference: Max tokens is limited to 25
+        const MAX_TOKENS = 25;
+        const STORAGE_KEY = 'vault_user_tokens_v2';
         
+        // --- State ---
+        let tokens = [];
         let deleteConfirmId = null;
 
         // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
+            loadTokens();
             renderTokens();
         });
+
+        // --- Storage Logic ---
+        function loadTokens() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                tokens = JSON.parse(stored);
+            } else {
+                // Default Mock Data if no storage
+                tokens = [
+                    {
+                        id: 'tok_1',
+                        name: 'CI/CD Pipeline',
+                        createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+                        createdBy: 'You',
+                        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180).toISOString(),
+                        status: 'active'
+                    },
+                    {
+                        id: 'tok_2',
+                        name: 'Local Development',
+                        createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
+                        createdBy: 'You',
+                        expiresAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
+                        status: 'expired'
+                    }
+                ];
+                saveTokens();
+            }
+        }
+
+        function saveTokens() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
+        }
 
         // --- Render ---
         function renderTokens() {
@@ -192,11 +212,13 @@
             const activeCountEl = document.getElementById('activeCount');
             const limitWarning = document.getElementById('limitWarning');
             const createBtn = document.getElementById('createBtn');
+            const maxTokensDisplay = document.getElementById('maxTokensDisplay');
 
             // Derived Data
             const activeCount = tokens.filter(t => t.status !== 'deleted').length;
             
             // Update Headers
+            maxTokensDisplay.innerText = MAX_TOKENS;
             activeCountEl.innerText = activeCount;
             activeCountEl.className = activeCount >= MAX_TOKENS ? 'font-semibold text-red-600' : 'font-semibold text-blue-600';
             
@@ -214,72 +236,104 @@
             if (tokens.length === 0) {
                 grid.innerHTML = '';
                 emptyState.classList.remove('hidden');
+                grid.classList.add('hidden');
                 return;
             } else {
                 emptyState.classList.add('hidden');
+                grid.classList.remove('hidden');
             }
 
-            // Build Grid
-            grid.innerHTML = tokens.map(token => {
+            // Define Table Header
+            const headerHtml = `
+                <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="col-span-3">Token Name</div>
+                    <div class="col-span-2">Status</div>
+                    <div class="col-span-2">Created</div>
+                    <div class="col-span-2">Expires</div>
+                    <div class="col-span-2">Created By</div>
+                    <div class="col-span-1 text-right">Actions</div>
+                </div>
+            `;
+
+            // Build Rows
+            const rowsHtml = tokens.map(token => {
                 const isExpired = new Date(token.expiresAt) < new Date() || token.status === 'expired';
-                const createdDate = new Date(token.createdDate).toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric' });
-                const expiresDate = token.expiresAt ? new Date(token.expiresAt).toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric' }) : 'Never';
+                const createdDate = new Date(token.createdDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                const expiresDate = token.expiresAt ? new Date(token.expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Never';
                 
                 // Badge Styles
                 const badgeClass = isExpired 
                     ? "bg-gray-100 text-gray-800" 
-                    : "bg-green-50 text-green-700 border border-green-200";
+                    : "bg-green-100 text-green-800";
                 const badgeText = isExpired ? "Expired" : "Active";
                 
-                // Card Classes
-                const cardClass = `bg-white rounded border shadow-sm transition-all hover:shadow-md hover:border-blue-300 flex flex-col p-4 ${isExpired ? 'border-gray-200 bg-gray-50 opacity-75' : 'border-gray-200'}`;
-                const titleClass = `font-bold text-gray-900 truncate ${isExpired ? 'line-through text-gray-500' : ''}`;
+                // Title Styling
+                const titleClass = `font-semibold text-gray-900 truncate block ${isExpired ? 'line-through text-gray-500' : ''}`;
 
                 // Action Area (Delete vs Confirm)
                 let actionHtml = '';
                 if (deleteConfirmId === token.id) {
                     actionHtml = `
-                        <div class="flex gap-1 animate-in fade-in ml-auto">
-                            <button onclick="confirmDelete('${token.id}')" class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Del</button>
-                            <button onclick="cancelDelete()" class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300">Cancel</button>
+                        <div class="flex gap-2 justify-end animate-in fade-in">
+                             <button onclick="confirmDelete('${token.id}')" class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition-colors">Confirm</button>
+                             <button onclick="cancelDelete()" class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200 transition-colors">Cancel</button>
                         </div>
                     `;
                 } else {
                     actionHtml = `
-                        <button onclick="initDelete('${token.id}')" class="text-gray-300 hover:text-red-500 transition-colors ml-auto" title="Revoke Token">
+                        <button onclick="initDelete('${token.id}')" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Revoke Token">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     `;
                 }
 
+                // Row Structure: Stacked on Mobile, Grid on Desktop
                 return `
-                <div class="${cardClass}">
-                    <div class="flex items-start justify-between mb-3 h-8">
-                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${badgeClass}">
+                <div class="flex flex-col md:grid md:grid-cols-12 md:gap-4 px-6 py-4 border-b last:border-0 border-gray-100 hover:bg-gray-50 items-center transition-colors group">
+                    
+                    <!-- NAME -->
+                    <div class="col-span-3 w-full mb-2 md:mb-0">
+                        <span class="${titleClass}" title="${token.name}">${token.name}</span>
+                        <div class="md:hidden text-xs text-gray-500 mt-0.5">ID: ${token.id}</div>
+                    </div>
+
+                    <!-- STATUS -->
+                    <div class="col-span-2 w-full flex justify-between md:block items-center mb-1 md:mb-0">
+                         <span class="md:hidden text-xs text-gray-500 font-medium uppercase">Status</span>
+                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}">
                             ${badgeText}
                         </span>
-                        ${actionHtml}
                     </div>
-                    
-                    <h3 class="${titleClass} text-sm mb-4" title="${token.name}">${token.name}</h3>
 
-                    <div class="space-y-1.5 text-xs mt-auto pt-3 border-t border-gray-100 border-dashed">
-                        <div class="flex justify-between text-gray-500">
-                            <span>Created</span>
-                            <span class="font-mono text-gray-700">${createdDate}</span>
-                        </div>
-                        <div class="flex justify-between text-gray-500">
-                            <span>Expires</span>
-                            <span class="font-mono ${isExpired ? 'text-red-600' : 'text-gray-700'}">${expiresDate}</span>
-                        </div>
-                        <div class="flex justify-between text-gray-500">
-                            <span>By</span>
-                            <span class="text-gray-700">${token.createdBy}</span>
-                        </div>
+                    <!-- CREATED -->
+                    <div class="col-span-2 w-full flex justify-between md:block items-center mb-1 md:mb-0 text-sm text-gray-600">
+                         <span class="md:hidden text-xs text-gray-500 font-medium uppercase">Created</span>
+                         ${createdDate}
+                    </div>
+
+                    <!-- EXPIRES -->
+                    <div class="col-span-2 w-full flex justify-between md:block items-center mb-1 md:mb-0 text-sm">
+                         <span class="md:hidden text-xs text-gray-500 font-medium uppercase">Expires</span>
+                         <span class="${isExpired ? 'text-red-600 font-medium' : 'text-gray-600'}">${expiresDate}</span>
+                    </div>
+
+                    <!-- CREATED BY -->
+                    <div class="col-span-2 w-full flex justify-between md:block items-center mb-2 md:mb-0 text-sm text-gray-600">
+                         <span class="md:hidden text-xs text-gray-500 font-medium uppercase">Created By</span>
+                         <div class="flex items-center gap-1.5">
+                            <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-medium">${token.createdBy}</span>
+                         </div>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="col-span-1 w-full flex justify-end items-center">
+                        ${actionHtml}
                     </div>
                 </div>
                 `;
             }).join('');
+
+            grid.innerHTML = headerHtml + rowsHtml;
         }
 
         // --- Actions ---
@@ -325,6 +379,7 @@
 
             // Add to list
             tokens.unshift(newToken);
+            saveTokens(); // PERSIST
             renderTokens();
 
             // Show Success State
@@ -365,6 +420,7 @@
 
         function confirmDelete(id) {
             tokens = tokens.filter(t => t.id !== id);
+            saveTokens(); // PERSIST
             deleteConfirmId = null;
             renderTokens();
         }
