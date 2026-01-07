@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Identity - Veeva ID</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-primary: #2b2b2b;
+            --text-secondary: #666666;
+            --border-color: #dcdcdc;
+            --veeva-blue: #0095ff;
+            --veeva-orange: #ff9e1b;
+            --hover-bg: #f5fbff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Logo Section */
+        .logo-container {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .logo-text {
+            font-size: 26px;
+            font-weight: 600;
+            color: #555;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-text span {
+            color: var(--veeva-orange);
+            font-style: italic;
+        }
+
+        /* Main Card */
+        .login-card {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 440px;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0 0 12px 0;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin: 0 0 32px 0;
+            line-height: 1.5;
+        }
+
+        /* MFA Options List */
+        .mfa-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mfa-option {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            position: relative;
+        }
+
+        .mfa-option:hover {
+            border-color: var(--veeva-blue);
+            background-color: var(--hover-bg);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 149, 255, 0.1);
+        }
+
+        .mfa-option:active {
+            transform: translateY(0);
+        }
+
+        .icon-container {
+            width: 42px;
+            height: 42px;
+            background-color: #f0f4f8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .mfa-option:hover .icon-container {
+            background-color: #e6f2ff;
+            color: var(--veeva-blue);
+        }
+
+        .option-details {
+            flex-grow: 1;
+        }
+
+        .option-title {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .option-desc {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* SVG Icons */
+        svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+            stroke: currentColor;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Recommended Badge */
+        .badge {
+            background-color: #fff4e5;
+            color: #d97706;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Action Links */
+        .action-link {
+            display: inline-block;
+            margin-top: 24px;
+            color: var(--veeva-blue);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 32px;
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .footer-links a {
+            color: #004b8d;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            color: #ccc;
+        }
+
+        /* Loading Overlay (Simulated) */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--veeva-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        .loading-text {
+            font-size: 15px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 24px 20px;
+            }
+            .footer {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Logo -->
+    <div class="logo-container">
+        <div class="logo-text">Veeva <span>iD</span></div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="login-card" id="mainCard">
+        
+        <!-- Loading State Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">Connecting...</div>
+        </div>
+
+        <h1>Verify Your Identity</h1>
+        <p class="subtitle">Select a verification method to continue securely.</p>
+
+        <div class="mfa-list">
+            
+            <!-- Option 1: Passkey -->
+            <div class="mfa-option" onclick="selectMethod('Passkey', 'Requesting biometric verification...')">
+                <span class="badge">Recommended</span>
+                <div class="icon-container">
+                    <!-- Key Icon -->
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                    </svg>
+                </div>
+                <div class="option-details">
+                    <span class="option-title">Passkey</span>
+                    <span class="option-desc">Use Face ID, Touch ID, or Hello</span>
+                </div>
+            </div>
+
+            <!-- Option 2: Vault Mobile -->
+            <div class="mfa-option" onclick="selectMethod('Vault Mobile', 'Sending notification to your device...')">
+                <div class="icon-container">
+                    <!-- Smartphone Icon -->
+                    <svg viewBox="0 0 24 24">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                </div>
+                <div class="option-details">
+                    <span class="option-title">Vault Mobile App</span>
+                    <span class="option-desc">Approve request on your device</span>
+                </div>
+            </div>
+
+            <!-- Option 3: Authenticator -->
+            <div class="mfa-option" onclick="selectMethod('Authenticator', 'Please prepare your authenticator code...')">
+                <div class="icon-container">
+                    <!-- Shield/Lock Icon -->
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <div class="option-details">
+                    <span class="option-title">Authenticator App</span>
+                    <span class="option-desc">Enter a code from your auth app</span>
+                </div>
+            </div>
+
+            <!-- Option 4: Email -->
+            <div class="mfa-option" onclick="selectMethod('Email', 'Sending verification code to email...')">
+                <div class="icon-container">
+                    <!-- Mail Icon -->
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+                <div class="option-details">
+                    <span class="option-title">Email Code</span>
+                    <span class="option-desc">Send to d*******@veeva.com</span>
+                </div>
+            </div>
+
+        </div>
+
+        <a href="#" class="action-link" onclick="resetForm()">Cancel and return to login</a>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <span class="divider">|</span>
+            <a href="#">English ▼</a>
+        </div>
+        <div class="copyright">
+            Copyright © 2010-2026 Veeva
+        </div>
+    </div>
+
+    <script>
+        function selectMethod(methodName, loadingMessage) {
+            const overlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            
+            // Show loading state
+            loadingText.textContent = loadingMessage;
+            overlay.style.display = 'flex';
+
+            // Simulate network request delay
+            setTimeout(() => {
+                // In a real app, this would redirect or show the input field for that method
+                if(methodName === 'Vault Mobile') {
+                    loadingText.innerHTML = "<strong>Check your phone!</strong><br><br>We sent a notification to your Vault Mobile app.";
+                    // Change spinner to checkmark
+                    document.querySelector('.spinner').style.border = 'none';
+                    document.querySelector('.spinner').innerHTML = '✅';
+                    document.querySelector('.spinner').style.fontSize = '30px';
+                    document.querySelector('.spinner').style.animation = 'none';
+                } else if (methodName === 'Passkey') {
+                    loadingText.textContent = "Verifying Passkey...";
+                } else {
+                    // Reset for demo purposes after a delay
+                    setTimeout(() => {
+                        alert(`In a real implementation, this would navigate to the ${methodName} verification screen.`);
+                        resetForm();
+                    }, 500);
+                }
+            }, 1500);
+        }
+
+        function resetForm() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = 'none';
+            // Reset spinner styles if they were changed
+            const spinner = document.querySelector('.spinner');
+            spinner.style.border = '3px solid #f3f3f3';
+            spinner.style.borderTop = '3px solid var(--veeva-blue)';
+            spinner.innerHTML = '';
+            spinner.style.animation = 'spin 1s linear infinite';
+        }
+    </script>
+</body>
+</html>
