@@ -15,6 +15,7 @@
             --veeva-orange: #ff9e1b;
             --hover-bg: #f5fbff;
             --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --error-red: #d32f2f;
         }
 
         body {
@@ -28,6 +29,28 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+        }
+
+        /* Test Toggle Styles */
+        .test-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 13px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .test-toggle label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         /* Logo Section */
@@ -106,6 +129,16 @@
             transform: translateY(0);
         }
 
+        /* Disabled State for Options */
+        .mfa-option.disabled {
+            opacity: 0.6;
+            pointer-events: none;
+            background-color: #f9f9f9;
+            border-color: #eee;
+            box-shadow: none;
+            transform: none;
+        }
+
         .icon-container {
             width: 42px;
             height: 42px;
@@ -122,6 +155,11 @@
         .mfa-option:hover .icon-container {
             background-color: #e6f2ff;
             color: var(--veeva-blue);
+        }
+        
+        .mfa-option.disabled:hover .icon-container {
+            background-color: #f0f4f8; /* Reset hover for disabled */
+            color: #555;
         }
 
         .option-details {
@@ -140,6 +178,24 @@
             display: block;
             font-size: 13px;
             color: var(--text-secondary);
+        }
+
+        /* Hint Text Styles */
+        .hint-text {
+            display: block;
+            font-size: 11px;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        
+        .hint-warning {
+            color: var(--veeva-orange);
+            font-style: italic;
+        }
+
+        .hint-error {
+            color: var(--error-red);
+            font-weight: 500;
         }
 
         /* SVG Icons */
@@ -243,6 +299,8 @@
             font-size: 15px;
             color: var(--text-primary);
             font-weight: 500;
+            text-align: center;
+            padding: 0 20px;
         }
 
         @keyframes spin {
@@ -259,20 +317,33 @@
                 flex-direction: column;
                 gap: 12px;
             }
+            .test-toggle {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header Logo -->
+    <div class="test-toggle">
+        <strong>Test Year:</strong>
+        <label>
+            <input type="radio" name="testYear" value="2026" onchange="setTestYear(2026)">
+            2026
+        </label>
+        <label>
+            <input type="radio" name="testYear" value="2027" checked onchange="setTestYear(2027)">
+            2027
+        </label>
+    </div>
+
     <div class="logo-container">
         <div class="logo-text">Veeva <span>iD</span></div>
     </div>
 
-    <!-- Main Card -->
     <div class="login-card" id="mainCard">
         
-        <!-- Loading State Overlay -->
         <div class="loading-overlay" id="loadingOverlay">
             <div class="spinner"></div>
             <div class="loading-text" id="loadingText">Connecting...</div>
@@ -283,11 +354,9 @@
 
         <div class="mfa-list">
             
-            <!-- Option 1: Passkey -->
             <div class="mfa-option" onclick="selectMethod('Passkey', 'Requesting biometric verification...')">
                 <span class="badge">Recommended</span>
                 <div class="icon-container">
-                    <!-- Key Icon -->
                     <svg viewBox="0 0 24 24">
                         <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
                     </svg>
@@ -298,10 +367,8 @@
                 </div>
             </div>
 
-            <!-- Option 2: Vault Mobile -->
             <div class="mfa-option" onclick="selectMethod('Vault Mobile', 'Sending notification to your device...')">
                 <div class="icon-container">
-                    <!-- Smartphone Icon -->
                     <svg viewBox="0 0 24 24">
                         <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
                         <line x1="12" y1="18" x2="12.01" y2="18"></line>
@@ -313,10 +380,8 @@
                 </div>
             </div>
 
-            <!-- Option 3: Authenticator -->
             <div class="mfa-option" onclick="selectMethod('Authenticator', 'Please prepare your authenticator code...')">
                 <div class="icon-container">
-                    <!-- Shield/Lock Icon -->
                     <svg viewBox="0 0 24 24">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
@@ -327,10 +392,8 @@
                 </div>
             </div>
 
-            <!-- Option 4: Email -->
-            <div class="mfa-option" onclick="selectMethod('Email', 'Sending verification code to email...')">
+            <div id="emailOption" class="mfa-option" onclick="handleEmailSelection()">
                 <div class="icon-container">
-                    <!-- Mail Icon -->
                     <svg viewBox="0 0 24 24">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                         <polyline points="22,6 12,13 2,6"></polyline>
@@ -339,6 +402,7 @@
                 <div class="option-details">
                     <span class="option-title">Email Code</span>
                     <span class="option-desc">Send to d*******@veeva.com</span>
+                    <span id="emailHint" class="hint-text"></span>
                 </div>
             </div>
 
@@ -347,7 +411,6 @@
         <a href="#" class="action-link" onclick="resetForm()">Cancel and return to login</a>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         <div class="footer-links">
             <a href="#">Privacy Policy</a>
@@ -360,6 +423,59 @@
     </div>
 
     <script>
+        let currentTestYear = 2027; // Default
+
+        // Initialize UI on load
+        window.onload = function() {
+            setTestYear(2027);
+        };
+
+        function setTestYear(year) {
+            currentTestYear = year;
+            updateEmailOptionState();
+        }
+
+        function updateEmailOptionState() {
+            const emailOption = document.getElementById('emailOption');
+            const emailHint = document.getElementById('emailHint');
+
+            if (currentTestYear === 2027) {
+                // 2027 Mode: Disabled if password length < 15 (simulated assumption)
+                emailOption.classList.add('disabled');
+                emailHint.textContent = "User's password must be 15 characters or greater to use email code.";
+                emailHint.className = "hint-text hint-error";
+            } else {
+                // 2026 Mode: Enabled but with warning
+                emailOption.classList.remove('disabled');
+                emailHint.textContent = "Note: After Jan 01 2027, this option will not be available if password is less than 15 characters.";
+                emailHint.className = "hint-text hint-warning";
+            }
+        }
+
+        function handleEmailSelection() {
+            if (currentTestYear === 2027) {
+                return; // Disabled
+            }
+
+            if (currentTestYear === 2026) {
+                // Suggest password change logic
+                const userWantsToChangePassword = confirm(
+                    "Security Suggestion:\n\n" +
+                    "Your password is currently less than 15 characters. To continue using Email Code in 2027, we recommend changing it now.\n\n" +
+                    "Click OK to Change Password now.\n" +
+                    "Click Cancel to do it later and continue."
+                );
+
+                if (userWantsToChangePassword) {
+                    alert("Redirecting to password change screen...");
+                    return; // Stop flow
+                }
+                // If cancelled, proceed to normal email selection
+            }
+
+            selectMethod('Email', 'Sending verification code to email...');
+        }
+
         function selectMethod(methodName, loadingMessage) {
             const overlay = document.getElementById('loadingOverlay');
             const loadingText = document.getElementById('loadingText');
