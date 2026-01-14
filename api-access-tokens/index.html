@@ -31,7 +31,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 p-4 md:p-8" onclick="handleGlobalClick(event)">
+<body class="bg-gray-50 font-sans text-gray-900 p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
         
@@ -202,12 +202,10 @@
     <script>
         // --- Configuration ---
         const MAX_TOKENS = 25;
-        const STORAGE_KEY = 'vault_user_tokens_v4'; // Incremented version to ensure clean data reload if you prefer
+        const STORAGE_KEY = 'vault_user_tokens_v5'; // Incremented version
         
         // --- State ---
         let tokens = [];
-        let deleteConfirmId = null;
-        let activeDropdownId = null; // Tracks which ellipsis menu is open
         let showInactive = false;
 
         // --- Init ---
@@ -383,43 +381,20 @@
                 // Text Styling
                 const dimClass = currentStatus !== 'active' ? 'text-gray-400' : 'text-gray-900';
 
-                // Action Area (Delete vs Confirm)
-                let actionHtml = '';
-                if (deleteConfirmId === token.id) {
-                    actionHtml = `
-                        <div class="flex gap-2 justify-end animate-in fade-in">
-                             <button onclick="confirmDelete('${token.id}')" class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition-colors">Confirm</button>
-                             <button onclick="cancelDelete()" class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200 transition-colors">Cancel</button>
-                        </div>
-                    `;
-                } else {
-                    actionHtml = `
-                        <button onclick="initDelete('${token.id}')" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Revoke Token">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    `;
-                }
+                // Toggle logic (replaces delete and ellipsis)
+                // If active, checked. If expired, disabled.
+                const isChecked = currentStatus === 'active' ? 'checked' : '';
+                const isDisabled = currentStatus === 'expired' ? 'disabled' : '';
+                const disabledClass = currentStatus === 'expired' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
+                const inputDisabled = currentStatus === 'expired' ? 'disabled' : '';
 
-                // Ellipsis Menu
-                const isDropdownOpen = activeDropdownId === token.id;
-                const ellipsisHtml = `
-                    <div class="relative inline-block text-left ml-2">
-                        <button onclick="toggleDropdown(event, '${token.id}')" class="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
-                        </button>
-                        <!-- Dropdown Menu -->
-                        <div class="${isDropdownOpen ? 'block' : 'hidden'} absolute left-full top-0 ml-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 focus:outline-none fade-in origin-top-left">
-                            <div class="py-1" role="menu">
-                                ${currentStatus === 'active' 
-                                    ? `<button onclick="toggleTokenStatus('${token.id}', 'inactive')" class="group w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
-                                         <div class="w-2 h-2 rounded-full bg-gray-400 group-hover:bg-gray-500"></div> Deactivate
-                                       </button>`
-                                    : `<button onclick="toggleTokenStatus('${token.id}', 'active')" class="group w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2" ${currentStatus === 'expired' ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
-                                         <div class="w-2 h-2 rounded-full bg-green-500 group-hover:bg-green-600"></div> Activate
-                                       </button>`
-                                }
-                            </div>
-                        </div>
+                // Unique ID for each row toggle
+                const toggleId = `toggle_${token.id}`;
+
+                const toggleActionHtml = `
+                    <div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in ${disabledClass}">
+                        <input type="checkbox" name="${toggleId}" id="${toggleId}" ${isChecked} ${inputDisabled} onchange="toggleTokenStatus('${token.id}')" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none ${disabledClass} border-gray-300 left-0 transition-all duration-200 ease-in-out"/>
+                        <label for="${toggleId}" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 ${disabledClass}"></label>
                     </div>
                 `;
 
@@ -427,14 +402,9 @@
                 return `
                 <div class="grid grid-cols-12 gap-4 px-6 py-4 border-b last:border-0 border-gray-100 hover:bg-gray-50 items-center transition-colors group">
                     
-                    <!-- NAME + ELLIPSIS -->
-                    <div class="col-span-2 w-full flex items-center justify-between">
-                        <div class="truncate pr-2">
-                            <span class="font-semibold ${dimClass}" title="${token.name}">${token.name}</span>
-                        </div>
-                        <div class="shrink-0">
-                            ${ellipsisHtml}
-                        </div>
+                    <!-- NAME (Removed Ellipsis) -->
+                    <div class="col-span-2 w-full truncate pr-2">
+                        <span class="font-semibold ${dimClass}" title="${token.name}">${token.name}</span>
                     </div>
 
                     <!-- CLIENT ID -->
@@ -449,7 +419,7 @@
                         </span>
                     </div>
 
-                    <!-- LAST USED (New) -->
+                    <!-- LAST USED -->
                     <div class="col-span-2 w-full text-sm text-gray-600">
                          ${lastUsedDisplay}
                     </div>
@@ -464,9 +434,9 @@
                          <span class="${currentStatus === 'expired' ? 'text-red-600 font-medium' : 'text-gray-500'}">${expiresDate}</span>
                     </div>
 
-                    <!-- ACTIONS -->
+                    <!-- ACTIONS (Replaced with Toggle) -->
                     <div class="col-span-1 w-full flex justify-end items-center">
-                        ${actionHtml}
+                        ${toggleActionHtml}
                     </div>
                 </div>
                 `;
@@ -477,31 +447,18 @@
 
         // --- Actions ---
 
-        function toggleDropdown(event, id) {
-            event.stopPropagation(); // Prevent global click from closing immediately
-            if (activeDropdownId === id) {
-                activeDropdownId = null; // Toggle off
-            } else {
-                activeDropdownId = id; // Toggle on
-            }
-            renderTokens();
-        }
-
-        function toggleTokenStatus(id, newStatus) {
+        function toggleTokenStatus(id) {
             const token = tokens.find(t => t.id === id);
             if (token) {
-                token.status = newStatus;
+                // If it was active, make inactive. If inactive, make active.
+                if (token.status === 'active') {
+                    token.status = 'inactive';
+                } else if (token.status === 'inactive') {
+                    token.status = 'active';
+                }
+                // If expired, do nothing (guarded by disabled input usually, but good to check)
+                
                 saveTokens();
-                // Close dropdown
-                activeDropdownId = null;
-                renderTokens();
-            }
-        }
-
-        function handleGlobalClick(event) {
-            // Close dropdown if clicking outside
-            if (activeDropdownId) {
-                activeDropdownId = null;
                 renderTokens();
             }
         }
@@ -573,25 +530,6 @@
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
             }
-        }
-
-        function initDelete(id) {
-            deleteConfirmId = id;
-            renderTokens();
-        }
-
-        function cancelDelete() {
-            deleteConfirmId = null;
-            renderTokens();
-        }
-
-        function confirmDelete(id) {
-            // Instead of removing from array, mark as deleted or filter out.
-            // For this specific logic, we remove it.
-            tokens = tokens.filter(t => t.id !== id);
-            saveTokens(); 
-            deleteConfirmId = null;
-            renderTokens();
         }
 
         // Close modal on backdrop click
