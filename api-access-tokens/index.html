@@ -14,16 +14,31 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
+        
+        /* Toggle Switch CSS */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #2563EB;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #2563EB;
+        }
+        .toggle-checkbox:checked + .toggle-label:before {
+            transform: translateX(100%);
+        }
+        .toggle-label:before {
+            transition: transform 0.2s;
+        }
     </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 p-4 md:p-8">
+<body class="bg-gray-50 font-sans text-gray-900 p-4 md:p-8" onclick="handleGlobalClick(event)">
 
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-7xl mx-auto">
         
         <!-- Page Header -->
         <div class="mb-8">
             <h1 class="text-2xl font-bold text-gray-900 mb-2">My Profile</h1>
-            <div class="flex border-b border-gray-200 overflow-x-auto">
+            <div class="flex border-b border-gray-200 overflow-x-auto no-scrollbar">
                 <button class="px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">General</button>
                 <button class="px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Security</button>
                 <button class="px-4 py-2 border-b-2 border-blue-600 text-blue-600 font-medium whitespace-nowrap">Access Tokens</button>
@@ -32,7 +47,7 @@
         </div>
 
         <!-- Token Section Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
             <div>
                 <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
                     <!-- Shield Icon -->
@@ -44,16 +59,28 @@
                 </p>
             </div>
             
-            <div class="flex items-center gap-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                
+                <!-- Show Inactive Toggle -->
+                <div class="flex items-center mr-2">
+                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="toggle" id="showInactiveToggle" onchange="toggleShowInactive()" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 left-0 transition-all duration-200 ease-in-out"/>
+                        <label for="showInactiveToggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                    <label for="showInactiveToggle" class="text-sm text-gray-700 font-medium cursor-pointer">Show Inactive</label>
+                </div>
+
+                <div class="h-6 w-px bg-gray-300 hidden sm:block"></div>
+
                 <div class="text-sm text-gray-600 bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm whitespace-nowrap">
                     <span id="activeCount" class="font-semibold text-blue-600">0</span> 
                     <span class="text-gray-400 mx-1">/</span> 
                     <span id="maxTokensDisplay">25</span> Active
                 </div>
                 
-                <button onclick="openModal()" id="createBtn" class="bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center gap-2">
+                <button onclick="openModal()" id="createBtn" class="bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center gap-2 w-full sm:w-auto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Generate New Token
+                    Generate Token
                 </button>
             </div>
         </div>
@@ -67,12 +94,28 @@
         </div>
 
         <!-- Token List Container -->
-        <div id="tokenGrid" class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-            <!-- Tokens injected via JS -->
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden overflow-x-auto">
+            <div class="min-w-[800px]"> <!-- Ensure table doesn't crush on small screens -->
+                <!-- Table Header -->
+                <div class="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="col-span-3">Token Name</div>
+                    <div class="col-span-2">Client ID</div>
+                    <div class="col-span-1">Status</div>
+                    <div class="col-span-2">Created</div>
+                    <div class="col-span-2">Expires</div>
+                    <div class="col-span-1">Created By</div>
+                    <div class="col-span-1 text-right">Actions</div>
+                </div>
+
+                <!-- Token List -->
+                <div id="tokenGrid">
+                    <!-- Tokens injected via JS -->
+                </div>
+            </div>
         </div>
 
         <!-- Empty State (Hidden by default) -->
-        <div id="emptyState" class="hidden text-center py-20 bg-white rounded-lg border border-gray-200 border-dashed">
+        <div id="emptyState" class="hidden text-center py-20 bg-white rounded-lg border border-gray-200 border-dashed mt-4">
             <div class="mx-auto h-12 w-12 text-gray-300 mb-3 flex items-center justify-center">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </div>
@@ -158,13 +201,14 @@
     <!-- Logic -->
     <script>
         // --- Configuration ---
-        // User preference: Max tokens is limited to 25
         const MAX_TOKENS = 25;
-        const STORAGE_KEY = 'vault_user_tokens_v2';
+        const STORAGE_KEY = 'vault_user_tokens_v3';
         
         // --- State ---
         let tokens = [];
         let deleteConfirmId = null;
+        let activeDropdownId = null; // Tracks which ellipsis menu is open
+        let showInactive = false;
 
         // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -172,37 +216,81 @@
             renderTokens();
         });
 
-        // --- Storage Logic ---
+        // --- Storage & Data ---
         function loadTokens() {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 tokens = JSON.parse(stored);
+                // Backfill clientId for older data versions if needed
+                tokens.forEach(t => { if(!t.clientId) t.clientId = generateClientId(); });
             } else {
-                // Default Mock Data if no storage
-                tokens = [
-                    {
-                        id: 'tok_1',
-                        name: 'CI/CD Pipeline',
-                        createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-                        createdBy: 'You',
-                        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180).toISOString(),
-                        status: 'active'
-                    },
-                    {
-                        id: 'tok_2',
-                        name: 'Local Development',
-                        createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
-                        createdBy: 'You',
-                        expiresAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
-                        status: 'expired'
-                    }
-                ];
+                generateMockData();
                 saveTokens();
             }
         }
 
+        function generateMockData() {
+            tokens = [
+                {
+                    id: 'tok_1',
+                    clientId: 'client_7a8b9c',
+                    name: 'Production Pipeline (CI/CD)',
+                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+                    createdBy: 'System',
+                    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180).toISOString(),
+                    status: 'active'
+                },
+                {
+                    id: 'tok_2',
+                    clientId: 'client_x9y8z7',
+                    name: 'Local Env - MacBook Pro',
+                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45).toISOString(),
+                    createdBy: 'You',
+                    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 15).toISOString(),
+                    status: 'active'
+                },
+                {
+                    id: 'tok_3',
+                    clientId: 'client_h2k3m4',
+                    name: 'Staging Server Integration',
+                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 120).toISOString(),
+                    createdBy: 'You',
+                    expiresAt: null, // Never
+                    status: 'inactive'
+                },
+                {
+                    id: 'tok_4',
+                    clientId: 'client_p5q6r7',
+                    name: 'Legacy API Access',
+                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 400).toISOString(),
+                    createdBy: 'Admin',
+                    expiresAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
+                    status: 'expired'
+                },
+                {
+                    id: 'tok_5',
+                    clientId: 'client_j9k8l7',
+                    name: 'Mobile App Gateway',
+                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+                    createdBy: 'You',
+                    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString(),
+                    status: 'active'
+                }
+            ];
+        }
+
+        function generateClientId() {
+            return 'client_' + Math.random().toString(36).substr(2, 6);
+        }
+
         function saveTokens() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
+        }
+
+        function toggleShowInactive() {
+            const toggle = document.getElementById('showInactiveToggle');
+            showInactive = toggle.checked;
+            renderTokens();
         }
 
         // --- Render ---
@@ -214,9 +302,16 @@
             const createBtn = document.getElementById('createBtn');
             const maxTokensDisplay = document.getElementById('maxTokensDisplay');
 
-            // Derived Data
-            const activeCount = tokens.filter(t => t.status !== 'deleted').length;
+            // 1. Calculate stats (based on ALL non-deleted tokens)
+            const activeCount = tokens.filter(t => t.status !== 'deleted' && t.status !== 'expired').length;
             
+            // 2. Filter for Display
+            let displayTokens = tokens.filter(t => t.status !== 'deleted');
+            if (!showInactive) {
+                // If toggle is OFF, hide 'inactive' and 'expired'
+                displayTokens = displayTokens.filter(t => t.status === 'active');
+            }
+
             // Update Headers
             maxTokensDisplay.innerText = MAX_TOKENS;
             activeCountEl.innerText = activeCount;
@@ -233,42 +328,38 @@
             }
 
             // Empty State Check
-            if (tokens.length === 0) {
+            if (displayTokens.length === 0) {
                 grid.innerHTML = '';
                 emptyState.classList.remove('hidden');
-                grid.classList.add('hidden');
                 return;
             } else {
                 emptyState.classList.add('hidden');
-                grid.classList.remove('hidden');
             }
 
-            // Define Table Header
-            const headerHtml = `
-                <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="col-span-3">Token Name</div>
-                    <div class="col-span-2">Status</div>
-                    <div class="col-span-2">Created</div>
-                    <div class="col-span-2">Expires</div>
-                    <div class="col-span-2">Created By</div>
-                    <div class="col-span-1 text-right">Actions</div>
-                </div>
-            `;
-
             // Build Rows
-            const rowsHtml = tokens.map(token => {
-                const isExpired = new Date(token.expiresAt) < new Date() || token.status === 'expired';
+            const rowsHtml = displayTokens.map(token => {
+                const isExpired = new Date(token.expiresAt) < new Date() && token.expiresAt !== null;
+                // Force status update if expired logic detects it, just for display consistency
+                let currentStatus = token.status;
+                if (isExpired) currentStatus = 'expired';
+
                 const createdDate = new Date(token.createdDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 const expiresDate = token.expiresAt ? new Date(token.expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Never';
                 
                 // Badge Styles
-                const badgeClass = isExpired 
-                    ? "bg-gray-100 text-gray-800" 
-                    : "bg-green-100 text-green-800";
-                const badgeText = isExpired ? "Expired" : "Active";
+                let badgeClass = "bg-green-100 text-green-800";
+                let badgeText = "Active";
                 
-                // Title Styling
-                const titleClass = `font-semibold text-gray-900 truncate block ${isExpired ? 'line-through text-gray-500' : ''}`;
+                if (currentStatus === 'inactive') {
+                    badgeClass = "bg-gray-100 text-gray-600";
+                    badgeText = "Inactive";
+                } else if (currentStatus === 'expired') {
+                    badgeClass = "bg-red-50 text-red-600";
+                    badgeText = "Expired";
+                }
+                
+                // Text Styling
+                const dimClass = currentStatus !== 'active' ? 'text-gray-400' : 'text-gray-900';
 
                 // Action Area (Delete vs Confirm)
                 let actionHtml = '';
@@ -287,39 +378,67 @@
                     `;
                 }
 
-                // Row Structure: Stacked on Mobile, Grid on Desktop
+                // Ellipsis Menu
+                const isDropdownOpen = activeDropdownId === token.id;
+                const ellipsisHtml = `
+                    <div class="relative inline-block text-left ml-2">
+                        <button onclick="toggleDropdown(event, '${token.id}')" class="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div class="${isDropdownOpen ? 'block' : 'hidden'} absolute left-full top-0 ml-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 focus:outline-none fade-in origin-top-left">
+                            <div class="py-1" role="menu">
+                                ${currentStatus === 'active' 
+                                    ? `<button onclick="toggleTokenStatus('${token.id}', 'inactive')" class="group w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                         <div class="w-2 h-2 rounded-full bg-gray-400 group-hover:bg-gray-500"></div> Deactivate
+                                       </button>`
+                                    : `<button onclick="toggleTokenStatus('${token.id}', 'active')" class="group w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2" ${currentStatus === 'expired' ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
+                                         <div class="w-2 h-2 rounded-full bg-green-500 group-hover:bg-green-600"></div> Activate
+                                       </button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Row Structure
                 return `
-                <div class="flex flex-col md:grid md:grid-cols-12 md:gap-4 px-6 py-4 border-b last:border-0 border-gray-100 hover:bg-gray-50 items-center transition-colors group">
+                <div class="grid grid-cols-12 gap-4 px-6 py-4 border-b last:border-0 border-gray-100 hover:bg-gray-50 items-center transition-colors group">
                     
-                    <!-- NAME -->
-                    <div class="col-span-3 w-full mb-2 md:mb-0">
-                        <span class="${titleClass}" title="${token.name}">${token.name}</span>
-                        <div class="md:hidden text-xs text-gray-500 mt-0.5">ID: ${token.id}</div>
+                    <!-- NAME + ELLIPSIS -->
+                    <div class="col-span-3 w-full flex items-center justify-between">
+                        <div class="truncate pr-2">
+                            <span class="font-semibold ${dimClass}" title="${token.name}">${token.name}</span>
+                        </div>
+                        <div class="shrink-0">
+                            ${ellipsisHtml}
+                        </div>
+                    </div>
+
+                    <!-- CLIENT ID -->
+                    <div class="col-span-2 w-full text-sm font-mono text-gray-500 truncate select-all" title="${token.clientId}">
+                        ${token.clientId}
                     </div>
 
                     <!-- STATUS -->
-                    <div class="col-span-2 w-full flex justify-between md:block items-center mb-1 md:mb-0">
-                         <span class="md:hidden text-xs text-gray-500 font-medium uppercase">Status</span>
+                    <div class="col-span-1 w-full">
                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}">
                             ${badgeText}
                         </span>
                     </div>
 
                     <!-- CREATED -->
-                    <div class="col-span-2 w-full flex justify-between md:block items-center mb-1 md:mb-0 text-sm text-gray-600">
-                         <span class="md:hidden text-xs text-gray-500 font-medium uppercase">Created</span>
+                    <div class="col-span-2 w-full text-sm text-gray-500">
                          ${createdDate}
                     </div>
 
                     <!-- EXPIRES -->
-                    <div class="col-span-2 w-full flex justify-between md:block items-center mb-1 md:mb-0 text-sm">
-                         <span class="md:hidden text-xs text-gray-500 font-medium uppercase">Expires</span>
-                         <span class="${isExpired ? 'text-red-600 font-medium' : 'text-gray-600'}">${expiresDate}</span>
+                    <div class="col-span-2 w-full text-sm">
+                         <span class="${currentStatus === 'expired' ? 'text-red-600 font-medium' : 'text-gray-500'}">${expiresDate}</span>
                     </div>
 
                     <!-- CREATED BY -->
-                    <div class="col-span-2 w-full flex justify-between md:block items-center mb-2 md:mb-0 text-sm text-gray-600">
-                         <span class="md:hidden text-xs text-gray-500 font-medium uppercase">Created By</span>
+                    <div class="col-span-1 w-full text-sm text-gray-500">
                          <div class="flex items-center gap-1.5">
                             <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-medium">${token.createdBy}</span>
                          </div>
@@ -333,10 +452,39 @@
                 `;
             }).join('');
 
-            grid.innerHTML = headerHtml + rowsHtml;
+            grid.innerHTML = rowsHtml;
         }
 
         // --- Actions ---
+
+        function toggleDropdown(event, id) {
+            event.stopPropagation(); // Prevent global click from closing immediately
+            if (activeDropdownId === id) {
+                activeDropdownId = null; // Toggle off
+            } else {
+                activeDropdownId = id; // Toggle on
+            }
+            renderTokens();
+        }
+
+        function toggleTokenStatus(id, newStatus) {
+            const token = tokens.find(t => t.id === id);
+            if (token) {
+                token.status = newStatus;
+                saveTokens();
+                // Close dropdown
+                activeDropdownId = null;
+                renderTokens();
+            }
+        }
+
+        function handleGlobalClick(event) {
+            // Close dropdown if clicking outside
+            if (activeDropdownId) {
+                activeDropdownId = null;
+                renderTokens();
+            }
+        }
 
         function openModal() {
             document.getElementById('modalBackdrop').classList.remove('hidden');
@@ -369,7 +517,8 @@
 
             // Create Token Object
             const newToken = {
-                id: `tok_${Math.floor(Math.random() * 10000)}`,
+                id: `tok_${Math.floor(Math.random() * 100000)}`,
+                clientId: generateClientId(),
                 name: name || 'Untitled Token',
                 createdDate: new Date().toISOString(),
                 createdBy: 'You',
@@ -393,11 +542,9 @@
 
         function copyToken() {
             const val = document.getElementById('newTokenValue').innerText;
-            // Modern copy
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(val);
             } else {
-                // Fallback
                 const textarea = document.createElement('textarea');
                 textarea.value = val;
                 document.body.appendChild(textarea);
@@ -405,7 +552,7 @@
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
             }
-            alert('Copied to clipboard!');
+            // Optional: Visual feedback could be added here
         }
 
         function initDelete(id) {
@@ -419,8 +566,10 @@
         }
 
         function confirmDelete(id) {
+            // Instead of removing from array, mark as deleted or filter out.
+            // For this specific logic, we remove it.
             tokens = tokens.filter(t => t.id !== id);
-            saveTokens(); // PERSIST
+            saveTokens(); 
             deleteConfirmId = null;
             renderTokens();
         }
