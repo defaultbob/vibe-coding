@@ -95,15 +95,15 @@
 
         <!-- Token List Container -->
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden overflow-x-auto">
-            <div class="min-w-[800px]"> <!-- Ensure table doesn't crush on small screens -->
+            <div class="min-w-[900px]"> <!-- Ensure table doesn't crush on small screens -->
                 <!-- Table Header -->
                 <div class="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="col-span-3">Token Name</div>
+                    <div class="col-span-2">Token Name</div>
                     <div class="col-span-2">Client ID</div>
                     <div class="col-span-1">Status</div>
+                    <div class="col-span-2">Last Used</div>
                     <div class="col-span-2">Created</div>
                     <div class="col-span-2">Expires</div>
-                    <div class="col-span-1">Created By</div>
                     <div class="col-span-1 text-right">Actions</div>
                 </div>
 
@@ -202,7 +202,7 @@
     <script>
         // --- Configuration ---
         const MAX_TOKENS = 25;
-        const STORAGE_KEY = 'vault_user_tokens_v3';
+        const STORAGE_KEY = 'vault_user_tokens_v4'; // Incremented version to ensure clean data reload if you prefer
         
         // --- State ---
         let tokens = [];
@@ -221,12 +221,23 @@
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 tokens = JSON.parse(stored);
-                // Backfill clientId for older data versions if needed
-                tokens.forEach(t => { if(!t.clientId) t.clientId = generateClientId(); });
+                // Backfill for older data versions
+                tokens.forEach(t => { 
+                    if(!t.clientId) t.clientId = generateClientId();
+                    if(t.lastUsed === undefined) t.lastUsed = randomDateWithinLastYear(); 
+                });
             } else {
                 generateMockData();
                 saveTokens();
             }
+        }
+
+        function randomDateWithinLastYear() {
+            // Helper for mock data
+            if (Math.random() > 0.8) return null; // 20% never used
+            const date = new Date();
+            date.setDate(date.getDate() - Math.floor(Math.random() * 365));
+            return date.toISOString();
         }
 
         function generateMockData() {
@@ -236,33 +247,37 @@
                     clientId: 'client_7a8b9c',
                     name: 'Production Pipeline (CI/CD)',
                     createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+                    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // Used 2 hours ago
                     createdBy: 'System',
                     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180).toISOString(),
                     status: 'active'
                 },
                 {
                     id: 'tok_2',
-                    clientId: 'postman',
+                    clientId: 'client_x9y8z7',
                     name: 'Local Env - MacBook Pro',
                     createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45).toISOString(),
+                    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(), // Used yesterday
                     createdBy: 'You',
                     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 15).toISOString(),
                     status: 'active'
                 },
                 {
                     id: 'tok_3',
-                    clientId: 'entra',
-                    name: 'SCIM',
+                    clientId: 'client_h2k3m4',
+                    name: 'Staging Server Integration',
                     createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 120).toISOString(),
+                    lastUsed: null, // Never used
                     createdBy: 'You',
                     expiresAt: null, // Never
                     status: 'inactive'
                 },
                 {
                     id: 'tok_4',
-                    clientId: '-',
+                    clientId: 'client_p5q6r7',
                     name: 'Legacy API Access',
                     createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 400).toISOString(),
+                    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString(),
                     createdBy: 'Admin',
                     expiresAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
                     status: 'expired'
@@ -272,6 +287,7 @@
                     clientId: 'client_j9k8l7',
                     name: 'Mobile App Gateway',
                     createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+                    lastUsed: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // Used 5 mins ago
                     createdBy: 'You',
                     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString(),
                     status: 'active'
@@ -343,8 +359,14 @@
                 let currentStatus = token.status;
                 if (isExpired) currentStatus = 'expired';
 
+                // Date Formatting
                 const createdDate = new Date(token.createdDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 const expiresDate = token.expiresAt ? new Date(token.expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Never';
+                
+                // Last Used Formatting (Date Only, No Time)
+                const lastUsedDisplay = token.lastUsed 
+                    ? new Date(token.lastUsed).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) 
+                    : '<span class="text-gray-400 italic">Never</span>';
                 
                 // Badge Styles
                 let badgeClass = "bg-green-100 text-green-800";
@@ -406,7 +428,7 @@
                 <div class="grid grid-cols-12 gap-4 px-6 py-4 border-b last:border-0 border-gray-100 hover:bg-gray-50 items-center transition-colors group">
                     
                     <!-- NAME + ELLIPSIS -->
-                    <div class="col-span-3 w-full flex items-center justify-between">
+                    <div class="col-span-2 w-full flex items-center justify-between">
                         <div class="truncate pr-2">
                             <span class="font-semibold ${dimClass}" title="${token.name}">${token.name}</span>
                         </div>
@@ -427,6 +449,11 @@
                         </span>
                     </div>
 
+                    <!-- LAST USED (New) -->
+                    <div class="col-span-2 w-full text-sm text-gray-600">
+                         ${lastUsedDisplay}
+                    </div>
+
                     <!-- CREATED -->
                     <div class="col-span-2 w-full text-sm text-gray-500">
                          ${createdDate}
@@ -435,13 +462,6 @@
                     <!-- EXPIRES -->
                     <div class="col-span-2 w-full text-sm">
                          <span class="${currentStatus === 'expired' ? 'text-red-600 font-medium' : 'text-gray-500'}">${expiresDate}</span>
-                    </div>
-
-                    <!-- CREATED BY -->
-                    <div class="col-span-1 w-full text-sm text-gray-500">
-                         <div class="flex items-center gap-1.5">
-                            <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-medium">${token.createdBy}</span>
-                         </div>
                     </div>
 
                     <!-- ACTIONS -->
@@ -521,6 +541,7 @@
                 clientId: generateClientId(),
                 name: name || 'Untitled Token',
                 createdDate: new Date().toISOString(),
+                lastUsed: null, // New tokens haven't been used
                 createdBy: 'You',
                 expiresAt: expiryDate ? expiryDate.toISOString() : null,
                 status: 'active'
@@ -552,7 +573,6 @@
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
             }
-            // Optional: Visual feedback could be added here
         }
 
         function initDelete(id) {
