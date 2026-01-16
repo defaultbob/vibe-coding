@@ -6,7 +6,7 @@
     <title>Responsive Data Entry</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom scrollbar for a cleaner look */
+        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -21,7 +21,7 @@
             background: #94a3b8; 
         }
         
-        /* Fade transition for mode switching */
+        /* Fade animations */
         .fade-in {
             animation: fadeIn 0.3s ease-in-out;
         }
@@ -31,224 +31,90 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 text-slate-800 min-h-screen p-4 md:p-8 font-sans">
+<body class="bg-gray-100 text-slate-800 min-h-screen p-4 md:p-8 font-sans">
 
+    <!-- MAIN PAGE CONTAINER (View Mode / Dashboard) -->
     <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
         
-        <!-- Header -->
-        <div class="bg-indigo-600 p-6 text-white flex justify-between items-center">
+        <!-- Main Header -->
+        <div class="bg-indigo-600 p-6 text-white flex justify-between items-center shadow-md z-10 relative">
             <div>
                 <h1 class="text-2xl font-bold">Personnel Data Entry</h1>
-                <p class="text-indigo-100 text-sm mt-1">Force 2-column layout · Breakpoint @ 800px</p>
+                <p class="text-indigo-100 text-sm mt-1">Personnel Records Dashboard</p>
             </div>
-            <div class="hidden sm:block">
-                <span id="status-badge" class="bg-indigo-500 text-xs py-1 px-3 rounded-full border border-indigo-400 shadow-sm transition-colors">
-                    Mode: Edit
+            <div class="flex items-center gap-3">
+                <!-- Status Badge: Pre-set to "Record Loaded" state -->
+                <span id="record-status" class="hidden sm:inline-block bg-green-100 text-green-800 border border-green-200 text-xs py-1 px-3 rounded-full shadow-sm">
+                    Record Loaded
                 </span>
+                <button onclick="openCreateDialog()" class="bg-white text-indigo-600 hover:bg-indigo-50 font-bold py-2 px-4 rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-2 text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Create New
+                </button>
             </div>
         </div>
 
-        <!-- Main Content Area -->
-        <div class="p-6 md:p-8">
+        <!-- Main Content Area (View Mode) -->
+        <div id="view-mode" class="p-6 md:p-8 min-h-[400px]">
             
-            <!-- EDIT MODE FORM -->
-            <form id="edit-mode" onsubmit="event.preventDefault(); saveFormData();" class="fade-in">
-                <!-- 
-                    GRID CONTAINER
-                    grid-cols-2: Always enforces 2 columns regardless of screen width.
-                -->
-                <div class="grid grid-cols-2 gap-x-4 gap-y-6 md:gap-x-8 md:gap-y-8">
+            <!-- Empty State Message (Hidden by default now) -->
+            <div id="empty-state" class="hidden flex-col items-center justify-center h-64 text-slate-400">
+                <svg class="w-16 h-16 mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <p class="text-lg font-medium">No record loaded</p>
+                <p class="text-sm">Click "Create New" to add an employee.</p>
+            </div>
 
-                    <!-- First Name -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="fname" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            First Name
-                        </label>
-                        <input type="text" id="fname" placeholder="Jane" 
-                            class="w-full min-[800px]:w-2/3 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                    </div>
-
-                    <!-- Last Name -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="lname" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            Last Name
-                        </label>
-                        <input type="text" id="lname" placeholder="Doe" 
-                            class="w-full min-[800px]:w-2/3 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                    </div>
-
-                    <!-- Employee ID -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="emp_id" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            Employee ID
-                        </label>
-                        <input type="text" id="emp_id" placeholder="E-123456" 
-                            class="w-full min-[800px]:w-2/3 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                    </div>
-
-                    <!-- Department -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="dept" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            Department
-                        </label>
-                        <select id="dept" class="w-full min-[800px]:w-2/3 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                            <option value="">Select...</option>
-                            <option>Engineering</option>
-                            <option>Sales</option>
-                            <option>Marketing</option>
-                            <option>HR</option>
-                        </select>
-                    </div>
-
-                    <!-- Email Address -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="email" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            Email Address
-                        </label>
-                        <input type="email" id="email" placeholder="jane@company.com" 
-                            class="w-full min-[800px]:w-2/3 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                    </div>
-
-                    <!-- Phone Number -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="phone" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            Phone
-                        </label>
-                        <input type="tel" id="phone" placeholder="(555) 000-0000" 
-                            class="w-full min-[800px]:w-2/3 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                    </div>
-
-                    <!-- Start Date -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="start_date" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            Start Date
-                        </label>
-                        <input type="date" id="start_date" 
-                            class="w-full min-[800px]:w-2/3 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                    </div>
-
-                    <!-- Shift -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="shift" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            Shift
-                        </label>
-                        <select id="shift" class="w-full min-[800px]:w-2/3 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                            <option value="">Select...</option>
-                            <option>Morning (9-5)</option>
-                            <option>Evening (5-1)</option>
-                            <option>Night (1-9)</option>
-                        </select>
-                    </div>
-
-                    <!-- Section Break -->
-                    <div class="col-span-2 pt-4 pb-2">
-                        <h3 class="text-xs uppercase tracking-wider text-slate-400 font-bold border-b border-slate-200 pb-2">Location Details</h3>
-                    </div>
-
-                    <!-- Address Line 1 -->
-                    <div class="col-span-2 flex flex-col min-[800px]:flex-row min-[800px]:items-start min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="address" class="text-sm font-semibold text-slate-600 min-[800px]:w-[16%] min-[800px]:text-right mt-2">
-                            Address
-                        </label>
-                        <input type="text" id="address" placeholder="1234 Main St" 
-                            class="w-full min-[800px]:w-[82.5%] px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                    </div>
-
-                    <!-- City -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="city" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            City
-                        </label>
-                        <input type="text" id="city" placeholder="Metropolis" 
-                            class="w-full min-[800px]:w-2/3 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
-                    </div>
-
-                    <!-- State & Zip -->
-                    <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
-                            State / Zip
-                        </label>
-                        <div class="flex gap-2 w-full min-[800px]:w-2/3">
-                            <select id="state" class="w-1/2 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm shadow-sm">
-                                <option value="">State</option>
-                                <option>CA</option>
-                                <option>NY</option>
-                                <option>TX</option>
-                            </select>
-                            <input type="text" id="zip" placeholder="90210" class="w-1/2 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm shadow-sm">
-                        </div>
-                    </div>
-
-                    <!-- Section Break -->
-                    <div class="col-span-2 pt-4 pb-2">
-                        <h3 class="text-xs uppercase tracking-wider text-slate-400 font-bold border-b border-slate-200 pb-2">Preferences</h3>
-                    </div>
-
-                    <!-- Notes -->
-                    <div class="col-span-2 flex flex-col min-[800px]:flex-row min-[800px]:items-start min-[800px]:justify-between gap-1 min-[800px]:gap-4">
-                        <label for="notes" class="text-sm font-semibold text-slate-600 min-[800px]:w-[16%] min-[800px]:text-right mt-2">
-                            Notes
-                        </label>
-                        <textarea id="notes" rows="3" placeholder="Additional comments..." 
-                            class="w-full min-[800px]:w-[82.5%] px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm"></textarea>
-                    </div>
-
-                </div>
-
-                <!-- Footer Actions (Edit Mode) -->
-                <div class="mt-8 pt-6 border-t border-gray-100 flex flex-col-reverse sm:flex-row justify-end gap-3">
-                    <button type="button" onclick="cancelEdit()" class="px-6 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-sm transition-colors">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-200 transition-all transform active:scale-95">
-                        Save Record
+            <!-- Data Display (Visible by default now) -->
+            <div id="data-display" class="fade-in">
+                <div class="flex justify-between items-end border-b border-gray-100 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-slate-700">Employee Details</h2>
+                    <button type="button" onclick="openEditDialog()" class="text-indigo-600 hover:text-indigo-800 font-medium text-sm flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        Edit Record
                     </button>
                 </div>
-            </form>
 
-            <!-- VIEW MODE DISPLAY -->
-            <div id="view-mode" class="hidden fade-in">
                 <div class="grid grid-cols-2 gap-x-4 gap-y-6 md:gap-x-8 md:gap-y-8">
                     
                     <!-- View Item Template -->
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">First Name</span>
-                        <div id="view-fname" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-fname" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">Last Name</span>
-                        <div id="view-lname" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-lname" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">Employee ID</span>
-                        <div id="view-emp_id" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-emp_id" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">Department</span>
-                        <div id="view-dept" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-dept" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">Email</span>
-                        <div id="view-email" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-email" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">Phone</span>
-                        <div id="view-phone" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-phone" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">Start Date</span>
-                        <div id="view-start_date" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-start_date" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">Shift</span>
-                        <div id="view-shift" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-shift" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <!-- View Section Break -->
@@ -258,17 +124,17 @@
 
                     <div class="col-span-2 flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-[16%] min-[800px]:text-right mt-1">Address</span>
-                        <div id="view-address" class="w-full min-[800px]:w-[82.5%] text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-address" class="w-full min-[800px]:w-[82.5%] text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">City</span>
-                        <div id="view-city" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1"></div>
+                        <div id="view-city" class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1"></div>
                     </div>
 
                     <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-1/3 min-[800px]:text-right">State / Zip</span>
-                        <div class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-transparent py-1">
+                        <div class="w-full min-[800px]:w-2/3 text-slate-800 font-medium border-b border-gray-100 py-1">
                             <span id="view-state"></span> <span id="view-zip" class="ml-2 text-slate-500"></span>
                         </div>
                     </div>
@@ -280,47 +146,259 @@
 
                     <div class="col-span-2 flex flex-col min-[800px]:flex-row min-[800px]:items-baseline min-[800px]:justify-between gap-1 min-[800px]:gap-4">
                         <span class="text-sm font-semibold text-slate-400 min-[800px]:w-[16%] min-[800px]:text-right mt-1">Notes</span>
-                        <div id="view-notes" class="w-full min-[800px]:w-[82.5%] text-slate-800 font-medium border-b border-transparent py-1 whitespace-pre-wrap"></div>
+                        <div id="view-notes" class="w-full min-[800px]:w-[82.5%] text-slate-800 font-medium border-b border-gray-100 py-1 whitespace-pre-wrap"></div>
                     </div>
 
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Footer Actions (View Mode) -->
-                <div class="mt-8 pt-6 border-t border-gray-100 flex justify-end">
-                    <button type="button" onclick="switchToEditMode()" class="px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-200 transition-all transform active:scale-95 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        Edit Record
-                    </button>
+
+    <!-- MODAL OVERLAY (Form Dialog) -->
+    <div id="form-dialog" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm transition-opacity" onclick="closeDialog()"></div>
+
+        <!-- Dialog Panel -->
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-5xl">
+                    
+                    <!-- Dialog Header -->
+                    <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
+                        <h3 class="text-lg font-bold leading-6 text-white" id="modal-title">New Entry</h3>
+                        <button type="button" onclick="closeDialog()" class="text-indigo-200 hover:text-white transition-colors rounded focus:outline-none focus:ring-2 focus:ring-white">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Scrollable Form Body -->
+                    <div class="max-h-[80vh] overflow-y-auto bg-gray-50">
+                        <form id="edit-mode" onsubmit="event.preventDefault(); saveFormData();" class="p-6 md:p-8">
+                            <!-- 
+                                GRID CONTAINER
+                                grid-cols-2: Always enforces 2 columns regardless of screen width.
+                            -->
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-6 md:gap-x-8 md:gap-y-8">
+            
+                                <!-- First Name -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="fname" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        First Name
+                                    </label>
+                                    <input type="text" id="fname" placeholder="Jane" 
+                                        class="w-full min-[800px]:w-2/3 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                </div>
+            
+                                <!-- Last Name -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="lname" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        Last Name
+                                    </label>
+                                    <input type="text" id="lname" placeholder="Doe" 
+                                        class="w-full min-[800px]:w-2/3 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                </div>
+            
+                                <!-- Employee ID -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="emp_id" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        Employee ID
+                                    </label>
+                                    <input type="text" id="emp_id" placeholder="E-123456" 
+                                        class="w-full min-[800px]:w-2/3 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                </div>
+            
+                                <!-- Department -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="dept" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        Department
+                                    </label>
+                                    <select id="dept" class="w-full min-[800px]:w-2/3 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                        <option value="">Select...</option>
+                                        <option>Engineering</option>
+                                        <option>Sales</option>
+                                        <option>Marketing</option>
+                                        <option>HR</option>
+                                    </select>
+                                </div>
+            
+                                <!-- Email Address -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="email" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        Email Address
+                                    </label>
+                                    <input type="email" id="email" placeholder="jane@company.com" 
+                                        class="w-full min-[800px]:w-2/3 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                </div>
+            
+                                <!-- Phone Number -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="phone" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        Phone
+                                    </label>
+                                    <input type="tel" id="phone" placeholder="(555) 000-0000" 
+                                        class="w-full min-[800px]:w-2/3 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                </div>
+            
+                                <!-- Start Date -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="start_date" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        Start Date
+                                    </label>
+                                    <input type="date" id="start_date" 
+                                        class="w-full min-[800px]:w-2/3 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                </div>
+            
+                                <!-- Shift -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="shift" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        Shift
+                                    </label>
+                                    <select id="shift" class="w-full min-[800px]:w-2/3 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                        <option value="">Select...</option>
+                                        <option>Morning (9-5)</option>
+                                        <option>Evening (5-1)</option>
+                                        <option>Night (1-9)</option>
+                                    </select>
+                                </div>
+            
+                                <!-- Section Break -->
+                                <div class="col-span-2 pt-4 pb-2">
+                                    <h3 class="text-xs uppercase tracking-wider text-slate-400 font-bold border-b border-slate-200 pb-2">Location Details</h3>
+                                </div>
+            
+                                <!-- Address Line 1 -->
+                                <div class="col-span-2 flex flex-col min-[800px]:flex-row min-[800px]:items-start min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="address" class="text-sm font-semibold text-slate-600 min-[800px]:w-[16%] min-[800px]:text-right mt-2">
+                                        Address
+                                    </label>
+                                    <input type="text" id="address" placeholder="1234 Main St" 
+                                        class="w-full min-[800px]:w-[82.5%] px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                </div>
+            
+                                <!-- City -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="city" class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        City
+                                    </label>
+                                    <input type="text" id="city" placeholder="Metropolis" 
+                                        class="w-full min-[800px]:w-2/3 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                                </div>
+            
+                                <!-- State & Zip -->
+                                <div class="flex flex-col min-[800px]:flex-row min-[800px]:items-center min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label class="text-sm font-semibold text-slate-600 min-[800px]:w-1/3 min-[800px]:text-right">
+                                        State / Zip
+                                    </label>
+                                    <div class="flex gap-2 w-full min-[800px]:w-2/3">
+                                        <select id="state" class="w-1/2 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm shadow-sm">
+                                            <option value="">State</option>
+                                            <option>CA</option>
+                                            <option>NY</option>
+                                            <option>TX</option>
+                                        </select>
+                                        <input type="text" id="zip" placeholder="90210" class="w-1/2 px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm shadow-sm">
+                                    </div>
+                                </div>
+            
+                                <!-- Section Break -->
+                                <div class="col-span-2 pt-4 pb-2">
+                                    <h3 class="text-xs uppercase tracking-wider text-slate-400 font-bold border-b border-slate-200 pb-2">Preferences</h3>
+                                </div>
+            
+                                <!-- Notes -->
+                                <div class="col-span-2 flex flex-col min-[800px]:flex-row min-[800px]:items-start min-[800px]:justify-between gap-1 min-[800px]:gap-4">
+                                    <label for="notes" class="text-sm font-semibold text-slate-600 min-[800px]:w-[16%] min-[800px]:text-right mt-2">
+                                        Notes
+                                    </label>
+                                    <textarea id="notes" rows="3" placeholder="Additional comments..." 
+                                        class="w-full min-[800px]:w-[82.5%] px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm"></textarea>
+                                </div>
+            
+                            </div>
+
+                            <!-- Footer Actions (Dialog) -->
+                            <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                                <button type="button" onclick="closeDialog()" class="px-6 py-2.5 rounded-lg text-slate-600 hover:bg-slate-200 font-medium text-sm transition-colors">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-200 transition-all transform active:scale-95">
+                                    Save Record
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
         // Store the "Last Saved" state of the data
+        // POPULATED DEFAULT STATE (User requested realistic sample values)
         let savedData = {
-            fname: '', lname: '', emp_id: '', dept: '', email: '', phone: '',
-            start_date: '', shift: '', address: '', city: '', state: '', zip: '', notes: ''
+            fname: 'Jane', 
+            lname: 'Doe', 
+            emp_id: 'E-123456', 
+            dept: 'Engineering', 
+            email: 'jane@company.com', 
+            phone: '(555) 012-3456',
+            start_date: '2023-01-15', 
+            shift: 'Morning (9-5)', 
+            address: '1234 Tech Blvd', 
+            city: 'San Francisco', 
+            state: 'CA', 
+            zip: '94105', 
+            notes: 'Preferred contact method: Email.'
         };
 
         const fieldIds = Object.keys(savedData);
         
-        const editModeEl = document.getElementById('edit-mode');
-        const viewModeEl = document.getElementById('view-mode');
-        const badgeEl = document.getElementById('status-badge');
+        const dialogEl = document.getElementById('form-dialog');
+        const emptyStateEl = document.getElementById('empty-state');
+        const dataDisplayEl = document.getElementById('data-display');
+        const modalTitleEl = document.getElementById('modal-title');
+        const statusBadgeEl = document.getElementById('record-status');
+        
+        // Track if we are editing an existing record or creating a new one
+        let isEditMode = false;
+        let hasRecord = true; // Defaulted to true
 
-        function updateBadge(mode) {
-            if(mode === 'view') {
-                badgeEl.textContent = 'Mode: View';
-                badgeEl.className = "bg-green-500 text-xs py-1 px-3 rounded-full border border-green-400 shadow-sm transition-colors text-white";
-            } else {
-                badgeEl.textContent = 'Mode: Edit';
-                badgeEl.className = "bg-indigo-500 text-xs py-1 px-3 rounded-full border border-indigo-400 shadow-sm transition-colors text-white";
-            }
+        function openCreateDialog() {
+            isEditMode = false;
+            modalTitleEl.textContent = "Create New Entry";
+            
+            // Clear inputs for fresh entry
+            fieldIds.forEach(id => {
+                const input = document.getElementById(id);
+                if(input) input.value = '';
+            });
+
+            dialogEl.classList.remove('hidden');
         }
 
-        // Called when user clicks "Save Record"
+        function openEditDialog() {
+            isEditMode = true;
+            modalTitleEl.textContent = "Edit Employee Record";
+            
+            // Populate inputs from savedData
+            fieldIds.forEach(id => {
+                const input = document.getElementById(id);
+                if(input) input.value = savedData[id];
+            });
+
+            dialogEl.classList.remove('hidden');
+        }
+
+        function closeDialog() {
+            dialogEl.classList.add('hidden');
+        }
+
+        // Called when user clicks "Save Record" in Dialog
         function saveFormData() {
             // 1. Collect data from inputs into savedData object
             fieldIds.forEach(id => {
@@ -328,38 +406,22 @@
                 if(input) savedData[id] = input.value;
             });
 
+            hasRecord = true;
+
             // 2. Render the View Mode
             renderViewMode();
 
-            // 3. Switch Visibility
-            editModeEl.classList.add('hidden');
-            viewModeEl.classList.remove('hidden');
-            updateBadge('view');
-        }
+            // 3. Update UI State
+            emptyStateEl.classList.add('hidden');
+            dataDisplayEl.classList.remove('hidden');
+            
+            // Update badge (if it was previously empty)
+            statusBadgeEl.textContent = 'Record Loaded';
+            statusBadgeEl.classList.remove('bg-indigo-800', 'border-indigo-500', 'text-indigo-100');
+            statusBadgeEl.classList.add('bg-green-100', 'text-green-800', 'border-green-200');
 
-        // Called when user clicks "Cancel"
-        function cancelEdit() {
-            // 1. Revert inputs to the last savedData
-            // If it's empty (first load), it clears the form.
-            fieldIds.forEach(id => {
-                const input = document.getElementById(id);
-                if(input) input.value = savedData[id];
-            });
-
-            // 2. Ensure view mode is up to date (in case we cancel without ever saving)
-            renderViewMode();
-
-            // 3. Switch Visibility
-            editModeEl.classList.add('hidden');
-            viewModeEl.classList.remove('hidden');
-            updateBadge('view');
-        }
-
-        // Called when user clicks "Edit Record"
-        function switchToEditMode() {
-            viewModeEl.classList.add('hidden');
-            editModeEl.classList.remove('hidden');
-            updateBadge('edit');
+            // 4. Close Dialog
+            closeDialog();
         }
 
         // Helper to update the text in View Mode
@@ -377,6 +439,10 @@
                 }
             });
         }
+
+        // INITIALIZATION
+        // Immediately render the default data so the user sees a record on load
+        renderViewMode();
     </script>
 </body>
 </html>

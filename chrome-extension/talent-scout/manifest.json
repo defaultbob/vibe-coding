@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "TalentScout Grader",
+  "version": "1.0",
+  "description": "Grades LinkedIn work history based on tenure and company quality.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.linkedin.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Grade Profile"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.linkedin.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
