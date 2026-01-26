@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Your Identity - Veeva ID</title>
+    <title>Sign In - Veeva ID</title>
     <style>
         :root {
             --bg-color: #f4f6f8;
@@ -13,6 +13,7 @@
             --border-color: #dcdcdc;
             --veeva-blue: #0095ff;
             --veeva-orange: #ff9e1b;
+            --veeva-orange-hover: #e68e18;
             --hover-bg: #f5fbff;
             --shadow: 0 4px 12px rgba(0,0,0,0.05);
             --error-red: #d32f2f;
@@ -29,28 +30,6 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-        }
-
-        /* Test Toggle Styles */
-        .test-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            font-size: 13px;
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .test-toggle label {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         /* Logo Section */
@@ -72,7 +51,7 @@
         }
 
         /* Main Card */
-        .login-card {
+        .card {
             background-color: var(--card-bg);
             width: 100%;
             max-width: 440px;
@@ -82,6 +61,18 @@
             text-align: center;
             box-sizing: border-box;
             position: relative;
+            display: none; /* Hidden by default, toggled via JS */
+        }
+
+        /* Show active card */
+        .card.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
@@ -96,6 +87,106 @@
             color: var(--text-secondary);
             margin: 0 0 32px 0;
             line-height: 1.5;
+        }
+
+        /* Forms & Inputs */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input[type="email"], 
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        input:focus {
+            border-color: var(--veeva-blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 149, 255, 0.1);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--veeva-orange);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--veeva-orange-hover);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background-color: white;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--veeva-blue);
+            background-color: var(--hover-bg);
+            color: var(--veeva-blue);
+        }
+
+        /* Divider */
+        .divider-text {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin: 24px 0;
+        }
+
+        .divider-text::before,
+        .divider-text::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .divider-text:not(:empty)::before {
+            margin-right: .5em;
+        }
+
+        .divider-text:not(:empty)::after {
+            margin-left: .5em;
         }
 
         /* MFA Options List */
@@ -129,16 +220,6 @@
             transform: translateY(0);
         }
 
-        /* Disabled State for Options */
-        .mfa-option.disabled {
-            opacity: 0.6;
-            pointer-events: none;
-            background-color: #f9f9f9;
-            border-color: #eee;
-            box-shadow: none;
-            transform: none;
-        }
-
         .icon-container {
             width: 42px;
             height: 42px;
@@ -157,11 +238,6 @@
             color: var(--veeva-blue);
         }
         
-        .mfa-option.disabled:hover .icon-container {
-            background-color: #f0f4f8; /* Reset hover for disabled */
-            color: #555;
-        }
-
         .option-details {
             flex-grow: 1;
         }
@@ -180,21 +256,15 @@
             color: var(--text-secondary);
         }
 
-        /* Hint Text Styles */
         .hint-text {
             display: block;
             font-size: 11px;
             margin-top: 4px;
             line-height: 1.4;
         }
-        
-        .hint-warning {
-            color: var(--veeva-orange);
-            font-style: italic;
-        }
 
-        .hint-error {
-            color: var(--error-red);
+        .hint-highlight {
+            color: var(--veeva-blue);
             font-weight: 500;
         }
 
@@ -231,6 +301,7 @@
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
+            cursor: pointer;
         }
 
         .action-link:hover {
@@ -269,14 +340,14 @@
             color: #ccc;
         }
 
-        /* Loading Overlay (Simulated) */
+        /* Loading Overlay */
         .loading-overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.95);
             border-radius: 8px;
             display: none;
             flex-direction: column;
@@ -310,43 +381,68 @@
 
         /* Responsive */
         @media (max-width: 480px) {
-            .login-card {
+            .card {
                 padding: 24px 20px;
             }
             .footer {
                 flex-direction: column;
                 gap: 12px;
             }
-            .test-toggle {
-                top: 10px;
-                right: 10px;
-            }
         }
     </style>
 </head>
 <body>
 
-    <div class="test-toggle">
-        <strong>Test Year:</strong>
-        <label>
-            <input type="radio" name="testYear" value="2026" onchange="setTestYear(2026)">
-            2026
-        </label>
-        <label>
-            <input type="radio" name="testYear" value="2027" checked onchange="setTestYear(2027)">
-            2027
-        </label>
-    </div>
-
     <div class="logo-container">
         <div class="logo-text">Veeva <span>iD</span></div>
     </div>
 
-    <div class="login-card" id="mainCard">
-        
-        <div class="loading-overlay" id="loadingOverlay">
+    <!-- VIEW 1: LOGIN -->
+    <div class="card active" id="loginView">
+        <div class="loading-overlay" id="loginLoader">
             <div class="spinner"></div>
-            <div class="loading-text" id="loadingText">Connecting...</div>
+            <div class="loading-text" id="loginLoaderText">Signing in...</div>
+        </div>
+
+        <h1>Sign In</h1>
+        <p class="subtitle">Enter your credentials to access Vault.</p>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="name@company.com" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn-primary">Sign In</button>
+        </form>
+
+        <div class="divider-text">OR</div>
+
+        <button class="btn-secondary" onclick="handlePasskeyLogin()">
+            <svg viewBox="0 0 24 24">
+                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+            </svg>
+            Sign in with a passkey
+        </button>
+        
+        <div style="margin-top: 12px; font-size: 12px; color: #666;">
+            (Saved on this device)
+        </div>
+
+        <a href="#" class="action-link" style="font-size: 13px;">Forgot password?</a>
+    </div>
+
+
+    <!-- VIEW 2: MFA SELECTION -->
+    <div class="card" id="mfaView">
+        <div class="loading-overlay" id="mfaLoader">
+            <div class="spinner"></div>
+            <div class="loading-text" id="mfaLoaderText">Connecting...</div>
         </div>
 
         <h1>Verify Your Identity</h1>
@@ -363,7 +459,8 @@
                 </div>
                 <div class="option-details">
                     <span class="option-title">Passkey</span>
-                    <span class="option-desc">Use Face ID, Touch ID, or Hello</span>
+                    <span class="option-desc">Use Windows Hello, Touch ID, or Face ID</span>
+                    <span class="hint-text hint-highlight">Go passwordless for faster, secure access.</span>
                 </div>
             </div>
 
@@ -392,7 +489,7 @@
                 </div>
             </div>
 
-            <div id="emailOption" class="mfa-option" onclick="handleEmailSelection()">
+            <div id="emailOption" class="mfa-option" onclick="selectMethod('Email', 'Sending verification code to email...')">
                 <div class="icon-container">
                     <svg viewBox="0 0 24 24">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -402,13 +499,12 @@
                 <div class="option-details">
                     <span class="option-title">Email Code</span>
                     <span class="option-desc">Send to d*******@veeva.com</span>
-                    <span id="emailHint" class="hint-text"></span>
                 </div>
             </div>
 
         </div>
 
-        <a href="#" class="action-link" onclick="resetForm()">Cancel and return to login</a>
+        <a href="#" class="action-link" onclick="switchView('loginView')">Cancel and return to login</a>
     </div>
 
     <div class="footer">
@@ -423,98 +519,81 @@
     </div>
 
     <script>
-        let currentTestYear = 2027; // Default
-
-        // Initialize UI on load
-        window.onload = function() {
-            setTestYear(2027);
-        };
-
-        function setTestYear(year) {
-            currentTestYear = year;
-            updateEmailOptionState();
+        function switchView(viewId) {
+            // Hide all cards
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+            // Show target card
+            document.getElementById(viewId).classList.add('active');
+            
+            // Reset loaders
+            resetLoaders();
         }
 
-        function updateEmailOptionState() {
-            const emailOption = document.getElementById('emailOption');
-            const emailHint = document.getElementById('emailHint');
+        function handleLogin(e) {
+            if(e) e.preventDefault();
+            
+            const loader = document.getElementById('loginLoader');
+            loader.style.display = 'flex';
 
-            if (currentTestYear === 2027) {
-                // 2027 Mode: Disabled if password length < 15 (simulated assumption)
-                emailOption.classList.add('disabled');
-                emailHint.textContent = "User's password must be 15 characters or greater to use email code.";
-                emailHint.className = "hint-text hint-error";
-            } else {
-                // 2026 Mode: Enabled but with warning
-                emailOption.classList.remove('disabled');
-                emailHint.textContent = "Note: After Jan 01 2027, this option will not be available if password is less than 15 characters.";
-                emailHint.className = "hint-text hint-warning";
-            }
+            // Simulate server check
+            setTimeout(() => {
+                // Success - Move to MFA
+                switchView('mfaView');
+            }, 1000);
         }
 
-        function handleEmailSelection() {
-            if (currentTestYear === 2027) {
-                return; // Disabled
-            }
+        function handlePasskeyLogin() {
+            const loader = document.getElementById('loginLoader');
+            const loaderText = document.getElementById('loginLoaderText');
+            
+            loaderText.textContent = "Verifying Passkey...";
+            loader.style.display = 'flex';
 
-            if (currentTestYear === 2026) {
-                // Suggest password change logic
-                const userWantsToChangePassword = confirm(
-                    "Security Suggestion:\n\n" +
-                    "Your password is currently less than 15 characters. To continue using Email Code in 2027, we recommend changing it now.\n\n" +
-                    "Click OK to Change Password now.\n" +
-                    "Click Cancel to do it later and continue."
-                );
-
-                if (userWantsToChangePassword) {
-                    alert("Redirecting to password change screen...");
-                    return; // Stop flow
-                }
-                // If cancelled, proceed to normal email selection
-            }
-
-            selectMethod('Email', 'Sending verification code to email...');
+            // Simulate passkey biometric prompt
+            setTimeout(() => {
+                // Success - For this demo, we'll go to the MFA screen as if it were a dashboard, 
+                // or we could show a "Logged In" success. 
+                // Let's go to MFA screen to keep the flow consistent with the user's previous requests.
+                switchView('mfaView');
+            }, 1500);
         }
 
         function selectMethod(methodName, loadingMessage) {
-            const overlay = document.getElementById('loadingOverlay');
-            const loadingText = document.getElementById('loadingText');
+            const loader = document.getElementById('mfaLoader');
+            const loadingText = document.getElementById('mfaLoaderText');
             
-            // Show loading state
             loadingText.textContent = loadingMessage;
-            overlay.style.display = 'flex';
+            loader.style.display = 'flex';
 
-            // Simulate network request delay
             setTimeout(() => {
-                // In a real app, this would redirect or show the input field for that method
                 if(methodName === 'Vault Mobile') {
                     loadingText.innerHTML = "<strong>Check your phone!</strong><br><br>We sent a notification to your Vault Mobile app.";
-                    // Change spinner to checkmark
-                    document.querySelector('.spinner').style.border = 'none';
-                    document.querySelector('.spinner').innerHTML = '✅';
-                    document.querySelector('.spinner').style.fontSize = '30px';
-                    document.querySelector('.spinner').style.animation = 'none';
+                    const spinner = document.querySelector('#mfaLoader .spinner');
+                    spinner.style.border = 'none';
+                    spinner.innerHTML = '✅';
+                    spinner.style.fontSize = '30px';
+                    spinner.style.animation = 'none';
                 } else if (methodName === 'Passkey') {
                     loadingText.textContent = "Verifying Passkey...";
                 } else {
-                    // Reset for demo purposes after a delay
                     setTimeout(() => {
                         alert(`In a real implementation, this would navigate to the ${methodName} verification screen.`);
-                        resetForm();
+                        resetLoaders();
                     }, 500);
                 }
             }, 1500);
         }
 
-        function resetForm() {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.style.display = 'none';
-            // Reset spinner styles if they were changed
-            const spinner = document.querySelector('.spinner');
-            spinner.style.border = '3px solid #f3f3f3';
-            spinner.style.borderTop = '3px solid var(--veeva-blue)';
-            spinner.innerHTML = '';
-            spinner.style.animation = 'spin 1s linear infinite';
+        function resetLoaders() {
+            document.querySelectorAll('.loading-overlay').forEach(el => el.style.display = 'none');
+            
+            // Reset spinner styles
+            document.querySelectorAll('.spinner').forEach(spinner => {
+                spinner.style.border = '3px solid #f3f3f3';
+                spinner.style.borderTop = '3px solid var(--veeva-blue)';
+                spinner.innerHTML = '';
+                spinner.style.animation = 'spin 1s linear infinite';
+            });
         }
     </script>
 </body>
