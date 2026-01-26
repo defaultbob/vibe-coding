@@ -55,7 +55,7 @@
             background-color: var(--card-bg);
             width: 100%;
             max-width: 396px;
-            padding: 20px 0 28px;
+            padding: 28px 0;
             border-radius: 8px;
             box-shadow: var(--shadow);
             text-align: center;
@@ -70,7 +70,7 @@
         }
         
         .card-content {
-            padding: 0 28px;
+            padding: 0 32px;
         }
 
         @keyframes fadeIn {
@@ -79,9 +79,9 @@
         }
 
         h1 {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: normal;
-            margin: 0 0 20px 0;
+            margin: 0 0 8px 0;
             color: var(--text-primary);
             text-align: center;
         }
@@ -89,9 +89,45 @@
         .subtitle {
             font-size: 14px;
             color: var(--text-secondary);
-            margin: 0 0 20px 0;
+            margin: 0 0 24px 0;
             line-height: 1.4;
             text-align: center;
+        }
+
+        /* User Profile (Step 2) */
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .avatar {
+            width: 72px;
+            height: 72px;
+            background-color: #e7f3ff;
+            color: var(--veeva-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .user-email-display {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
         /* Forms & Inputs */
@@ -132,16 +168,25 @@
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
             margin-top: 6px;
             line-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .btn-primary:hover {
             background-color: var(--veeva-orange-hover);
+        }
+        
+        .btn-primary svg {
+            width: 20px;
+            height: 20px;
         }
 
         .btn-secondary {
@@ -163,6 +208,21 @@
 
         .btn-secondary:hover {
             background-color: #f5f6f7;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--veeva-blue);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 8px;
+        }
+        
+        .btn-link:hover {
+            text-decoration: underline;
         }
 
         /* Divider */
@@ -354,6 +414,14 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Helper for hidden password state in step 2 */
+        .password-fallback {
+            display: none;
+            margin-top: 16px;
+            text-align: left;
+            animation: fadeIn 0.2s;
+        }
     </style>
 </head>
 <body>
@@ -362,45 +430,83 @@
         <div class="logo-text">Veeva <span>iD</span></div>
     </div>
 
-    <!-- VIEW 1: LOGIN -->
-    <div class="card active" id="loginView">
-        <div class="loading-overlay" id="loginLoader">
+    <!-- STEP 1: EMAIL ENTRY -->
+    <div class="card active" id="emailView">
+        <div class="loading-overlay" id="emailLoader">
             <div class="spinner"></div>
-            <div class="loading-text" id="loginLoaderText">Verifying...</div>
+            <div class="loading-text">Checking user...</div>
         </div>
         
         <div class="card-content">
-            <form onsubmit="handleLogin(event)">
+            <h1>Sign In</h1>
+            <p class="subtitle">Enter your user name to continue.</p>
+            
+            <form onsubmit="handleEmailSubmit(event)">
                 <div class="input-group">
-                    <input type="text" id="username" placeholder="User Name" required aria-label="User Name">
+                    <input type="text" id="usernameInput" placeholder="User Name" required aria-label="User Name">
                 </div>
                 
-                <div class="input-group">
-                    <input type="password" id="password" placeholder="Password" required aria-label="Password">
-                </div>
-
-                <button type="submit" class="btn-primary">Log In</button>
+                <button type="submit" class="btn-primary">Next</button>
             </form>
 
-            <a href="#" class="action-link">Forgot password?</a>
+            <a href="#" class="action-link">Forgot user name?</a>
+        </div>
+    </div>
 
-            <div class="divider-container">
+
+    <!-- STEP 2: AUTHENTICATION (Passkey or Password) -->
+    <div class="card" id="authView">
+        <div class="loading-overlay" id="authLoader">
+            <div class="spinner"></div>
+            <div class="loading-text" id="authLoaderText">Verifying...</div>
+        </div>
+
+        <div class="card-content">
+            <h1>Welcome Back</h1>
+            
+            <div class="user-profile">
+                <div class="avatar" id="userAvatar">U</div>
+                <div class="user-email-display" id="displayEmail">user@example.com</div>
+                <div class="user-role">Veeva Systems</div>
+            </div>
+
+            <!-- Primary Action: Passkey -->
+            <button class="btn-primary" onclick="handlePasskeyLogin('authLoader')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                </svg>
+                Sign In with Passkey
+            </button>
+
+            <div class="divider-container" id="fallbackDivider">
                 <div class="divider-line"></div>
                 <div class="divider-text">OR</div>
                 <div class="divider-line"></div>
             </div>
 
-            <button class="btn-secondary" onclick="handlePasskeyLogin()">
-                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; color: #1c1e21;">
-                    <path fill="currentColor" d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
-                Sign in with a passkey
+            <!-- Secondary: Password Toggle -->
+            <button class="btn-secondary" id="usePasswordBtn" onclick="showPasswordInput()">
+                Use Password
             </button>
+            
+            <!-- Hidden Password Field -->
+            <div class="password-fallback" id="passwordFallback">
+                <form onsubmit="handlePasswordLogin(event)">
+                    <div class="input-group">
+                        <input type="password" id="passwordInput" placeholder="Password" required aria-label="Password">
+                    </div>
+                    <button type="submit" class="btn-primary" style="font-size: 16px;">Log In</button>
+                </form>
+            </div>
+
+            <div style="margin-top: 24px;">
+                <button class="btn-link" onclick="switchView('emailView')">Sign in with a different account</button>
+            </div>
         </div>
     </div>
 
 
-    <!-- VIEW 2: MFA SELECTION -->
+    <!-- STEP 3: MFA / SETUP -->
     <div class="card" id="mfaView">
         <div class="loading-overlay" id="mfaLoader">
             <div class="spinner"></div>
@@ -413,6 +519,7 @@
 
             <div class="mfa-list">
                 
+                <!-- This serves as both verification OR a prompt to use/setup passkey if they used password -->
                 <div class="mfa-option" onclick="selectMethod('Passkey', 'Requesting biometric verification...')">
                     <span class="badge">Recommended</span>
                     <div class="icon-container">
@@ -467,7 +574,7 @@
 
             </div>
 
-            <a href="#" class="action-link" onclick="switchView('loginView')">Cancel</a>
+            <a href="#" class="action-link" onclick="switchView('emailView')">Cancel</a>
         </div>
     </div>
 
@@ -485,31 +592,83 @@
     </div>
 
     <script>
+        let currentUserEmail = "";
+
         function switchView(viewId) {
             document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
+            
+            // Reset Step 2 state if switching back
+            if(viewId === 'authView') {
+                document.getElementById('passwordFallback').style.display = 'none';
+                document.getElementById('usePasswordBtn').style.display = 'flex';
+                document.getElementById('fallbackDivider').style.display = 'flex';
+            }
+            // Reset Step 1 state
+            if(viewId === 'emailView') {
+                document.getElementById('usernameInput').value = currentUserEmail; // Keep typed email
+            }
+            
             resetLoaders();
         }
 
-        function handleLogin(e) {
+        // Step 1 Handler: Email
+        function handleEmailSubmit(e) {
             if(e) e.preventDefault();
-            const loader = document.getElementById('loginLoader');
+            const emailInput = document.getElementById('usernameInput');
+            currentUserEmail = emailInput.value;
+            
+            if(!currentUserEmail) return;
+
+            // Update UI for Step 2
+            document.getElementById('displayEmail').textContent = currentUserEmail;
+            document.getElementById('userAvatar').textContent = currentUserEmail.charAt(0).toUpperCase();
+
+            const loader = document.getElementById('emailLoader');
+            loader.style.display = 'flex';
+            
+            // Simulate lookup
+            setTimeout(() => {
+                switchView('authView');
+            }, 800);
+        }
+
+        // Step 2 Handler: Password Toggle
+        function showPasswordInput() {
+            document.getElementById('usePasswordBtn').style.display = 'none';
+            document.getElementById('fallbackDivider').style.display = 'none';
+            document.getElementById('passwordFallback').style.display = 'block';
+            document.getElementById('passwordInput').focus();
+        }
+
+        // Step 2 Handler: Password Login -> Goes to Step 3 (MFA)
+        function handlePasswordLogin(e) {
+            if(e) e.preventDefault();
+            const loader = document.getElementById('authLoader');
             loader.style.display = 'flex';
             setTimeout(() => {
                 switchView('mfaView');
             }, 1000);
         }
 
-        function handlePasskeyLogin() {
-            const loader = document.getElementById('loginLoader');
-            const loaderText = document.getElementById('loginLoaderText');
-            loaderText.textContent = "Verifying Passkey...";
+        // Step 2 Handler: Passkey Login -> Success (Done)
+        function handlePasskeyLogin(loaderId) {
+            const loader = document.getElementById(loaderId);
+            const textId = loaderId + 'Text';
+            const loaderText = document.getElementById(textId);
+            
+            if(loaderText) loaderText.textContent = "Verifying Passkey...";
             loader.style.display = 'flex';
+            
             setTimeout(() => {
-                switchView('mfaView');
+                // If the user uses a passkey here, they are typically done. 
+                // But if they clicked it in Step 3 (MFA), it's also verification.
+                alert("Success! You have signed in securely with your Passkey.");
+                resetLoaders();
             }, 1500);
         }
 
+        // Step 3 Handler: MFA Selection
         function selectMethod(methodName, loadingMessage) {
             const loader = document.getElementById('mfaLoader');
             const loadingText = document.getElementById('mfaLoaderText');
@@ -525,7 +684,7 @@
                     spinner.style.fontSize = '30px';
                     spinner.style.animation = 'none';
                 } else if (methodName === 'Passkey') {
-                    loadingText.textContent = "Verifying Passkey...";
+                    handlePasskeyLogin('mfaLoader'); // Reuse logic
                 } else {
                     setTimeout(() => {
                         alert(`In a real implementation, this would navigate to the ${methodName} verification screen.`);
