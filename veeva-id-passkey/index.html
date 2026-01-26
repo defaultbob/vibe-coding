@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - Veeva ID</title>
+    <title>Sign In - Veeva</title>
     <style>
         :root {
-            --bg-color: #f4f6f8;
+            --bg-color: #f0f2f5;
             --card-bg: #ffffff;
-            --text-primary: #2b2b2b;
-            --text-secondary: #666666;
-            --border-color: #dcdcdc;
+            --text-primary: #1d2129;
+            --text-secondary: #65676b;
+            --border-color: #ccd0d5;
             --veeva-blue: #0095ff;
             --veeva-orange: #ff9e1b;
             --veeva-orange-hover: #e68e18;
-            --hover-bg: #f5fbff;
-            --shadow: 0 4px 12px rgba(0,0,0,0.05);
-            --error-red: #d32f2f;
+            --input-border: #dddfe2;
+            --shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 8px 16px rgba(0, 0, 0, .1);
         }
 
         body {
             background-color: var(--bg-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -39,102 +38,106 @@
         }
 
         .logo-text {
-            font-size: 26px;
-            font-weight: 600;
+            font-size: 36px;
+            font-weight: bold;
             color: #555;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
+            font-family: "Arial", sans-serif;
         }
         
         .logo-text span {
             color: var(--veeva-orange);
-            font-style: italic;
+            font-weight: normal;
         }
 
         /* Main Card */
         .card {
             background-color: var(--card-bg);
             width: 100%;
-            max-width: 440px;
-            padding: 40px;
+            max-width: 396px;
+            padding: 20px 0 28px;
             border-radius: 8px;
             box-shadow: var(--shadow);
             text-align: center;
             box-sizing: border-box;
             position: relative;
-            display: none; /* Hidden by default, toggled via JS */
+            display: none; 
         }
 
-        /* Show active card */
         .card.active {
             display: block;
-            animation: fadeIn 0.3s ease-in-out;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .card-content {
+            padding: 0 28px;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
-            font-size: 24px;
-            font-weight: 500;
-            margin: 0 0 12px 0;
+            font-size: 18px;
+            font-weight: normal;
+            margin: 0 0 20px 0;
             color: var(--text-primary);
+            text-align: center;
         }
 
         .subtitle {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text-secondary);
-            margin: 0 0 32px 0;
-            line-height: 1.5;
+            margin: 0 0 20px 0;
+            line-height: 1.4;
+            text-align: center;
         }
 
         /* Forms & Inputs */
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 500;
         }
 
         input[type="email"], 
         input[type="password"],
         input[type="text"] {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
+            padding: 14px 16px;
+            border: 1px solid var(--input-border);
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 17px;
             box-sizing: border-box;
-            transition: all 0.2s;
+            transition: border-color 0.2s;
             background: #fff;
+            color: #1c1e21;
         }
 
         input:focus {
             border-color: var(--veeva-blue);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 149, 255, 0.1);
+            box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+        }
+        
+        input::placeholder {
+            color: #90949c;
         }
 
         /* Buttons */
         .btn-primary {
             width: 100%;
             padding: 12px;
-            background-color: var(--veeva-orange);
+            background-color: var(--veeva-blue);
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 20px;
+            font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
-            margin-top: 10px;
+            margin-top: 6px;
+            line-height: 24px;
         }
 
         .btn-primary:hover {
@@ -143,13 +146,13 @@
 
         .btn-secondary {
             width: 100%;
-            padding: 12px;
-            background-color: white;
+            padding: 10px;
+            background-color: #fff;
             color: var(--text-primary);
             border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -159,176 +162,152 @@
         }
 
         .btn-secondary:hover {
-            border-color: var(--veeva-blue);
-            background-color: var(--hover-bg);
-            color: var(--veeva-blue);
+            background-color: #f5f6f7;
         }
 
         /* Divider */
-        .divider-text {
+        .divider-container {
             display: flex;
             align-items: center;
-            text-align: center;
-            color: var(--text-secondary);
+            margin: 20px 0;
+            color: #96999e;
             font-size: 13px;
-            margin: 24px 0;
         }
 
-        .divider-text::before,
-        .divider-text::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .divider-text:not(:empty)::before {
-            margin-right: .5em;
-        }
-
-        .divider-text:not(:empty)::after {
-            margin-left: .5em;
-        }
-
-        /* MFA Options List */
-        .mfa-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .mfa-option {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
-            position: relative;
-        }
-
-        .mfa-option:hover {
-            border-color: var(--veeva-blue);
-            background-color: var(--hover-bg);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 5px rgba(0, 149, 255, 0.1);
-        }
-
-        .mfa-option:active {
-            transform: translateY(0);
-        }
-
-        .icon-container {
-            width: 42px;
-            height: 42px;
-            background-color: #f0f4f8;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 16px;
-            color: #555;
-            flex-shrink: 0;
-        }
-
-        .mfa-option:hover .icon-container {
-            background-color: #e6f2ff;
-            color: var(--veeva-blue);
-        }
-        
-        .option-details {
+        .divider-line {
             flex-grow: 1;
+            height: 1px;
+            background-color: var(--border-color);
         }
 
-        .option-title {
-            display: block;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 2px;
-        }
-
-        .option-desc {
-            display: block;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .hint-text {
-            display: block;
-            font-size: 11px;
-            margin-top: 4px;
-            line-height: 1.4;
-        }
-
-        .hint-highlight {
-            color: var(--veeva-blue);
+        .divider-text {
+            margin: 0 10px;
             font-weight: 500;
-        }
-
-        /* SVG Icons */
-        svg {
-            width: 20px;
-            height: 20px;
-            stroke-width: 2;
-            stroke: currentColor;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* Recommended Badge */
-        .badge {
-            background-color: #fff4e5;
-            color: #d97706;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 12px;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            text-transform: uppercase;
         }
 
         /* Action Links */
         .action-link {
-            display: inline-block;
-            margin-top: 24px;
+            display: block;
+            margin-top: 16px;
             color: var(--veeva-blue);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
+            text-align: center;
         }
 
         .action-link:hover {
             text-decoration: underline;
         }
 
+        /* MFA Options List */
+        .mfa-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mfa-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            text-align: left;
+            position: relative;
+        }
+
+        .mfa-option:hover {
+            background-color: #f5f6f7;
+            border-color: #ccd0d5;
+        }
+
+        .icon-container {
+            width: 36px;
+            height: 36px;
+            background-color: transparent;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #555;
+            flex-shrink: 0;
+        }
+        
+        .icon-container svg {
+            width: 28px;
+            height: 28px;
+            stroke-width: 1.5;
+        }
+
+        .option-details {
+            flex-grow: 1;
+        }
+
+        .option-title {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .option-desc {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .hint-text {
+            display: block;
+            font-size: 12px;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        .hint-highlight {
+            color: var(--veeva-blue);
+            font-weight: normal;
+        }
+
+        .badge {
+            background-color: #e7f3ff;
+            color: var(--veeva-blue);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            text-transform: uppercase;
+        }
+
         /* Footer */
         .footer {
-            margin-top: 32px;
+            margin-top: 40px;
             width: 100%;
-            max-width: 440px;
+            max-width: 396px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
-            color: #666;
-            padding: 0 10px;
-            box-sizing: border-box;
+            font-size: 11px;
+            color: #737373;
+            padding: 0;
         }
 
         .footer-links {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
 
         .footer-links a {
-            color: #004b8d;
+            color: #737373;
             text-decoration: none;
         }
 
@@ -347,47 +326,33 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.9);
             border-radius: 8px;
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 10;
+            z-index: 100;
         }
 
         .spinner {
-            width: 30px;
-            height: 30px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--veeva-blue);
+            width: 24px;
+            height: 24px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--veeva-blue);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
         }
 
         .loading-text {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text-primary);
-            font-weight: 500;
-            text-align: center;
-            padding: 0 20px;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .card {
-                padding: 24px 20px;
-            }
-            .footer {
-                flex-direction: column;
-                gap: 12px;
-            }
         }
     </style>
 </head>
@@ -401,40 +366,37 @@
     <div class="card active" id="loginView">
         <div class="loading-overlay" id="loginLoader">
             <div class="spinner"></div>
-            <div class="loading-text" id="loginLoaderText">Signing in...</div>
+            <div class="loading-text" id="loginLoaderText">Verifying...</div>
         </div>
-
-        <h1>Sign In</h1>
-        <p class="subtitle">Enter your credentials to access Vault.</p>
-
-        <form onsubmit="handleLogin(event)">
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="name@company.com" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter your password" required>
-            </div>
-
-            <button type="submit" class="btn-primary">Sign In</button>
-        </form>
-
-        <div class="divider-text">OR</div>
-
-        <button class="btn-secondary" onclick="handlePasskeyLogin()">
-            <svg viewBox="0 0 24 24">
-                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-            </svg>
-            Sign in with a passkey
-        </button>
         
-        <div style="margin-top: 12px; font-size: 12px; color: #666;">
-            (Saved on this device)
-        </div>
+        <div class="card-content">
+            <form onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="User Name" required aria-label="User Name">
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Password" required aria-label="Password">
+                </div>
 
-        <a href="#" class="action-link" style="font-size: 13px;">Forgot password?</a>
+                <button type="submit" class="btn-primary">Log In</button>
+            </form>
+
+            <a href="#" class="action-link">Forgot password?</a>
+
+            <div class="divider-container">
+                <div class="divider-line"></div>
+                <div class="divider-text">OR</div>
+                <div class="divider-line"></div>
+            </div>
+
+            <button class="btn-secondary" onclick="handlePasskeyLogin()">
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; color: #1c1e21;">
+                    <path fill="currentColor" d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+                Sign in with a passkey
+            </button>
+        </div>
     </div>
 
 
@@ -445,99 +407,95 @@
             <div class="loading-text" id="mfaLoaderText">Connecting...</div>
         </div>
 
-        <h1>Verify Your Identity</h1>
-        <p class="subtitle">Select a verification method to continue securely.</p>
+        <div class="card-content">
+            <h1 style="margin-top:10px;">Verify Your Identity</h1>
+            <p class="subtitle">Select a verification method.</p>
 
-        <div class="mfa-list">
-            
-            <div class="mfa-option" onclick="selectMethod('Passkey', 'Requesting biometric verification...')">
-                <span class="badge">Recommended</span>
-                <div class="icon-container">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-                    </svg>
+            <div class="mfa-list">
+                
+                <div class="mfa-option" onclick="selectMethod('Passkey', 'Requesting biometric verification...')">
+                    <span class="badge">Recommended</span>
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                        </svg>
+                    </div>
+                    <div class="option-details">
+                        <span class="option-title">Passkey</span>
+                        <span class="option-desc">Use Windows Hello, Touch ID, or Face ID</span>
+                        <span class="hint-text hint-highlight">Go passwordless for faster, secure access.</span>
+                    </div>
                 </div>
-                <div class="option-details">
-                    <span class="option-title">Passkey</span>
-                    <span class="option-desc">Use Windows Hello, Touch ID, or Face ID</span>
-                    <span class="hint-text hint-highlight">Go passwordless for faster, secure access.</span>
+
+                <div class="mfa-option" onclick="selectMethod('Vault Mobile', 'Sending notification to your device...')">
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="option-details">
+                        <span class="option-title">Vault Mobile App</span>
+                        <span class="option-desc">Approve request on your device</span>
+                    </div>
                 </div>
+
+                <div class="mfa-option" onclick="selectMethod('Authenticator', 'Please prepare your authenticator code...')">
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <div class="option-details">
+                        <span class="option-title">Authenticator App</span>
+                        <span class="option-desc">Enter a code from your auth app</span>
+                    </div>
+                </div>
+
+                <div id="emailOption" class="mfa-option" onclick="selectMethod('Email', 'Sending verification code to email...')">
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <div class="option-details">
+                        <span class="option-title">Email Code</span>
+                        <span class="option-desc">Send to d*******@veeva.com</span>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="mfa-option" onclick="selectMethod('Vault Mobile', 'Sending notification to your device...')">
-                <div class="icon-container">
-                    <svg viewBox="0 0 24 24">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                    </svg>
-                </div>
-                <div class="option-details">
-                    <span class="option-title">Vault Mobile App</span>
-                    <span class="option-desc">Approve request on your device</span>
-                </div>
-            </div>
-
-            <div class="mfa-option" onclick="selectMethod('Authenticator', 'Please prepare your authenticator code...')">
-                <div class="icon-container">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    </svg>
-                </div>
-                <div class="option-details">
-                    <span class="option-title">Authenticator App</span>
-                    <span class="option-desc">Enter a code from your auth app</span>
-                </div>
-            </div>
-
-            <div id="emailOption" class="mfa-option" onclick="selectMethod('Email', 'Sending verification code to email...')">
-                <div class="icon-container">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                </div>
-                <div class="option-details">
-                    <span class="option-title">Email Code</span>
-                    <span class="option-desc">Send to d*******@veeva.com</span>
-                </div>
-            </div>
-
+            <a href="#" class="action-link" onclick="switchView('loginView')">Cancel</a>
         </div>
-
-        <a href="#" class="action-link" onclick="switchView('loginView')">Cancel and return to login</a>
     </div>
 
     <div class="footer">
         <div class="footer-links">
-            <a href="#">Privacy Policy</a>
+            <a href="#">Privacy</a>
+            <span class="divider">|</span>
+            <a href="#">Terms</a>
             <span class="divider">|</span>
             <a href="#">English ▼</a>
         </div>
         <div class="copyright">
-            Copyright © 2010-2026 Veeva
+            © 2026 Veeva Systems
         </div>
     </div>
 
     <script>
         function switchView(viewId) {
-            // Hide all cards
             document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
-            // Show target card
             document.getElementById(viewId).classList.add('active');
-            
-            // Reset loaders
             resetLoaders();
         }
 
         function handleLogin(e) {
             if(e) e.preventDefault();
-            
             const loader = document.getElementById('loginLoader');
             loader.style.display = 'flex';
-
-            // Simulate server check
             setTimeout(() => {
-                // Success - Move to MFA
                 switchView('mfaView');
             }, 1000);
         }
@@ -545,15 +503,9 @@
         function handlePasskeyLogin() {
             const loader = document.getElementById('loginLoader');
             const loaderText = document.getElementById('loginLoaderText');
-            
             loaderText.textContent = "Verifying Passkey...";
             loader.style.display = 'flex';
-
-            // Simulate passkey biometric prompt
             setTimeout(() => {
-                // Success - For this demo, we'll go to the MFA screen as if it were a dashboard, 
-                // or we could show a "Logged In" success. 
-                // Let's go to MFA screen to keep the flow consistent with the user's previous requests.
                 switchView('mfaView');
             }, 1500);
         }
@@ -561,7 +513,6 @@
         function selectMethod(methodName, loadingMessage) {
             const loader = document.getElementById('mfaLoader');
             const loadingText = document.getElementById('mfaLoaderText');
-            
             loadingText.textContent = loadingMessage;
             loader.style.display = 'flex';
 
@@ -586,13 +537,11 @@
 
         function resetLoaders() {
             document.querySelectorAll('.loading-overlay').forEach(el => el.style.display = 'none');
-            
-            // Reset spinner styles
             document.querySelectorAll('.spinner').forEach(spinner => {
-                spinner.style.border = '3px solid #f3f3f3';
-                spinner.style.borderTop = '3px solid var(--veeva-blue)';
+                spinner.style.border = '2px solid #f3f3f3';
+                spinner.style.borderTop = '2px solid var(--veeva-blue)';
                 spinner.innerHTML = '';
-                spinner.style.animation = 'spin 1s linear infinite';
+                spinner.style.animation = 'spin 0.8s linear infinite';
             });
         }
     </script>
