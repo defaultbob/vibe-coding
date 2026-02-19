@@ -28,6 +28,15 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
 
+    <!-- Flow Toggle -->
+    <div class="mb-6 flex items-center justify-center space-x-3 text-sm">
+        <span class="font-bold text-slate-800 transition-colors" id="lbl-standard">Standard Flow</span>
+        <button type="button" onclick="toggleFlowMode()" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" id="flowToggleBtn">
+            <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" id="flowToggleKnob"></span>
+        </button>
+        <span class="text-slate-500 transition-colors" id="lbl-identifier">Identifier First</span>
+    </div>
+
     <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
         <!-- Header -->
         <div class="p-8 text-center bg-slate-900 text-white transition-all duration-300" id="header-bg">
@@ -50,11 +59,12 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i data-lucide="mail" class="w-5 h-5 text-slate-400"></i>
                             </div>
-                            <input type="email" id="email" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="you@example.com" required>
+                            <!-- Added autocomplete="username webauthn" to trigger Conditional UI -->
+                            <input type="email" id="email" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="you@example.com" required autocomplete="username webauthn">
                         </div>
                     </div>
 
-                    <div>
+                    <div id="passwordFieldContainer" class="block">
                         <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -64,7 +74,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors mt-4">
+                    <button type="submit" id="loginSubmitBtn" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors mt-4">
                         Continue
                     </button>
                 </form>
@@ -85,7 +95,42 @@
                         <div id="iconWrapperAuth" class="relative mr-2">
                             <i data-lucide="fingerprint" class="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform"></i>
                         </div>
-                        Sign in with a Passkey
+                        <span id="passkeyBtnText">Sign in with a Passkey</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 1.5: Password Only (Identifier First Flow) -->
+            <div id="step-password-only" class="fade-in hidden space-y-4">
+                <div class="flex items-center justify-center space-x-2 mb-6 bg-slate-50 rounded-full py-1.5 px-4 w-max mx-auto border border-slate-200">
+                    <i data-lucide="user-circle" class="w-4 h-4 text-slate-500"></i>
+                    <span id="pwd-email-display" class="text-sm font-medium text-slate-700"></span>
+                    <button type="button" onclick="backToIdentifier()" class="text-slate-400 hover:text-slate-600 ml-2" title="Change email">
+                        <i data-lucide="edit-2" class="w-3 h-3"></i>
+                    </button>
+                </div>
+
+                <form onsubmit="handlePasswordSubmit(event)" class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="pwd-only" class="block text-sm font-medium text-slate-700">Password</label>
+                            <a href="#" class="text-xs font-medium text-blue-600 hover:text-blue-500">Forgot password?</a>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="lock" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <input type="password" id="pwd-only" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="mt-4 text-center hidden" id="pwdPasskeyFallback">
+                    <button onclick="authenticateWithPasskey()" type="button" class="text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors">
+                        Try another way (Use Passkey)
                     </button>
                 </div>
             </div>
@@ -168,6 +213,7 @@
         const demoConsole = document.getElementById('demoConsole');
         const passkeyBtn = document.getElementById('passkeyBtn');
         let deviceSupportsPasskeys = false;
+        let isIdentifierFirstFlow = false;
 
         /**
          * Log messages to the on-screen console for demonstration purposes
@@ -188,9 +234,14 @@
             try {
                 if (window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
                     deviceSupportsPasskeys = true;
-                    // Show passkey auth button on the login screen
-                    passkeyBtn.classList.remove('hidden');
                     logToConsole("System capabilities: Passkeys supported.");
+
+                    // Always show the normal button in Standard Flow (removed localStorage hint)
+                    passkeyBtn.classList.remove('hidden');
+
+                    // 2. Conditional UI (Autofill): Set up invisible listener
+                    setupConditionalUI();
+
                 } else {
                     logToConsole("System capabilities: Passkeys NOT supported by this device/browser.");
                 }
@@ -199,22 +250,154 @@
             }
         }
 
+        /**
+         * Initialize Conditional UI (Passkey Autofill)
+         */
+        async function setupConditionalUI() {
+            if (window.PublicKeyCredential && PublicKeyCredential.isConditionalMediationAvailable) {
+                const isAvailable = await PublicKeyCredential.isConditionalMediationAvailable();
+                if (isAvailable) {
+                    logToConsole("Conditional UI available. Waiting for autofill selection...");
+                    try {
+                        const challengeFromServer = generateRandomBuffer(32);
+                        const options = {
+                            challenge: challengeFromServer,
+                            rpId: window.location.hostname,
+                            userVerification: "preferred",
+                            timeout: 300000 // 5 minutes for them to click the input
+                        };
+
+                        // This promise resolves ONLY if the user selects a passkey from the browser's autofill dropdown
+                        const assertion = await navigator.credentials.get({
+                            publicKey: options,
+                            mediation: "conditional"
+                        });
+
+                        logToConsole("Conditional UI Authentication successful! (Autofilled)");
+                        showSuccessDashboard();
+
+                    } catch (error) {
+                        // NotAllowedError is normal if they navigate away or don't use autofill
+                        logToConsole("Conditional UI ended/aborted: " + error.name);
+                    }
+                }
+            }
+        }
+
         // --- FLOW LOGIC ---
+
+        function toggleFlowMode() {
+            isIdentifierFirstFlow = !isIdentifierFirstFlow;
+            const knob = document.getElementById('flowToggleKnob');
+            const btn = document.getElementById('flowToggleBtn');
+            const lblStandard = document.getElementById('lbl-standard');
+            const lblIdentifier = document.getElementById('lbl-identifier');
+            
+            if (isIdentifierFirstFlow) {
+                knob.classList.replace('translate-x-0', 'translate-x-5');
+                btn.classList.replace('bg-slate-300', 'bg-blue-600');
+                lblStandard.classList.replace('font-bold', 'font-normal');
+                lblStandard.classList.replace('text-slate-800', 'text-slate-500');
+                lblIdentifier.classList.replace('font-normal', 'font-bold');
+                lblIdentifier.classList.replace('text-slate-500', 'text-slate-800');
+                
+                // Hide Password Field, adjust button
+                document.getElementById('passwordFieldContainer').classList.add('hidden');
+                document.getElementById('password').removeAttribute('required');
+                document.getElementById('loginSubmitBtn').textContent = "Next";
+                logToConsole("Switched to Identifier First Flow. Password hidden.");
+            } else {
+                knob.classList.replace('translate-x-5', 'translate-x-0');
+                btn.classList.replace('bg-blue-600', 'bg-slate-300');
+                lblIdentifier.classList.replace('font-bold', 'font-normal');
+                lblIdentifier.classList.replace('text-slate-800', 'text-slate-500');
+                lblStandard.classList.replace('font-normal', 'font-bold');
+                lblStandard.classList.replace('text-slate-500', 'text-slate-800');
+                
+                // Show Password Field, adjust button
+                document.getElementById('passwordFieldContainer').classList.remove('hidden');
+                document.getElementById('password').setAttribute('required', 'true');
+                document.getElementById('loginSubmitBtn').textContent = "Continue";
+                logToConsole("Switched to Standard Flow.");
+            }
+            
+            // Reset views back to login
+            document.getElementById('step-mfa').classList.add('hidden');
+            document.getElementById('step-passkey-promo').classList.add('hidden');
+            document.getElementById('step-success').classList.add('hidden');
+            document.getElementById('step-password-only').classList.add('hidden');
+            document.getElementById('step-login').classList.remove('hidden');
+            
+            document.getElementById('header-title').textContent = "Welcome Back";
+            document.getElementById('header-subtitle').textContent = "Sign in to your account to continue";
+            document.getElementById('header-bg').className = "p-8 text-center bg-slate-900 text-white transition-all duration-300";
+            document.getElementById('header-icon').setAttribute('data-lucide', 'shield-check');
+            document.getElementById('header-icon').className = "w-8 h-8 text-blue-400";
+            lucide.createIcons();
+        }
 
         function handleStandardLogin(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             
-            // Update UI for step 2
+            if (isIdentifierFirstFlow) {
+                logToConsole(`Identifier entered: ${email}`);
+                
+                // IN A REAL APP: You would send the email to your backend here to check 
+                // if they have a passkey registered. If yes, you'd trigger authenticateWithPasskey(true).
+                // SINCE WE HAVE NO BACKEND OR LOCAL STORAGE: We proceed to the password step. 
+                // Passkey users are expected to use the Conditional UI autofill dropdown on the previous screen.
+                logToConsole("Proceeding to password step.");
+                showPasswordStep(email);
+            } else {
+                logToConsole(`Standard login accepted for: ${email}`);
+                showMfaStep(email);
+            }
+        }
+
+        function showPasswordStep(email) {
+            document.getElementById('pwd-email-display').textContent = email;
+            document.getElementById('step-login').classList.add('hidden');
+            document.getElementById('step-password-only').classList.remove('hidden');
+            
+            // Show fallback button if the device supports passkeys (since we don't know if they have one without a backend)
+            if (deviceSupportsPasskeys) {
+                document.getElementById('pwdPasskeyFallback').classList.remove('hidden');
+            } else {
+                document.getElementById('pwdPasskeyFallback').classList.add('hidden');
+            }
+            
+            document.getElementById('header-title').textContent = "Enter Password";
+            document.getElementById('header-subtitle').textContent = "Verify your identity";
+            lucide.createIcons();
+            
+            // Auto focus password
+            setTimeout(() => document.getElementById('pwd-only').focus(), 100);
+        }
+
+        function backToIdentifier() {
+            document.getElementById('step-password-only').classList.add('hidden');
+            document.getElementById('step-login').classList.remove('hidden');
+            document.getElementById('header-title').textContent = "Welcome Back";
+            document.getElementById('header-subtitle').textContent = "Sign in to your account to continue";
+        }
+
+        function handlePasswordSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            logToConsole(`Password accepted for: ${email}`);
+            document.getElementById('step-password-only').classList.add('hidden');
+            showMfaStep(email);
+        }
+
+        function showMfaStep(email) {
             document.getElementById('mfa-email-display').textContent = email;
             document.getElementById('step-login').classList.add('hidden');
             document.getElementById('step-mfa').classList.remove('hidden');
             
-            // Update Header
             document.getElementById('header-title').textContent = "Two-Step Verification";
             document.getElementById('header-subtitle').textContent = "Protecting your account";
             
-            logToConsole(`Standard login accepted for: ${email}`);
             logToConsole("Sending mock MFA code...");
         }
 
@@ -320,6 +503,8 @@
                 // 4. Success handling
                 logToConsole("Registration successful! (Mocked)");
                 
+                // (Removed localStorage saving here)
+                
                 const regBtn = document.getElementById('registerPasskeyBtn');
                 regBtn.classList.remove('bg-slate-900', 'hover:bg-slate-800');
                 regBtn.classList.add('bg-green-600', 'hover:bg-green-700');
@@ -344,7 +529,7 @@
          * Initiate the Passkey Authentication (Assertion) request
          * (Kept here in case they click "Sign in with a Passkey" on Step 1)
          */
-        async function authenticateWithPasskey() {
+        async function authenticateWithPasskey(fallbackToPasswordOnCancel = false) {
             logToConsole("Requesting passkey authentication...");
             const iconWrapper = document.getElementById('iconWrapperAuth');
             if (iconWrapper) iconWrapper.classList.add('animate-pulse');
@@ -371,6 +556,8 @@
                 lucide.createIcons();
 
                 setTimeout(() => {
+                    // Hide password step if we were in it
+                    document.getElementById('step-password-only').classList.add('hidden');
                     showSuccessDashboard();
                 }, 1000);
 
@@ -379,6 +566,11 @@
                 let msg = "Authentication failed.";
                 if (error.name === "NotAllowedError") msg = "Request cancelled.";
                 logToConsole(`${msg} (${error.name})`, true);
+                
+                if (fallbackToPasswordOnCancel === true) {
+                    logToConsole("Passkey canceled. Falling back to password input.");
+                    showPasswordStep(document.getElementById('email').value);
+                }
             }
         }
 
