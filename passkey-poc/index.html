@@ -338,6 +338,9 @@
 
         function handleStandardLogin(e) {
             e.preventDefault();
+            // Blur the active input to safely dismiss password manager extensions before hiding the view
+            if (document.activeElement) document.activeElement.blur();
+            
             const email = document.getElementById('email').value;
             
             if (isIdentifierFirstFlow) {
@@ -384,6 +387,9 @@
 
         function handlePasswordSubmit(e) {
             e.preventDefault();
+            // Blur the active input to safely dismiss password manager extensions before hiding the view
+            if (document.activeElement) document.activeElement.blur();
+            
             const email = document.getElementById('email').value;
             logToConsole(`Password accepted for: ${email}`);
             document.getElementById('step-password-only').classList.add('hidden');
@@ -403,6 +409,9 @@
 
         function handleMfaSubmit(e) {
             e.preventDefault();
+            // Blur the active input to safely dismiss password manager extensions before hiding the view
+            if (document.activeElement) document.activeElement.blur();
+            
             const code = document.getElementById('mfaCode').value;
             logToConsole(`MFA verified with code: ${code}`);
 
