@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Passkey Upgrade Flow Sample</title>
+    <title>Veeva Identity - Passkey Flow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         /* Custom animations for UI feedback */
         @keyframes pulse-ring {
-            0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(242, 108, 50, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(242, 108, 50, 0); }
+            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(242, 108, 50, 0); }
         }
         .anim-pulse-ring {
             animation: pulse-ring 2s infinite;
@@ -24,16 +24,24 @@
             from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* Veeva Brand Colors */
+        .veeva-bg-orange { background-color: #F26C32; }
+        .veeva-bg-orange-hover:hover { background-color: #E05920; }
+        .veeva-text-orange { color: #F26C32; }
+        .veeva-ring-orange:focus { --tw-ring-color: #F26C32; border-color: #F26C32; }
+        .veeva-text-blue { color: #00529b; }
+        .veeva-text-blue-hover:hover { color: #003d73; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
+<body class="bg-[#f4f6f9] min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
 
-    <!-- Demo Controls -->
+    <!-- Demo Controls (Kept for testing the flows) -->
     <div class="mb-6 flex flex-col space-y-3">
         <!-- Flow Toggle -->
         <div class="flex items-center justify-end space-x-3 text-sm">
             <span class="font-bold text-slate-800 transition-colors" id="lbl-standard">Standard Flow</span>
-            <button type="button" onclick="toggleFlowMode()" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" id="flowToggleBtn">
+            <button type="button" onclick="toggleFlowMode()" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 veeva-ring-orange" role="switch" aria-checked="false" id="flowToggleBtn">
                 <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" id="flowToggleKnob"></span>
             </button>
             <span class="text-slate-500 transition-colors w-28" id="lbl-identifier">Identifier First</span>
@@ -42,51 +50,47 @@
         <!-- User Mode Toggle -->
         <div class="flex items-center justify-end space-x-3 text-sm">
             <span class="font-bold text-slate-800 transition-colors" id="lbl-newuser">New User</span>
-            <button type="button" onclick="toggleUserMode()" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" id="userToggleBtn">
+            <button type="button" onclick="toggleUserMode()" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 veeva-ring-orange" role="switch" aria-checked="false" id="userToggleBtn">
                 <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" id="userToggleKnob"></span>
             </button>
             <span class="text-slate-500 transition-colors w-28" id="lbl-returning">Returning User</span>
         </div>
     </div>
 
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-        <!-- Header -->
-        <div class="p-8 text-center bg-slate-900 text-white transition-all duration-300" id="header-bg">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-800 mb-4 shadow-inner" id="header-icon-container">
-                <i data-lucide="shield-check" class="w-8 h-8 text-blue-400" id="header-icon"></i>
+    <!-- Main Card -->
+    <div class="max-w-md w-full bg-white rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-slate-200 overflow-hidden">
+        
+        <!-- Header (Veeva Style Logo) -->
+        <div class="pt-8 pb-2 text-center bg-white text-slate-800 transition-all duration-300" id="header-bg">
+            <div class="mb-2">
+                <!-- Mock Veeva Logo -->
+                <span class="text-4xl font-extrabold tracking-tight veeva-text-orange">Veeva</span>
             </div>
-            <h2 class="text-2xl font-bold" id="header-title">Welcome Back</h2>
-            <p class="text-slate-400 mt-2 text-sm" id="header-subtitle">Sign in to your account to continue</p>
+            <h2 class="text-xl font-medium text-slate-700 mt-4" id="header-title">Sign In</h2>
+            <p class="text-slate-500 mt-1 text-sm hidden" id="header-subtitle">Sign in to your account to continue</p>
         </div>
 
         <!-- Main Content Area -->
-        <div class="p-8">
+        <div class="px-8 pb-8 pt-4">
             
             <!-- STEP 1: Standard Login Form -->
             <div id="step-login" class="fade-in block">
                 <form class="space-y-4" onsubmit="handleStandardLogin(event)">
                     <div>
-                        <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                        <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-lucide="mail" class="w-5 h-5 text-slate-400"></i>
-                            </div>
-                            <!-- Added autocomplete="username webauthn" to trigger Conditional UI -->
-                            <input type="email" id="email" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="you@example.com" required autocomplete="username webauthn">
+                            <input type="email" id="email" class="block w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 veeva-ring-orange transition-colors sm:text-sm" placeholder="user@veeva.com" required autocomplete="username webauthn">
                         </div>
                     </div>
 
                     <div id="passwordFieldContainer" class="block">
                         <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-lucide="lock" class="w-5 h-5 text-slate-400"></i>
-                            </div>
-                            <input type="password" id="password" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="••••••••" required>
+                            <input type="password" id="password" class="block w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 veeva-ring-orange transition-colors sm:text-sm" required>
                         </div>
                     </div>
 
-                    <button type="submit" id="loginSubmitBtn" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors mt-4">
+                    <button type="submit" id="loginSubmitBtn" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded text-sm font-bold text-white veeva-bg-orange veeva-bg-orange-hover focus:outline-none focus:ring-2 focus:ring-offset-2 veeva-ring-orange transition-colors mt-4 shadow-sm">
                         Continue
                     </button>
                 </form>
@@ -97,15 +101,15 @@
                         <div class="w-full border-t border-slate-200"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-slate-500">Or</span>
+                        <span class="px-2 bg-white text-slate-400 text-xs uppercase tracking-wider">Or</span>
                     </div>
                 </div>
 
-                <!-- Passkey Authentication Button (If user already has one) -->
+                <!-- Passkey Authentication Button -->
                 <div class="mt-6 text-center">
-                    <button id="passkeyBtn" onclick="authenticateWithPasskey()" type="button" class="hidden w-full flex items-center justify-center py-2.5 px-4 border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors group">
+                    <button id="passkeyBtn" onclick="authenticateWithPasskey()" type="button" class="hidden w-full flex items-center justify-center py-2.5 px-4 border border-slate-300 rounded shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 veeva-ring-orange transition-colors group">
                         <div id="iconWrapperAuth" class="relative mr-2">
-                            <i data-lucide="fingerprint" class="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform"></i>
+                            <i data-lucide="fingerprint" class="w-5 h-5 veeva-text-orange group-hover:scale-110 transition-transform"></i>
                         </div>
                         <span id="passkeyBtnText">Sign in with a Passkey</span>
                     </button>
@@ -114,10 +118,12 @@
 
             <!-- STEP 1.5: Password Only (Identifier First Flow) -->
             <div id="step-password-only" class="fade-in hidden space-y-4">
-                <div class="flex items-center justify-center space-x-2 mb-6 bg-slate-50 rounded-full py-1.5 px-4 w-max mx-auto border border-slate-200">
-                    <i data-lucide="user-circle" class="w-4 h-4 text-slate-500"></i>
-                    <span id="pwd-email-display" class="text-sm font-medium text-slate-700"></span>
-                    <button type="button" onclick="backToIdentifier()" class="text-slate-400 hover:text-slate-600 ml-2" title="Change email">
+                <div class="flex items-center justify-between mb-6 bg-slate-50 rounded py-2 px-3 border border-slate-200">
+                    <div class="flex items-center space-x-2 truncate">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
+                        <span id="pwd-email-display" class="text-sm text-slate-700 truncate"></span>
+                    </div>
+                    <button type="button" onclick="backToIdentifier()" class="text-slate-400 hover:text-slate-600 flex-shrink-0" title="Change email">
                         <i data-lucide="edit-2" class="w-3 h-3"></i>
                     </button>
                 </div>
@@ -126,23 +132,20 @@
                     <div>
                         <div class="flex justify-between items-center mb-1">
                             <label for="pwd-only" class="block text-sm font-medium text-slate-700">Password</label>
-                            <a href="#" class="text-xs font-medium text-blue-600 hover:text-blue-500">Forgot password?</a>
+                            <a href="#" class="text-xs font-medium veeva-text-blue veeva-text-blue-hover">Forgot password?</a>
                         </div>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-lucide="lock" class="w-5 h-5 text-slate-400"></i>
-                            </div>
-                            <input type="password" id="pwd-only" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="••••••••" required>
+                            <input type="password" id="pwd-only" class="block w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 veeva-ring-orange transition-colors sm:text-sm" required>
                         </div>
                     </div>
-                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded shadow-sm text-sm font-bold text-white veeva-bg-orange veeva-bg-orange-hover focus:outline-none focus:ring-2 focus:ring-offset-2 veeva-ring-orange transition-colors">
                         Sign In
                     </button>
                 </form>
                 
                 <div class="mt-4 text-center hidden" id="pwdPasskeyFallback">
-                    <button onclick="authenticateWithPasskey()" type="button" class="text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors">
-                        Try another way (Use Passkey)
+                    <button onclick="authenticateWithPasskey()" type="button" class="text-sm font-medium veeva-text-blue veeva-text-blue-hover transition-colors">
+                        Use a Passkey instead
                     </button>
                 </div>
             </div>
@@ -150,49 +153,45 @@
             <!-- STEP 2: MFA Code Form -->
             <div id="step-mfa" class="fade-in hidden space-y-4">
                 <div class="text-center mb-6">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 mb-4">
-                        <i data-lucide="mail-open" class="w-6 h-6 text-blue-600"></i>
-                    </div>
-                    <h3 class="text-lg font-medium text-slate-900">Check your email</h3>
-                    <p class="text-sm text-slate-500 mt-1">We've sent a 4-digit code to <span id="mfa-email-display" class="font-medium text-slate-700">your email</span>.</p>
+                    <p class="text-sm text-slate-600 mt-1">We've sent a 4-digit code to <br><span id="mfa-email-display" class="font-medium text-slate-800">your email</span>.</p>
                 </div>
 
                 <form onsubmit="handleMfaSubmit(event)" class="space-y-6">
                     <div>
-                        <input type="text" id="mfaCode" maxlength="4" pattern="\d{4}" class="block w-full text-center text-3xl tracking-[0.5em] font-mono py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="••••" required autocomplete="one-time-code">
+                        <input type="text" id="mfaCode" maxlength="4" pattern="\d{4}" class="block w-full text-center text-3xl tracking-[0.5em] font-mono py-3 border border-slate-300 rounded focus:ring-1 veeva-ring-orange transition-colors" placeholder="••••" required autocomplete="one-time-code">
                     </div>
-                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded shadow-sm text-sm font-bold text-white veeva-bg-orange veeva-bg-orange-hover focus:outline-none focus:ring-2 focus:ring-offset-2 veeva-ring-orange transition-colors">
                         Verify Code
                     </button>
                 </form>
                 <p class="text-center text-sm text-slate-500 mt-4">
-                    Didn't receive it? <a href="#" class="text-blue-600 hover:underline">Resend code</a>
+                    Didn't receive it? <a href="#" class="veeva-text-blue veeva-text-blue-hover hover:underline">Resend</a>
                 </p>
             </div>
 
             <!-- STEP 3: Passkey Creation Promo -->
             <div id="step-passkey-promo" class="fade-in hidden text-center space-y-6">
-                <div class="relative mx-auto w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-2">
-                    <i data-lucide="fingerprint" class="w-10 h-10 text-blue-600 relative z-10"></i>
-                    <div class="absolute inset-0 rounded-full border-4 border-blue-100 anim-pulse-ring"></div>
+                <div class="relative mx-auto w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-2">
+                    <i data-lucide="shield-check" class="w-8 h-8 veeva-text-orange relative z-10"></i>
+                    <div class="absolute inset-0 rounded-full border-2 border-orange-200 anim-pulse-ring"></div>
                 </div>
                 
                 <div>
-                    <h3 class="text-xl font-bold text-slate-900">Sign in faster next time</h3>
+                    <h3 class="text-lg font-medium text-slate-900">Upgrade Your Security</h3>
                     <p class="text-sm text-slate-500 mt-2 px-2">
                         Create a passkey to skip passwords and email codes. Sign in securely using your fingerprint, face, or screen lock.
                     </p>
                 </div>
 
                 <div class="space-y-3 pt-2">
-                    <button id="registerPasskeyBtn" onclick="registerPasskey()" class="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors">
+                    <button id="registerPasskeyBtn" onclick="registerPasskey()" class="w-full flex items-center justify-center py-2.5 px-4 border border-transparent rounded shadow-sm text-sm font-bold text-white veeva-bg-orange veeva-bg-orange-hover focus:outline-none focus:ring-2 focus:ring-offset-2 veeva-ring-orange transition-colors">
                         <div id="iconWrapperReg" class="relative mr-2">
-                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                            <i data-lucide="fingerprint" class="w-4 h-4"></i>
                         </div>
-                        Create a Passkey Now
+                        Create Passkey
                     </button>
                     
-                    <button onclick="skipPasskey()" class="w-full flex justify-center py-2.5 px-4 text-sm font-medium text-slate-500 bg-transparent hover:text-slate-800 transition-colors">
+                    <button onclick="skipPasskey()" class="w-full flex justify-center py-2.5 px-4 text-sm font-medium veeva-text-blue veeva-text-blue-hover transition-colors">
                         Maybe later
                     </button>
                 </div>
@@ -200,20 +199,27 @@
 
             <!-- STEP 4: Success / Dashboard -->
             <div id="step-success" class="fade-in hidden text-center py-6">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6">
-                    <i data-lucide="check" class="w-10 h-10 text-green-600"></i>
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 mb-4 border border-green-100">
+                    <i data-lucide="check" class="w-8 h-8 text-green-600"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-slate-900 mb-2">You're in!</h3>
-                <p class="text-slate-500 mb-8">You have successfully authenticated and reached the secure dashboard area.</p>
+                <h3 class="text-xl font-medium text-slate-900 mb-2">Authentication Successful</h3>
+                <p class="text-slate-500 mb-8 text-sm">You have securely accessed the Veeva identity portal.</p>
                 
-                <button onclick="location.reload()" class="text-sm font-medium text-blue-600 hover:text-blue-500 hover:underline">
-                    Restart Demo Flow
+                <button onclick="location.reload()" class="text-sm font-medium veeva-text-blue veeva-text-blue-hover">
+                    Return to Login
                 </button>
             </div>
 
             <!-- Feedback Console (For Demo Purposes) -->
-            <div id="demoConsole" class="hidden mt-6 text-left bg-slate-900 text-green-400 text-xs p-3 rounded-lg font-mono overflow-x-auto whitespace-pre-wrap shadow-inner border border-slate-700 max-h-32 overflow-y-auto"></div>
+            <div id="demoConsole" class="hidden mt-6 text-left bg-slate-800 text-green-400 text-xs p-3 rounded font-mono overflow-x-auto whitespace-pre-wrap shadow-inner border border-slate-700 max-h-32 overflow-y-auto"></div>
             
+        </div>
+        
+        <!-- Footer Links -->
+        <div class="bg-slate-50 px-8 py-4 border-t border-slate-200 text-center flex justify-center space-x-4 text-xs text-slate-500">
+            <a href="#" class="hover:text-slate-800">Need Help?</a>
+            <span>|</span>
+            <a href="#" class="hover:text-slate-800">Privacy Policy</a>
         </div>
     </div>
 
@@ -229,7 +235,7 @@
         
         // Mock User Data for toggle
         let isReturningUser = false;
-        const mockReturningEmail = "demo.user@example.com";
+        const mockReturningEmail = "demo.user@veeva.com";
 
         /**
          * Log messages to the on-screen console for demonstration purposes
@@ -252,10 +258,10 @@
                     deviceSupportsPasskeys = true;
                     logToConsole("System capabilities: Passkeys supported.");
 
-                    // Always show the normal button in Standard Flow (removed localStorage hint)
+                    // Always show the normal button in Standard Flow
                     passkeyBtn.classList.remove('hidden');
 
-                    // 2. Conditional UI (Autofill): Set up invisible listener
+                    // Conditional UI (Autofill): Set up invisible listener
                     setupConditionalUI();
 
                 } else {
@@ -278,12 +284,10 @@
                         const challengeFromServer = generateRandomBuffer(32);
                         const options = {
                             challenge: challengeFromServer,
-                            // OMITTING rpId lets the browser safely infer the correct effective domain
                             userVerification: "preferred",
-                            timeout: 300000 // 5 minutes for them to click the input
+                            timeout: 300000 
                         };
 
-                        // This promise resolves ONLY if the user selects a passkey from the browser's autofill dropdown
                         const assertion = await navigator.credentials.get({
                             publicKey: options,
                             mediation: "conditional"
@@ -293,7 +297,6 @@
                         showSuccessDashboard();
 
                     } catch (error) {
-                        // NotAllowedError is normal if they navigate away or don't use autofill
                         logToConsole("Conditional UI ended/aborted: " + error.name);
                     }
                 }
@@ -311,7 +314,8 @@
             
             if (isIdentifierFirstFlow) {
                 knob.classList.replace('translate-x-0', 'translate-x-5');
-                btn.classList.replace('bg-slate-300', 'bg-blue-600');
+                btn.classList.add('veeva-bg-orange');
+                btn.classList.remove('bg-slate-300');
                 lblStandard.classList.replace('font-bold', 'font-normal');
                 lblStandard.classList.replace('text-slate-800', 'text-slate-500');
                 lblIdentifier.classList.replace('font-normal', 'font-bold');
@@ -324,7 +328,8 @@
                 logToConsole("Switched to Identifier First Flow. Password hidden.");
             } else {
                 knob.classList.replace('translate-x-5', 'translate-x-0');
-                btn.classList.replace('bg-blue-600', 'bg-slate-300');
+                btn.classList.remove('veeva-bg-orange');
+                btn.classList.add('bg-slate-300');
                 lblIdentifier.classList.replace('font-bold', 'font-normal');
                 lblIdentifier.classList.replace('text-slate-800', 'text-slate-500');
                 lblStandard.classList.replace('font-normal', 'font-bold');
@@ -344,12 +349,7 @@
             document.getElementById('step-password-only').classList.add('hidden');
             document.getElementById('step-login').classList.remove('hidden');
             
-            document.getElementById('header-title').textContent = "Welcome Back";
-            document.getElementById('header-subtitle').textContent = "Sign in to your account to continue";
-            document.getElementById('header-bg').className = "p-8 text-center bg-slate-900 text-white transition-all duration-300";
-            document.getElementById('header-icon').setAttribute('data-lucide', 'shield-check');
-            document.getElementById('header-icon').className = "w-8 h-8 text-blue-400";
-            lucide.createIcons();
+            document.getElementById('header-title').textContent = "Sign In";
         }
 
         function redactEmail(email) {
@@ -358,7 +358,6 @@
             const name = parts[0];
             const domain = parts[1];
             if (name.length <= 1) return email;
-            // Keep first character, redact the rest
             const redactedName = name.charAt(0) + '*'.repeat(name.length - 1);
             return `${redactedName}@${domain}`;
         }
@@ -373,7 +372,8 @@
             
             if (isReturningUser) {
                 knob.classList.replace('translate-x-0', 'translate-x-5');
-                btn.classList.replace('bg-slate-300', 'bg-blue-600');
+                btn.classList.add('veeva-bg-orange');
+                btn.classList.remove('bg-slate-300');
                 lblNew.classList.replace('font-bold', 'font-normal');
                 lblNew.classList.replace('text-slate-800', 'text-slate-500');
                 lblReturning.classList.replace('font-normal', 'font-bold');
@@ -383,7 +383,8 @@
                 logToConsole("Switched to Returning User. Email pre-populated.");
             } else {
                 knob.classList.replace('translate-x-5', 'translate-x-0');
-                btn.classList.replace('bg-blue-600', 'bg-slate-300');
+                btn.classList.remove('veeva-bg-orange');
+                btn.classList.add('bg-slate-300');
                 lblReturning.classList.replace('font-bold', 'font-normal');
                 lblReturning.classList.replace('text-slate-800', 'text-slate-500');
                 lblNew.classList.replace('font-normal', 'font-bold');
@@ -395,7 +396,6 @@
         }
 
         function getRealEmail(inputEmail) {
-            // Helper to translate the visually redacted email back to the full demo email for downstream steps
             if (isReturningUser && inputEmail === redactEmail(mockReturningEmail)) {
                 return mockReturningEmail;
             }
@@ -404,19 +404,13 @@
 
         function handleStandardLogin(e) {
             e.preventDefault();
-            // Blur the active input to safely dismiss password manager extensions before hiding the view
             if (document.activeElement) document.activeElement.blur();
             
             let email = document.getElementById('email').value;
-            email = getRealEmail(email); // Translate redacted visual back to real email
+            email = getRealEmail(email); 
             
             if (isIdentifierFirstFlow) {
                 logToConsole(`Identifier entered: ${email}`);
-                
-                // IN A REAL APP: You would send the email to your backend here to check 
-                // if they have a passkey registered. If yes, you'd trigger authenticateWithPasskey(true).
-                // SINCE WE HAVE NO BACKEND OR LOCAL STORAGE: We proceed to the password step. 
-                // Passkey users are expected to use the Conditional UI autofill dropdown on the previous screen.
                 logToConsole("Proceeding to password step.");
                 showPasswordStep(email);
             } else {
@@ -430,7 +424,6 @@
             document.getElementById('step-login').classList.add('hidden');
             document.getElementById('step-password-only').classList.remove('hidden');
             
-            // Show fallback button if the device supports passkeys (since we don't know if they have one without a backend)
             if (deviceSupportsPasskeys) {
                 document.getElementById('pwdPasskeyFallback').classList.remove('hidden');
             } else {
@@ -438,27 +431,22 @@
             }
             
             document.getElementById('header-title').textContent = "Enter Password";
-            document.getElementById('header-subtitle').textContent = "Verify your identity";
-            lucide.createIcons();
             
-            // Auto focus password
             setTimeout(() => document.getElementById('pwd-only').focus(), 100);
         }
 
         function backToIdentifier() {
             document.getElementById('step-password-only').classList.add('hidden');
             document.getElementById('step-login').classList.remove('hidden');
-            document.getElementById('header-title').textContent = "Welcome Back";
-            document.getElementById('header-subtitle').textContent = "Sign in to your account to continue";
+            document.getElementById('header-title').textContent = "Sign In";
         }
 
         function handlePasswordSubmit(e) {
             e.preventDefault();
-            // Blur the active input to safely dismiss password manager extensions before hiding the view
             if (document.activeElement) document.activeElement.blur();
             
             let email = document.getElementById('email').value;
-            email = getRealEmail(email); // Translate redacted visual back to real email
+            email = getRealEmail(email); 
             
             logToConsole(`Password accepted for: ${email}`);
             document.getElementById('step-password-only').classList.add('hidden');
@@ -471,14 +459,12 @@
             document.getElementById('step-mfa').classList.remove('hidden');
             
             document.getElementById('header-title').textContent = "Two-Step Verification";
-            document.getElementById('header-subtitle').textContent = "Protecting your account";
             
             logToConsole("Sending mock MFA code...");
         }
 
         function handleMfaSubmit(e) {
             e.preventDefault();
-            // Blur the active input to safely dismiss password manager extensions before hiding the view
             if (document.activeElement) document.activeElement.blur();
             
             const code = document.getElementById('mfaCode').value;
@@ -486,21 +472,10 @@
 
             document.getElementById('step-mfa').classList.add('hidden');
             
-            // Branch logic based on passkey support
             if (deviceSupportsPasskeys) {
-                // Device supports passkeys: Prompt user to upgrade their login method
                 document.getElementById('step-passkey-promo').classList.remove('hidden');
-                
-                // Update Header
-                document.getElementById('header-bg').classList.remove('bg-slate-900');
-                document.getElementById('header-bg').classList.add('bg-blue-600');
-                document.getElementById('header-icon').setAttribute('data-lucide', 'sparkles');
-                document.getElementById('header-icon').classList.replace('text-blue-400', 'text-white');
-                document.getElementById('header-title').textContent = "Upgrade your security";
-                document.getElementById('header-subtitle').textContent = "Highly recommended";
-                lucide.createIcons();
+                document.getElementById('header-title').textContent = "Secure Your Account";
             } else {
-                // Device doesn't support passkeys: Skip straight to success
                 showSuccessDashboard();
             }
         }
@@ -517,14 +492,7 @@
             document.getElementById('step-passkey-promo').classList.add('hidden');
             
             document.getElementById('step-success').classList.remove('hidden');
-            
-            // Update Header for Dashboard
-            document.getElementById('header-bg').className = "p-8 text-center bg-slate-900 text-white transition-all duration-300";
-            document.getElementById('header-title').textContent = "Dashboard";
-            document.getElementById('header-subtitle').textContent = "Secure internal area";
-            document.getElementById('header-icon').setAttribute('data-lucide', 'layout-dashboard');
-            document.getElementById('header-icon').classList.replace('text-white', 'text-blue-400');
-            lucide.createIcons();
+            document.getElementById('header-title').textContent = "Veeva Identity Portal";
         }
 
         // --- WEBAUTHN LOGIC ---
@@ -535,26 +503,20 @@
             return array;
         }
 
-        /**
-         * Initiate the Passkey Registration (Creation) request
-         */
         async function registerPasskey() {
             logToConsole("Requesting passkey registration...");
             const iconWrapper = document.getElementById('iconWrapperReg');
             if (iconWrapper) iconWrapper.classList.add('animate-pulse');
 
             try {
-                // 1. Fetch challenge and user data from server (Mocked here)
                 const challengeFromServer = generateRandomBuffer(32);
                 const userId = generateRandomBuffer(16);
-                const userEmail = document.getElementById('email').value || "user@example.com";
+                const userEmail = document.getElementById('email').value || "user@veeva.com";
 
-                // 2. Construct the Options
                 const publicKeyCredentialCreationOptions = {
                     challenge: challengeFromServer,
                     rp: { 
-                        name: "Passkey Demo App"
-                        // OMITTING 'id' here fixes OperationErrors on IP addresses, iframes, and sandboxes
+                        name: "Veeva Passkey Demo"
                     },
                     user: {
                         id: userId,
@@ -562,11 +524,11 @@
                         displayName: userEmail.split('@')[0],
                     },
                     pubKeyCredParams: [
-                        { alg: -7, type: "public-key" }, // ES256
-                        { alg: -257, type: "public-key" } // RS256
+                        { alg: -7, type: "public-key" }, 
+                        { alg: -257, type: "public-key" } 
                     ],
                     authenticatorSelection: {
-                        authenticatorAttachment: "platform", // Force native biometrics (TouchID/Windows Hello)
+                        authenticatorAttachment: "platform", 
                         requireResidentKey: true,
                         userVerification: "required"
                     },
@@ -576,23 +538,18 @@
 
                 logToConsole("Waiting for user interaction (browser prompt to CREATE passkey)...");
                 
-                // 3. Prompt the user
                 const credential = await navigator.credentials.create({
                     publicKey: publicKeyCredentialCreationOptions
                 });
 
-                // 4. Success handling
                 logToConsole("Registration successful! (Mocked)");
                 
-                // (Removed localStorage saving here)
-                
                 const regBtn = document.getElementById('registerPasskeyBtn');
-                regBtn.classList.remove('bg-slate-900', 'hover:bg-slate-800');
+                regBtn.classList.remove('veeva-bg-orange', 'veeva-bg-orange-hover');
                 regBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-                regBtn.innerHTML = `<i data-lucide="check" class="w-5 h-5 mr-2"></i> Passkey Created!`;
+                regBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4 mr-2"></i> Passkey Created!`;
                 lucide.createIcons();
 
-                // Wait 1.5 seconds for user to see success, then redirect to dashboard
                 setTimeout(() => {
                     document.getElementById('step-passkey-promo').classList.add('hidden');
                     showSuccessDashboard();
@@ -606,10 +563,6 @@
             }
         }
 
-        /**
-         * Initiate the Passkey Authentication (Assertion) request
-         * (Kept here in case they click "Sign in with a Passkey" on Step 1)
-         */
         async function authenticateWithPasskey(fallbackToPasswordOnCancel = false) {
             logToConsole("Requesting passkey authentication...");
             const iconWrapper = document.getElementById('iconWrapperAuth');
@@ -620,7 +573,6 @@
 
                 const publicKeyCredentialRequestOptions = {
                     challenge: challengeFromServer,
-                    // OMITTING 'rpId' here
                     userVerification: "preferred",
                     timeout: 60000,
                 };
@@ -637,7 +589,6 @@
                 lucide.createIcons();
 
                 setTimeout(() => {
-                    // Hide password step if we were in it
                     document.getElementById('step-password-only').classList.add('hidden');
                     showSuccessDashboard();
                 }, 1000);
