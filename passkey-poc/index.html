@@ -191,8 +191,10 @@
             logToConsole("Requesting passkey authentication...");
             
             // Add visual feedback to button
-            const icon = passkeyBtn.querySelector('i');
-            icon.classList.add('animate-pulse', 'text-blue-400');
+            const icon = passkeyBtn.querySelector('svg') || passkeyBtn.querySelector('i');
+            if (icon) {
+                icon.classList.add('animate-pulse', 'text-blue-400');
+            }
 
             try {
                 // 1. Fetch challenge from server (Mocked here)
@@ -238,7 +240,9 @@
 
             } catch (error) {
                 // Handle errors (e.g., user cancelled, origin mismatch, no passkeys registered)
-                icon.classList.remove('animate-pulse', 'text-blue-400');
+                if (icon) {
+                    icon.classList.remove('animate-pulse', 'text-blue-400');
+                }
                 
                 let friendlyMessage = "Authentication failed.";
                 if (error.name === "NotAllowedError") {
