@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Passkey Authentication Sample</title>
+    <title>Passkey Upgrade Flow Sample</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -16,99 +16,147 @@
         .anim-pulse-ring {
             animation: pulse-ring 2s infinite;
         }
+        /* Smooth transitions for view switching */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
+<body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
 
     <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
         <!-- Header -->
-        <div class="p-8 text-center bg-slate-900 text-white">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-800 mb-4 shadow-inner">
-                <i data-lucide="shield-check" class="w-8 h-8 text-blue-400"></i>
+        <div class="p-8 text-center bg-slate-900 text-white transition-all duration-300" id="header-bg">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-800 mb-4 shadow-inner" id="header-icon-container">
+                <i data-lucide="shield-check" class="w-8 h-8 text-blue-400" id="header-icon"></i>
             </div>
-            <h2 class="text-2xl font-bold">Welcome Back</h2>
-            <p class="text-slate-400 mt-2 text-sm">Sign in to your account to continue</p>
+            <h2 class="text-2xl font-bold" id="header-title">Welcome Back</h2>
+            <p class="text-slate-400 mt-2 text-sm" id="header-subtitle">Sign in to your account to continue</p>
         </div>
 
-        <!-- Main Form Content -->
+        <!-- Main Content Area -->
         <div class="p-8">
-            <!-- Standard Login Form -->
-            <form id="standardLoginForm" class="space-y-4" onsubmit="handleStandardLogin(event)">
-                <div>
-                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i data-lucide="mail" class="w-5 h-5 text-slate-400"></i>
+            
+            <!-- STEP 1: Standard Login Form -->
+            <div id="step-login" class="fade-in block">
+                <form class="space-y-4" onsubmit="handleStandardLogin(event)">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="mail" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <input type="email" id="email" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="you@example.com" required>
                         </div>
-                        <input type="email" id="email" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="you@example.com" required>
                     </div>
-                </div>
 
-                <div>
-                    <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i data-lucide="lock" class="w-5 h-5 text-slate-400"></i>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="lock" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <input type="password" id="password" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="••••••••" required>
                         </div>
-                        <input type="password" id="password" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors mt-4">
+                        Continue
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="mt-6 relative">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-slate-500">Or</span>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between mt-2">
-                    <div class="flex items-center">
-                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded">
-                        <label for="remember-me" class="ml-2 block text-sm text-slate-700">Remember me</label>
-                    </div>
-                    <div class="text-sm">
-                        <a href="#" class="font-medium text-blue-600 hover:text-blue-500">Forgot password?</a>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors mt-4">
-                    Sign in
-                </button>
-            </form>
-
-            <!-- Divider -->
-            <div class="mt-6 relative">
-                <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div class="w-full border-t border-slate-200"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-slate-500">Or continue with</span>
+                <!-- Passkey Authentication Button (If user already has one) -->
+                <div class="mt-6 text-center">
+                    <button id="passkeyBtn" onclick="authenticateWithPasskey()" type="button" class="hidden w-full flex items-center justify-center py-2.5 px-4 border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors group">
+                        <div id="iconWrapperAuth" class="relative mr-2">
+                            <i data-lucide="fingerprint" class="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        Sign in with a Passkey
+                    </button>
                 </div>
             </div>
 
-            <!-- Passkey Section -->
-            <div class="mt-6 text-center">
+            <!-- STEP 2: MFA Code Form -->
+            <div id="step-mfa" class="fade-in hidden space-y-4">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 mb-4">
+                        <i data-lucide="mail-open" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-slate-900">Check your email</h3>
+                    <p class="text-sm text-slate-500 mt-1">We've sent a 4-digit code to <span id="mfa-email-display" class="font-medium text-slate-700">your email</span>.</p>
+                </div>
+
+                <form onsubmit="handleMfaSubmit(event)" class="space-y-6">
+                    <div>
+                        <input type="text" id="mfaCode" maxlength="4" pattern="\d{4}" class="block w-full text-center text-3xl tracking-[0.5em] font-mono py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="••••" required autocomplete="one-time-code">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                        Verify Code
+                    </button>
+                </form>
+                <p class="text-center text-sm text-slate-500 mt-4">
+                    Didn't receive it? <a href="#" class="text-blue-600 hover:underline">Resend code</a>
+                </p>
+            </div>
+
+            <!-- STEP 3: Passkey Creation Promo -->
+            <div id="step-passkey-promo" class="fade-in hidden text-center space-y-6">
+                <div class="relative mx-auto w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-2">
+                    <i data-lucide="fingerprint" class="w-10 h-10 text-blue-600 relative z-10"></i>
+                    <div class="absolute inset-0 rounded-full border-4 border-blue-100 anim-pulse-ring"></div>
+                </div>
                 
-                <!-- Support Status Indicator -->
-                <div id="passkeyStatus" class="flex items-center justify-center space-x-2 text-sm text-slate-500 mb-4 bg-slate-50 py-2 px-3 rounded-md">
-                    <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
-                    <span>Checking device capabilities...</span>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Sign in faster next time</h3>
+                    <p class="text-sm text-slate-500 mt-2 px-2">
+                        Create a passkey to skip passwords and email codes. Sign in securely using your fingerprint, face, or screen lock.
+                    </p>
                 </div>
 
-                <!-- Passkey Button (Hidden by default) -->
-                <button id="passkeyBtn" onclick="authenticateWithPasskey()" class="hidden w-full flex items-center justify-center py-2.5 px-4 border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors group">
-                    <div id="iconWrapper" class="relative mr-2">
-                        <i data-lucide="fingerprint" class="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform"></i>
-                    </div>
-                    Sign in with Passkey
-                </button>
-
-                <!-- Register Passkey Button -->
-                <button id="registerPasskeyBtn" type="button" onclick="registerPasskey()" class="hidden w-full flex items-center justify-center py-2.5 px-4 border border-dashed border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-600 bg-transparent hover:bg-slate-50 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors mt-3">
-                    <i data-lucide="plus-circle" class="w-4 h-4 mr-2 text-slate-500"></i>
-                    Create a new Passkey
-                </button>
-
-                <!-- Feedback Console (For Demo Purposes) -->
-                <div id="demoConsole" class="hidden mt-4 text-left bg-slate-900 text-green-400 text-xs p-3 rounded-lg font-mono overflow-x-auto whitespace-pre-wrap shadow-inner border border-slate-700 max-h-48 overflow-y-auto"></div>
+                <div class="space-y-3 pt-2">
+                    <button id="registerPasskeyBtn" onclick="registerPasskey()" class="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors">
+                        <div id="iconWrapperReg" class="relative mr-2">
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                        </div>
+                        Create a Passkey Now
+                    </button>
+                    
+                    <button onclick="skipPasskey()" class="w-full flex justify-center py-2.5 px-4 text-sm font-medium text-slate-500 bg-transparent hover:text-slate-800 transition-colors">
+                        Maybe later
+                    </button>
+                </div>
             </div>
-        </div>
-        
-        <div class="bg-slate-50 px-8 py-4 border-t border-slate-100 text-center">
-            <p class="text-sm text-slate-500">Don't have an account? <a href="#" class="font-medium text-blue-600 hover:text-blue-500">Sign up</a></p>
+
+            <!-- STEP 4: Success / Dashboard -->
+            <div id="step-success" class="fade-in hidden text-center py-6">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6">
+                    <i data-lucide="check" class="w-10 h-10 text-green-600"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-2">You're in!</h3>
+                <p class="text-slate-500 mb-8">You have successfully authenticated and reached the secure dashboard area.</p>
+                
+                <button onclick="location.reload()" class="text-sm font-medium text-blue-600 hover:text-blue-500 hover:underline">
+                    Restart Demo Flow
+                </button>
+            </div>
+
+            <!-- Feedback Console (For Demo Purposes) -->
+            <div id="demoConsole" class="hidden mt-6 text-left bg-slate-900 text-green-400 text-xs p-3 rounded-lg font-mono overflow-x-auto whitespace-pre-wrap shadow-inner border border-slate-700 max-h-32 overflow-y-auto"></div>
+            
         </div>
     </div>
 
@@ -117,9 +165,9 @@
         lucide.createIcons();
 
         // UI Elements
-        const passkeyStatus = document.getElementById('passkeyStatus');
-        const passkeyBtn = document.getElementById('passkeyBtn');
         const demoConsole = document.getElementById('demoConsole');
+        const passkeyBtn = document.getElementById('passkeyBtn');
+        let deviceSupportsPasskeys = false;
 
         /**
          * Log messages to the on-screen console for demonstration purposes
@@ -138,52 +186,88 @@
          */
         async function checkPasskeySupport() {
             try {
-                // 1. Check if the WebAuthn API is available in the browser
-                if (!window.PublicKeyCredential) {
-                    throw new Error("WebAuthn API is not supported by this browser.");
-                }
-
-                // 2. Check if a user-verifying platform authenticator (TouchID, Windows Hello, etc.) is available
-                const isAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                
-                if (isAvailable) {
-                    // Supported! Update UI to show the passkey button
-                    passkeyStatus.innerHTML = `
-                        <i data-lucide="check-circle-2" class="w-4 h-4 text-green-500"></i>
-                        <span class="text-green-700 font-medium">Passkeys supported on this device</span>
-                    `;
+                if (window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
+                    deviceSupportsPasskeys = true;
+                    // Show passkey auth button on the login screen
                     passkeyBtn.classList.remove('hidden');
-                    document.getElementById('registerPasskeyBtn').classList.remove('hidden');
-                    lucide.createIcons();
+                    logToConsole("System capabilities: Passkeys supported.");
                 } else {
-                    // API exists, but no hardware authenticator found
-                    passkeyStatus.innerHTML = `
-                        <i data-lucide="info" class="w-4 h-4 text-amber-500"></i>
-                        <span class="text-amber-700">No built-in authenticator detected</span>
-                    `;
-                    lucide.createIcons();
+                    logToConsole("System capabilities: Passkeys NOT supported by this device/browser.");
                 }
-
-                // Optional: Check Conditional UI (Auto-fill) support
-                if (window.PublicKeyCredential && PublicKeyCredential.isConditionalMediationAvailable) {
-                    const conditionalSupport = await PublicKeyCredential.isConditionalMediationAvailable();
-                    logToConsole(`Conditional UI (Autofill) supported: ${conditionalSupport}`);
-                }
-
             } catch (error) {
-                passkeyStatus.innerHTML = `
-                    <i data-lucide="x-circle" class="w-4 h-4 text-red-500"></i>
-                    <span class="text-red-700">Passkeys not supported</span>
-                `;
-                lucide.createIcons();
-                logToConsole(error.message, true);
+                logToConsole("Passkey check failed: " + error.message, true);
             }
         }
 
-        /**
-         * Utility function to generate a dummy challenge.
-         * IN PRODUCTION: This MUST come from your backend server!
-         */
+        // --- FLOW LOGIC ---
+
+        function handleStandardLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            
+            // Update UI for step 2
+            document.getElementById('mfa-email-display').textContent = email;
+            document.getElementById('step-login').classList.add('hidden');
+            document.getElementById('step-mfa').classList.remove('hidden');
+            
+            // Update Header
+            document.getElementById('header-title').textContent = "Two-Step Verification";
+            document.getElementById('header-subtitle').textContent = "Protecting your account";
+            
+            logToConsole(`Standard login accepted for: ${email}`);
+            logToConsole("Sending mock MFA code...");
+        }
+
+        function handleMfaSubmit(e) {
+            e.preventDefault();
+            const code = document.getElementById('mfaCode').value;
+            logToConsole(`MFA verified with code: ${code}`);
+
+            document.getElementById('step-mfa').classList.add('hidden');
+            
+            // Branch logic based on passkey support
+            if (deviceSupportsPasskeys) {
+                // Device supports passkeys: Prompt user to upgrade their login method
+                document.getElementById('step-passkey-promo').classList.remove('hidden');
+                
+                // Update Header
+                document.getElementById('header-bg').classList.remove('bg-slate-900');
+                document.getElementById('header-bg').classList.add('bg-blue-600');
+                document.getElementById('header-icon').setAttribute('data-lucide', 'sparkles');
+                document.getElementById('header-icon').classList.replace('text-blue-400', 'text-white');
+                document.getElementById('header-title').textContent = "Upgrade your security";
+                document.getElementById('header-subtitle').textContent = "Highly recommended";
+                lucide.createIcons();
+            } else {
+                // Device doesn't support passkeys: Skip straight to success
+                showSuccessDashboard();
+            }
+        }
+
+        function skipPasskey() {
+            logToConsole("User skipped passkey creation.");
+            document.getElementById('step-passkey-promo').classList.add('hidden');
+            showSuccessDashboard();
+        }
+
+        function showSuccessDashboard() {
+            document.getElementById('step-login').classList.add('hidden');
+            document.getElementById('step-mfa').classList.add('hidden');
+            document.getElementById('step-passkey-promo').classList.add('hidden');
+            
+            document.getElementById('step-success').classList.remove('hidden');
+            
+            // Update Header for Dashboard
+            document.getElementById('header-bg').className = "p-8 text-center bg-slate-900 text-white transition-all duration-300";
+            document.getElementById('header-title').textContent = "Dashboard";
+            document.getElementById('header-subtitle').textContent = "Secure internal area";
+            document.getElementById('header-icon').setAttribute('data-lucide', 'layout-dashboard');
+            document.getElementById('header-icon').classList.replace('text-white', 'text-blue-400');
+            lucide.createIcons();
+        }
+
+        // --- WEBAUTHN LOGIC ---
+
         function generateRandomBuffer(length) {
             const array = new Uint8Array(length);
             window.crypto.getRandomValues(array);
@@ -194,154 +278,108 @@
          * Initiate the Passkey Registration (Creation) request
          */
         async function registerPasskey() {
-            demoConsole.innerHTML = ''; // Clear console
             logToConsole("Requesting passkey registration...");
+            const iconWrapper = document.getElementById('iconWrapperReg');
+            if (iconWrapper) iconWrapper.classList.add('animate-pulse');
 
             try {
                 // 1. Fetch challenge and user data from server (Mocked here)
                 const challengeFromServer = generateRandomBuffer(32);
-                const userId = generateRandomBuffer(16); // Mock user ID
+                const userId = generateRandomBuffer(16);
                 const userEmail = document.getElementById('email').value || "user@example.com";
 
-                // 2. Construct the PublicKeyCredentialCreationOptions
+                // 2. Construct the Options
                 const publicKeyCredentialCreationOptions = {
                     challenge: challengeFromServer,
-                    rp: {
-                        name: "Passkey Demo App",
-                        id: window.location.hostname,
-                    },
+                    rp: { name: "Passkey Demo App", id: window.location.hostname },
                     user: {
                         id: userId,
                         name: userEmail,
                         displayName: userEmail.split('@')[0],
                     },
                     pubKeyCredParams: [
-                        { alg: -7, type: "public-key" }, // ES256 (Most common for Passkeys)
+                        { alg: -7, type: "public-key" }, // ES256
                         { alg: -257, type: "public-key" } // RS256
                     ],
                     authenticatorSelection: {
-                        // "platform" specifically requests built-in authenticators like Touch ID / Windows Hello
-                        authenticatorAttachment: "platform",
+                        authenticatorAttachment: "platform", // Force native biometrics (TouchID/Windows Hello)
                         requireResidentKey: true,
                         userVerification: "required"
                     },
                     timeout: 60000,
-                    attestation: "none" // "none" is usually fine unless you need enterprise-level device tracking
+                    attestation: "none"
                 };
 
                 logToConsole("Waiting for user interaction (browser prompt to CREATE passkey)...");
                 
-                // 3. Prompt the user to create the passkey
+                // 3. Prompt the user
                 const credential = await navigator.credentials.create({
                     publicKey: publicKeyCredentialCreationOptions
                 });
 
-                // 4. Send the new credential to your server to save it in the database
+                // 4. Success handling
                 logToConsole("Registration successful! (Mocked)");
-                logToConsole(`New Credential ID: ${bufferToHex(credential.rawId)}`);
                 
-                // Show success UI
                 const regBtn = document.getElementById('registerPasskeyBtn');
-                regBtn.classList.add('bg-green-50', 'border-green-500', 'text-green-700', 'border-solid');
-                regBtn.classList.remove('border-dashed', 'text-slate-600');
-                regBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4 mr-2"></i> Passkey Created!`;
+                regBtn.classList.remove('bg-slate-900', 'hover:bg-slate-800');
+                regBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                regBtn.innerHTML = `<i data-lucide="check" class="w-5 h-5 mr-2"></i> Passkey Created!`;
                 lucide.createIcons();
 
+                // Wait 1.5 seconds for user to see success, then redirect to dashboard
+                setTimeout(() => {
+                    document.getElementById('step-passkey-promo').classList.add('hidden');
+                    showSuccessDashboard();
+                }, 1500);
+
             } catch (error) {
-                let friendlyMessage = "Registration failed.";
-                if (error.name === "NotAllowedError") {
-                    friendlyMessage = "Request cancelled by user.";
-                }
-                logToConsole(`${friendlyMessage} (${error.name}: ${error.message})`, true);
+                if (iconWrapper) iconWrapper.classList.remove('animate-pulse');
+                let msg = "Registration failed.";
+                if (error.name === "NotAllowedError") msg = "Request cancelled by user.";
+                logToConsole(`${msg} (${error.name})`, true);
             }
         }
 
         /**
          * Initiate the Passkey Authentication (Assertion) request
+         * (Kept here in case they click "Sign in with a Passkey" on Step 1)
          */
         async function authenticateWithPasskey() {
-            demoConsole.innerHTML = ''; // Clear console
             logToConsole("Requesting passkey authentication...");
-            
-            // Add visual feedback to button wrapper instead of the dynamic SVG
-            const iconWrapper = document.getElementById('iconWrapper');
-            if (iconWrapper) {
-                iconWrapper.classList.add('animate-pulse');
-            }
+            const iconWrapper = document.getElementById('iconWrapperAuth');
+            if (iconWrapper) iconWrapper.classList.add('animate-pulse');
 
             try {
-                // 1. Fetch challenge from server (Mocked here)
-                // In a real app, you would do: const response = await fetch('/api/generate-challenge');
                 const challengeFromServer = generateRandomBuffer(32); 
 
-                // 2. Construct the PublicKeyCredentialRequestOptions
                 const publicKeyCredentialRequestOptions = {
-                    // The challenge ensures the request is fresh and prevents replay attacks
                     challenge: challengeFromServer,
-                    
-                    // The Relying Party ID. Must be a subset of the current domain.
-                    // For local testing, 'localhost' or the specific hostname works.
                     rpId: window.location.hostname,
-                    
-                    // Request user verification (e.g., biometrics/PIN)
                     userVerification: "preferred",
-                    
-                    // Timeout in milliseconds
                     timeout: 60000,
                 };
 
-                logToConsole(`Constructed Request Options for RP: ${publicKeyCredentialRequestOptions.rpId}`);
-
-                // 3. Prompt the user to authenticate using their passkey
-                // This triggers the browser/OS native biometric prompt
                 logToConsole("Waiting for user interaction (browser prompt)...");
                 const assertion = await navigator.credentials.get({
                     publicKey: publicKeyCredentialRequestOptions
                 });
 
-                // 4. Send the assertion to the server for verification
                 logToConsole("Authentication successful! (Mocked)");
-                logToConsole(`Credential ID: ${bufferToHex(assertion.rawId)}`);
-                logToConsole(`Client Data JSON length: ${assertion.response.clientDataJSON.byteLength} bytes`);
-                logToConsole(`Authenticator Data length: ${assertion.response.authenticatorData.byteLength} bytes`);
                 
-                // Show success UI
-                passkeyBtn.classList.remove('border-slate-300', 'text-slate-700');
                 passkeyBtn.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
                 passkeyBtn.innerHTML = `<i data-lucide="check" class="w-5 h-5 mr-2"></i> Authenticated!`;
                 lucide.createIcons();
 
+                setTimeout(() => {
+                    showSuccessDashboard();
+                }, 1000);
+
             } catch (error) {
-                // Handle errors (e.g., user cancelled, origin mismatch, no passkeys registered)
-                if (iconWrapper) {
-                    iconWrapper.classList.remove('animate-pulse');
-                }
-                
-                let friendlyMessage = "Authentication failed.";
-                if (error.name === "NotAllowedError") {
-                    friendlyMessage = "Request cancelled or timed out.";
-                } else if (error.name === "SecurityError") {
-                    friendlyMessage = "Security error: Ensure you are on HTTPS and the RP ID matches the domain.";
-                }
-
-                logToConsole(`${friendlyMessage} (${error.name}: ${error.message})`, true);
+                if (iconWrapper) iconWrapper.classList.remove('animate-pulse');
+                let msg = "Authentication failed.";
+                if (error.name === "NotAllowedError") msg = "Request cancelled.";
+                logToConsole(`${msg} (${error.name})`, true);
             }
-        }
-
-        // Handle standard fallback login
-        function handleStandardLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            demoConsole.innerHTML = '';
-            logToConsole(`Standard login attempted for: ${email}`);
-            logToConsole("In a real app, this would POST to /api/login");
-        }
-
-        // Helper function for demo console
-        function bufferToHex(buffer) {
-            return Array.from(new Uint8Array(buffer))
-                .map(b => b.toString(16).padStart(2, '0'))
-                .join('');
         }
 
         // Run check on load
