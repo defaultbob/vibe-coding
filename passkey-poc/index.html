@@ -278,7 +278,7 @@
                         const challengeFromServer = generateRandomBuffer(32);
                         const options = {
                             challenge: challengeFromServer,
-                            rpId: window.location.hostname,
+                            // OMITTING rpId lets the browser safely infer the correct effective domain
                             userVerification: "preferred",
                             timeout: 300000 // 5 minutes for them to click the input
                         };
@@ -552,7 +552,10 @@
                 // 2. Construct the Options
                 const publicKeyCredentialCreationOptions = {
                     challenge: challengeFromServer,
-                    rp: { name: "Passkey Demo App", id: window.location.hostname },
+                    rp: { 
+                        name: "Passkey Demo App"
+                        // OMITTING 'id' here fixes OperationErrors on IP addresses, iframes, and sandboxes
+                    },
                     user: {
                         id: userId,
                         name: userEmail,
@@ -617,7 +620,7 @@
 
                 const publicKeyCredentialRequestOptions = {
                     challenge: challengeFromServer,
-                    rpId: window.location.hostname,
+                    // OMITTING 'rpId' here
                     userVerification: "preferred",
                     timeout: 60000,
                 };
