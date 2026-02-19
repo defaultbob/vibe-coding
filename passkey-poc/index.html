@@ -28,13 +28,25 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
 
-    <!-- Flow Toggle -->
-    <div class="mb-6 flex items-center justify-center space-x-3 text-sm">
-        <span class="font-bold text-slate-800 transition-colors" id="lbl-standard">Standard Flow</span>
-        <button type="button" onclick="toggleFlowMode()" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" id="flowToggleBtn">
-            <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" id="flowToggleKnob"></span>
-        </button>
-        <span class="text-slate-500 transition-colors" id="lbl-identifier">Identifier First</span>
+    <!-- Demo Controls -->
+    <div class="mb-6 flex flex-col space-y-3">
+        <!-- Flow Toggle -->
+        <div class="flex items-center justify-end space-x-3 text-sm">
+            <span class="font-bold text-slate-800 transition-colors" id="lbl-standard">Standard Flow</span>
+            <button type="button" onclick="toggleFlowMode()" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" id="flowToggleBtn">
+                <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" id="flowToggleKnob"></span>
+            </button>
+            <span class="text-slate-500 transition-colors w-28" id="lbl-identifier">Identifier First</span>
+        </div>
+        
+        <!-- User Mode Toggle -->
+        <div class="flex items-center justify-end space-x-3 text-sm">
+            <span class="font-bold text-slate-800 transition-colors" id="lbl-newuser">New User</span>
+            <button type="button" onclick="toggleUserMode()" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" id="userToggleBtn">
+                <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" id="userToggleKnob"></span>
+            </button>
+            <span class="text-slate-500 transition-colors w-28" id="lbl-returning">Returning User</span>
+        </div>
     </div>
 
     <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
@@ -214,6 +226,10 @@
         const passkeyBtn = document.getElementById('passkeyBtn');
         let deviceSupportsPasskeys = false;
         let isIdentifierFirstFlow = false;
+        
+        // Mock User Data for toggle
+        let isReturningUser = false;
+        const mockReturningEmail = "demo.user@example.com";
 
         /**
          * Log messages to the on-screen console for demonstration purposes
@@ -336,12 +352,63 @@
             lucide.createIcons();
         }
 
+        function redactEmail(email) {
+            const parts = email.split('@');
+            if (parts.length !== 2) return email;
+            const name = parts[0];
+            const domain = parts[1];
+            if (name.length <= 1) return email;
+            // Keep first character, redact the rest
+            const redactedName = name.charAt(0) + '*'.repeat(name.length - 1);
+            return `${redactedName}@${domain}`;
+        }
+
+        function toggleUserMode() {
+            isReturningUser = !isReturningUser;
+            const knob = document.getElementById('userToggleKnob');
+            const btn = document.getElementById('userToggleBtn');
+            const lblNew = document.getElementById('lbl-newuser');
+            const lblReturning = document.getElementById('lbl-returning');
+            const emailInput = document.getElementById('email');
+            
+            if (isReturningUser) {
+                knob.classList.replace('translate-x-0', 'translate-x-5');
+                btn.classList.replace('bg-slate-300', 'bg-blue-600');
+                lblNew.classList.replace('font-bold', 'font-normal');
+                lblNew.classList.replace('text-slate-800', 'text-slate-500');
+                lblReturning.classList.replace('font-normal', 'font-bold');
+                lblReturning.classList.replace('text-slate-500', 'text-slate-800');
+                
+                emailInput.value = redactEmail(mockReturningEmail);
+                logToConsole("Switched to Returning User. Email pre-populated.");
+            } else {
+                knob.classList.replace('translate-x-5', 'translate-x-0');
+                btn.classList.replace('bg-blue-600', 'bg-slate-300');
+                lblReturning.classList.replace('font-bold', 'font-normal');
+                lblReturning.classList.replace('text-slate-800', 'text-slate-500');
+                lblNew.classList.replace('font-normal', 'font-bold');
+                lblNew.classList.replace('text-slate-500', 'text-slate-800');
+                
+                emailInput.value = "";
+                logToConsole("Switched to New User. Email cleared.");
+            }
+        }
+
+        function getRealEmail(inputEmail) {
+            // Helper to translate the visually redacted email back to the full demo email for downstream steps
+            if (isReturningUser && inputEmail === redactEmail(mockReturningEmail)) {
+                return mockReturningEmail;
+            }
+            return inputEmail;
+        }
+
         function handleStandardLogin(e) {
             e.preventDefault();
             // Blur the active input to safely dismiss password manager extensions before hiding the view
             if (document.activeElement) document.activeElement.blur();
             
-            const email = document.getElementById('email').value;
+            let email = document.getElementById('email').value;
+            email = getRealEmail(email); // Translate redacted visual back to real email
             
             if (isIdentifierFirstFlow) {
                 logToConsole(`Identifier entered: ${email}`);
@@ -390,7 +457,9 @@
             // Blur the active input to safely dismiss password manager extensions before hiding the view
             if (document.activeElement) document.activeElement.blur();
             
-            const email = document.getElementById('email').value;
+            let email = document.getElementById('email').value;
+            email = getRealEmail(email); // Translate redacted visual back to real email
+            
             logToConsole(`Password accepted for: ${email}`);
             document.getElementById('step-password-only').classList.add('hidden');
             showMfaStep(email);
