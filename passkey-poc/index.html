@@ -90,10 +90,16 @@
 
                 <!-- Passkey Button (Hidden by default) -->
                 <button id="passkeyBtn" onclick="authenticateWithPasskey()" class="hidden w-full flex items-center justify-center py-2.5 px-4 border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors group">
-                    <div class="relative mr-2">
+                    <div id="iconWrapper" class="relative mr-2">
                         <i data-lucide="fingerprint" class="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform"></i>
                     </div>
                     Sign in with Passkey
+                </button>
+
+                <!-- Register Passkey Button -->
+                <button id="registerPasskeyBtn" type="button" onclick="registerPasskey()" class="hidden w-full flex items-center justify-center py-2.5 px-4 border border-dashed border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-600 bg-transparent hover:bg-slate-50 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors mt-3">
+                    <i data-lucide="plus-circle" class="w-4 h-4 mr-2 text-slate-500"></i>
+                    Create a new Passkey
                 </button>
 
                 <!-- Feedback Console (For Demo Purposes) -->
@@ -147,6 +153,7 @@
                         <span class="text-green-700 font-medium">Passkeys supported on this device</span>
                     `;
                     passkeyBtn.classList.remove('hidden');
+                    document.getElementById('registerPasskeyBtn').classList.remove('hidden');
                     lucide.createIcons();
                 } else {
                     // API exists, but no hardware authenticator found
@@ -184,16 +191,82 @@
         }
 
         /**
+         * Initiate the Passkey Registration (Creation) request
+         */
+        async function registerPasskey() {
+            demoConsole.innerHTML = ''; // Clear console
+            logToConsole("Requesting passkey registration...");
+
+            try {
+                // 1. Fetch challenge and user data from server (Mocked here)
+                const challengeFromServer = generateRandomBuffer(32);
+                const userId = generateRandomBuffer(16); // Mock user ID
+                const userEmail = document.getElementById('email').value || "user@example.com";
+
+                // 2. Construct the PublicKeyCredentialCreationOptions
+                const publicKeyCredentialCreationOptions = {
+                    challenge: challengeFromServer,
+                    rp: {
+                        name: "Passkey Demo App",
+                        id: window.location.hostname,
+                    },
+                    user: {
+                        id: userId,
+                        name: userEmail,
+                        displayName: userEmail.split('@')[0],
+                    },
+                    pubKeyCredParams: [
+                        { alg: -7, type: "public-key" }, // ES256 (Most common for Passkeys)
+                        { alg: -257, type: "public-key" } // RS256
+                    ],
+                    authenticatorSelection: {
+                        // "platform" specifically requests built-in authenticators like Touch ID / Windows Hello
+                        authenticatorAttachment: "platform",
+                        requireResidentKey: true,
+                        userVerification: "required"
+                    },
+                    timeout: 60000,
+                    attestation: "none" // "none" is usually fine unless you need enterprise-level device tracking
+                };
+
+                logToConsole("Waiting for user interaction (browser prompt to CREATE passkey)...");
+                
+                // 3. Prompt the user to create the passkey
+                const credential = await navigator.credentials.create({
+                    publicKey: publicKeyCredentialCreationOptions
+                });
+
+                // 4. Send the new credential to your server to save it in the database
+                logToConsole("Registration successful! (Mocked)");
+                logToConsole(`New Credential ID: ${bufferToHex(credential.rawId)}`);
+                
+                // Show success UI
+                const regBtn = document.getElementById('registerPasskeyBtn');
+                regBtn.classList.add('bg-green-50', 'border-green-500', 'text-green-700', 'border-solid');
+                regBtn.classList.remove('border-dashed', 'text-slate-600');
+                regBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4 mr-2"></i> Passkey Created!`;
+                lucide.createIcons();
+
+            } catch (error) {
+                let friendlyMessage = "Registration failed.";
+                if (error.name === "NotAllowedError") {
+                    friendlyMessage = "Request cancelled by user.";
+                }
+                logToConsole(`${friendlyMessage} (${error.name}: ${error.message})`, true);
+            }
+        }
+
+        /**
          * Initiate the Passkey Authentication (Assertion) request
          */
         async function authenticateWithPasskey() {
             demoConsole.innerHTML = ''; // Clear console
             logToConsole("Requesting passkey authentication...");
             
-            // Add visual feedback to button
-            const icon = passkeyBtn.querySelector('svg') || passkeyBtn.querySelector('i');
-            if (icon) {
-                icon.classList.add('animate-pulse', 'text-blue-400');
+            // Add visual feedback to button wrapper instead of the dynamic SVG
+            const iconWrapper = document.getElementById('iconWrapper');
+            if (iconWrapper) {
+                iconWrapper.classList.add('animate-pulse');
             }
 
             try {
@@ -240,8 +313,8 @@
 
             } catch (error) {
                 // Handle errors (e.g., user cancelled, origin mismatch, no passkeys registered)
-                if (icon) {
-                    icon.classList.remove('animate-pulse', 'text-blue-400');
+                if (iconWrapper) {
+                    iconWrapper.classList.remove('animate-pulse');
                 }
                 
                 let friendlyMessage = "Authentication failed.";
