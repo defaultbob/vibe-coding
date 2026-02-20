@@ -237,6 +237,10 @@
         let isReturningUser = false;
         const mockReturningEmail = "demo.user@veeva.com";
 
+        // GLOBAL ABORT CONTROLLER
+        // Used to cancel the background Conditional UI listener when we want to trigger an explicit prompt
+        let conditionalUIAbortController = new AbortController();
+
         /**
          * Log messages to the on-screen console for demonstration purposes
          */
@@ -280,24 +284,33 @@
                 const isAvailable = await PublicKeyCredential.isConditionalMediationAvailable();
                 if (isAvailable) {
                     logToConsole("Conditional UI available. Waiting for autofill selection...");
+                    
+                    // Reset the abort controller for a fresh listener
+                    conditionalUIAbortController = new AbortController();
+                    
                     try {
                         const challengeFromServer = generateRandomBuffer(32);
                         const options = {
                             challenge: challengeFromServer,
+                            rpId: window.location.hostname,
                             userVerification: "preferred",
                             timeout: 300000 
                         };
 
                         const assertion = await navigator.credentials.get({
                             publicKey: options,
-                            mediation: "conditional"
+                            mediation: "conditional",
+                            signal: conditionalUIAbortController.signal // Attach the abort signal here
                         });
 
                         logToConsole("Conditional UI Authentication successful! (Autofilled)");
                         showSuccessDashboard();
 
                     } catch (error) {
-                        logToConsole("Conditional UI ended/aborted: " + error.name);
+                        // Ignore standard abort errors when we manually cancel it
+                        if (error.name !== "AbortError") {
+                            logToConsole("Conditional UI ended/aborted: " + error.name);
+                        }
                     }
                 }
             }
@@ -504,6 +517,12 @@
         }
 
         async function registerPasskey() {
+            // CRITICAL FIX: Cancel any pending Conditional UI background listeners 
+            // so they release the device's authenticator chip back to us.
+            if (conditionalUIAbortController) {
+                conditionalUIAbortController.abort();
+            }
+
             logToConsole("Requesting passkey registration...");
             const iconWrapper = document.getElementById('iconWrapperReg');
             if (iconWrapper) iconWrapper.classList.add('animate-pulse');
@@ -516,7 +535,8 @@
                 const publicKeyCredentialCreationOptions = {
                     challenge: challengeFromServer,
                     rp: { 
-                        name: "Veeva Passkey Demo"
+                        name: "Veeva Passkey Demo",
+                        id: window.location.hostname // Required by newer browser spec implementations
                     },
                     user: {
                         id: userId,
@@ -529,6 +549,7 @@
                     ],
                     authenticatorSelection: {
                         authenticatorAttachment: "platform", 
+                        residentKey: "required", // Updated to modern spec equivalent of requireResidentKey
                         requireResidentKey: true,
                         userVerification: "required"
                     },
@@ -558,12 +579,23 @@
             } catch (error) {
                 if (iconWrapper) iconWrapper.classList.remove('animate-pulse');
                 let msg = "Registration failed.";
-                if (error.name === "NotAllowedError") msg = "Request cancelled by user.";
+                
+                if (error.name === "NotAllowedError") {
+                    msg = "Request cancelled by user.";
+                } else if (error.name === "OperationError") {
+                    msg = "OperationError: Make sure you are testing on HTTPS or Localhost, and that TouchID is fully enabled.";
+                }
+
                 logToConsole(`${msg} (${error.name})`, true);
             }
         }
 
         async function authenticateWithPasskey(fallbackToPasswordOnCancel = false) {
+            // CRITICAL FIX: Cancel any pending Conditional UI background listeners
+            if (conditionalUIAbortController) {
+                conditionalUIAbortController.abort();
+            }
+
             logToConsole("Requesting passkey authentication...");
             const iconWrapper = document.getElementById('iconWrapperAuth');
             if (iconWrapper) iconWrapper.classList.add('animate-pulse');
@@ -573,6 +605,7 @@
 
                 const publicKeyCredentialRequestOptions = {
                     challenge: challengeFromServer,
+                    rpId: window.location.hostname,
                     userVerification: "preferred",
                     timeout: 60000,
                 };
