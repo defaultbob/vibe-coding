@@ -530,7 +530,10 @@
             try {
                 const challengeFromServer = generateRandomBuffer(32);
                 const userId = generateRandomBuffer(16);
-                const userEmail = document.getElementById('email').value || "user@veeva.com";
+                
+                // FIX: Pass the raw input through getRealEmail to remove the asterisks
+                const rawEmail = document.getElementById('email').value || "user@veeva.com";
+                const userEmail = getRealEmail(rawEmail);
 
                 const publicKeyCredentialCreationOptions = {
                     challenge: challengeFromServer,
