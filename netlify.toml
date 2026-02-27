@@ -1,9 +1,0 @@
-# Netlify configuration file
-
-[build]
-  # This project is static, so no build command is needed.
-  # Netlify will publish the root directory.
-  publish = "/"
-
-[functions]
-  directory = "netlify/functions"
