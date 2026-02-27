@@ -192,39 +192,47 @@
           return;
         }
 
-        const tokenResponse = await fetch(tokenUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({
-            grant_type: 'authorization_code',
-            code: authCode,
-            redirect_uri: redirectUri,
-            client_id: clientId,
-            code_verifier: codeVerifier
-          })
-        });
-
-        const tokenData = await tokenResponse.json();
-        if (tokenData.access_token) {
-          const userInfoResponse = await fetch(userInfoUrl, {
-            headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
+        try {
+          const tokenResponse = await fetch(tokenUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              grant_type: 'authorization_code',
+              code: authCode,
+              redirect_uri: redirectUri,
+              client_id: clientId,
+              code_verifier: codeVerifier
+            })
           });
-          const userInfo = await userInfoResponse.json();
 
-          let userInfoHtml = `<h3>Welcome, ${userInfo.first_name || 'User'}!</h3>`;
-          userInfoHtml += `<p>Here is the data returned from your VeevaID profile:</p>`;
-          
-          userInfoHtml += '<dl>';
-          for (const key in userInfo) {
-              const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-              const value = userInfo[key] || '<em>(not provided)</em>';
-              
-              userInfoHtml += `<dt>${formattedKey}:</dt><dd>${value}</dd>`;
+          if (!tokenResponse.ok) {
+            throw new Error(`Token request failed: ${tokenResponse.status} ${tokenResponse.statusText}`);
           }
-          userInfoHtml += '</dl>';
-          userInfoDiv.innerHTML = userInfoHtml;
-        } else {
-          userInfoDiv.innerHTML = '<p>Error: Could not retrieve access token.</p>';
+
+          const tokenData = await tokenResponse.json();
+          if (tokenData.access_token) {
+            const userInfoResponse = await fetch(userInfoUrl, {
+              headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
+            });
+            const userInfo = await userInfoResponse.json();
+
+            let userInfoHtml = `<h3>Welcome, ${userInfo.first_name || 'User'}!</h3>`;
+            userInfoHtml += `<p>Here is the data returned from your VeevaID profile:</p>`;
+            
+            userInfoHtml += '<dl>';
+            for (const key in userInfo) {
+                const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                const value = userInfo[key] || '<em>(not provided)</em>';
+                
+                userInfoHtml += `<dt>${formattedKey}:</dt><dd>${value}</dd>`;
+            }
+            userInfoHtml += '</dl>';
+            userInfoDiv.innerHTML = userInfoHtml;
+          } else {
+            userInfoDiv.innerHTML = `<p>Error: Could not retrieve access token. Response: ${JSON.stringify(tokenData)}</p>`;
+          }
+        } catch (error) {
+          userInfoDiv.innerHTML = `<p>An unexpected error occurred:</p><pre>${error.toString()}</pre>`;
         }
       }
     });
