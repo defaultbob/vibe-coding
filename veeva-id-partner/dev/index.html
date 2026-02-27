@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>VeevaID Partner Demo (DEV)</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #container {
+      text-align: center;
+    }
+    button {
+      background-color: #0073e6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    #userInfo {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    /* Toggle Switch Styles */
+    .toggle-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+      margin: 0 10px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked+.slider {
+      background-color: #0073e6;
+    }
+    input:checked+.slider:before {
+      transform: translateX(26px);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <h1>VeevaID Partner Demo (DEV)</h1>
+    <button id="login">Log in with VeevaID</button>
+    <button id="logout" style="display: none; background-color: #6c757d;">Log Out</button>
+    <div id="userInfo"></div>
+  </div>
+
+  <script>
+    const clientId = 'david-mills-demo-a7b3c9';
+    const redirectUri = window.location.origin + window.location.pathname;
+    const authUrl = 'https://id.veevadev.com/auth/authorize';
+    const tokenUrl = 'https://id.veevadev.com/auth/token';
+    const userInfoUrl = 'https://id.veevadev.com/auth/user_info';
+
+    // Helper function to generate a random string for code verifier
+    function generateRandomString(length) {
+      const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+      let text = '';
+      for (let i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+      return text;
+    }
+
+    // Helper function to generate code challenge
+    async function generateCodeChallenge(verifier) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(verifier);
+      const digest = await window.crypto.subtle.digest('SHA-256', data);
+      return window.btoa(String.fromCharCode(...new Uint8Array(digest)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const loginButton = document.getElementById('login');
+      const logoutButton = document.getElementById('logout');
+      const userInfoDiv = document.getElementById('userInfo');
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+
+      if (code) {
+        // UI changes for logged-in state
+        loginButton.style.display = 'none';
+        logoutButton.style.display = 'inline-block';
+
+        const codeVerifier = sessionStorage.getItem('codeVerifier');
+        const storedState = sessionStorage.getItem('oauthState');
+        
+        if (state !== storedState) {
+          userInfoDiv.innerHTML = '<p>Error: state mismatch. Please try again.</p>';
+          return;
+        }
+
+        // Exchange authorization code for access token
+        const tokenResponse = await fetch(tokenUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: redirectUri,
+            client_id: clientId,
+            code_verifier: codeVerifier
+          })
+        });
+
+        const tokenData = await tokenResponse.json();
+        if (tokenData.access_token) {
+          // Get user info
+          const userInfoResponse = await fetch(userInfoUrl, {
+            headers: {
+              'Authorization': `Bearer ${tokenData.access_token}`
+            }
+          });
+          const userInfo = await userInfoResponse.json();
+          userInfoDiv.innerHTML = `
+            <h3>Welcome, ${userInfo.first_name} ${userInfo.last_name}</h3>
+            <p>Email: ${userInfo.primary_email}</p>
+            <p>VeevaID (sub): ${userInfo.sub}</p>
+          `;
+        } else {
+          userInfoDiv.innerHTML = '<p>Error: Could not retrieve access token.</p>';
+        }
+
+      } else {
+        // Not logged in, set up login and logout buttons
+        loginButton.addEventListener('click', async () => {
+          const codeVerifier = generateRandomString(128);
+          sessionStorage.setItem('codeVerifier', codeVerifier);
+
+          const codeChallenge = await generateCodeChallenge(codeVerifier);
+          
+          const state = generateRandomString(32);
+          sessionStorage.setItem('oauthState', state);
+
+          const params = new URLSearchParams({
+            client_id: clientId,
+            response_type: 'code',
+            redirect_uri: redirectUri,
+            scope: 'vidauth',
+            state: state,
+            code_challenge: codeChallenge,
+            code_challenge_method: 'S256'
+          });
+
+          window.location.href = `${authUrl}?${params.toString()}`;
+        });
+
+        logoutButton.addEventListener('click', () => {
+          sessionStorage.removeItem('codeVerifier');
+          sessionStorage.removeItem('oauthState');
+          // Redirect to clean the URL of auth code and state
+          window.location.href = redirectUri;
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

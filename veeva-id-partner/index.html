@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeevaID Partner Demo - Select Environment</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f6f9;
+      color: #24292e;
+    }
+    .container {
+      text-align: center;
+      max-width: 800px;
+      margin: 20px;
+    }
+    h1 {
+      font-size: 2.5em;
+      font-weight: 600;
+      color: #00529b; /* Veeva Blue */
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.1em;
+      color: #586069;
+      margin-bottom: 40px;
+    }
+    .card-container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .card {
+      background-color: #ffffff;
+      border: 1px solid #d1d5da;
+      border-radius: 8px;
+      padding: 30px;
+      width: 280px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: all 0.2s ease-in-out;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      border-color: #0073e6;
+    }
+    .card .icon {
+      color: #0073e6;
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 1.5em;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .card .description {
+      font-size: 0.95em;
+      color: #586069;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>VeevaID Partner Demo</h1>
+    <p>Select an environment to launch the authentication flow.</p>
+    <div class="card-container">
+      <a href="./dev/" class="card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+        </div>
+        <h2>Development</h2>
+        <p class="description">Connect to the Veeva DEV environment. For testing and integration purposes.</p>
+      </a>
+      <a href="./prod/" class="card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <h2>Production</h2>
+        <p class="description">Connect to the live Veeva PROD environment. For end-user authentication.</p>
+      </a>
+    </div>
+  </div>
+</body>
+
+</html>
