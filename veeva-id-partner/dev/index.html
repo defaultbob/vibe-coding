@@ -158,7 +158,8 @@
           scope: 'vidauth',
           state: state,
           code_challenge: codeChallenge,
-          code_challenge_method: 'S256'
+          code_challenge_method: 'S256',
+          prompt: 'login' // Force user to re-authenticate every time
         });
         window.location.href = `${authUrl}?${params.toString()}`;
       });
