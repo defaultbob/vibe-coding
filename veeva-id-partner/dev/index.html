@@ -159,6 +159,37 @@
       const logoutButton = document.getElementById('logout');
       const userInfoDiv = document.getElementById('userInfo');
 
+      // --- Set up event listeners once ---
+      loginButton.addEventListener('click', async () => {
+        const codeVerifier = generateRandomString(128);
+        sessionStorage.setItem('codeVerifier', codeVerifier);
+
+        const codeChallenge = await generateCodeChallenge(codeVerifier);
+        
+        const state = generateRandomString(32);
+        sessionStorage.setItem('oauthState', state);
+
+        const params = new URLSearchParams({
+          client_id: clientId,
+          response_type: 'code',
+          redirect_uri: redirectUri,
+          scope: 'vidauth',
+          state: state,
+          code_challenge: codeChallenge,
+          code_challenge_method: 'S256'
+        });
+
+        window.location.href = `${authUrl}?${params.toString()}`;
+      });
+
+      logoutButton.addEventListener('click', () => {
+        sessionStorage.removeItem('codeVerifier');
+        sessionStorage.removeItem('oauthState');
+        // Redirect to the base page, clearing URL parameters and restarting the flow
+        window.location.href = redirectUri;
+      });
+
+      // --- Handle page load logic ---
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       const state = urlParams.get('state');
@@ -221,35 +252,9 @@
         }
 
       } else {
-        // Not logged in, set up login and logout buttons
-        loginButton.addEventListener('click', async () => {
-          const codeVerifier = generateRandomString(128);
-          sessionStorage.setItem('codeVerifier', codeVerifier);
-
-          const codeChallenge = await generateCodeChallenge(codeVerifier);
-          
-          const state = generateRandomString(32);
-          sessionStorage.setItem('oauthState', state);
-
-          const params = new URLSearchParams({
-            client_id: clientId,
-            response_type: 'code',
-            redirect_uri: redirectUri,
-            scope: 'vidauth',
-            state: state,
-            code_challenge: codeChallenge,
-            code_challenge_method: 'S256'
-          });
-
-          window.location.href = `${authUrl}?${params.toString()}`;
-        });
-
-        logoutButton.addEventListener('click', () => {
-          sessionStorage.removeItem('codeVerifier');
-          sessionStorage.removeItem('oauthState');
-          // Redirect to clean the URL of auth code and state
-          window.location.href = redirectUri;
-        });
+        // No code in URL, so this is the initial page load.
+        // The default state (login visible, logout hidden) is correct.
+        // The listeners are already attached, so nothing more to do.
       }
     });
   </script>
