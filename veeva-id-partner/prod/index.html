@@ -33,6 +33,37 @@
     #userInfo {
       margin-top: 20px;
       text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #userInfo h3 {
+      text-align: center;
+    }
+    #userInfo p {
+      text-align: center;
+    }
+    #userInfo dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 10px 20px;
+        margin-top: 20px;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e1e4e8;
+    }
+    #userInfo dt {
+        font-weight: 600;
+        color: #586069;
+        grid-column: 1;
+        text-align: right;
+    }
+    #userInfo dd {
+        grid-column: 2;
+        margin: 0;
+        font-family: monospace, monospace;
+        word-break: break-all;
     }
 
     /* Toggle Switch Styles */
@@ -169,11 +200,22 @@
             }
           });
           const userInfo = await userInfoResponse.json();
-          userInfoDiv.innerHTML = `
-            <h3>Welcome, ${userInfo.first_name} ${userInfo.last_name}</h3>
-            <p>Email: ${userInfo.primary_email}</p>
-            <p>VeevaID (sub): ${userInfo.sub}</p>
-          `;
+
+          let userInfoHtml = `<h3>Welcome, ${userInfo.first_name || 'User'}!</h3>`;
+          userInfoHtml += `<p>Here is the data returned from your VeevaID profile:</p>`;
+          
+          userInfoHtml += '<dl>';
+          // Loop through all properties of the userInfo object
+          for (const key in userInfo) {
+              // Format the key for display (e.g., 'first_name' -> 'First Name')
+              const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+              // Use a placeholder for empty/null values
+              const value = userInfo[key] || '<em>(not provided)</em>';
+              
+              userInfoHtml += `<dt>${formattedKey}:</dt><dd>${value}</dd>`;
+          }
+          userInfoHtml += '</dl>';
+          userInfoDiv.innerHTML = userInfoHtml;
         } else {
           userInfoDiv.innerHTML = '<p>Error: Could not retrieve access token.</p>';
         }
