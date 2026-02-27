@@ -1,5 +1,5 @@
 {
-  "client_id": "david-mills-demo-3",
+  "client_id": "david-mills-demo-4",
   "app_name": "VeevaID Partner Demo",
   "app_short_name": "VIDPD",
   "app_short_description": "VeevaID_Partner_Demo",
@@ -18,8 +18,10 @@
     "check_switch_callback_url": "https://your-domain.com/callbacks/check-switch"
   },
   "oauth_redirect_urls": [
-    "https://defaultbob.github.io/vibe-coding/veeva-id-partner",
-    "http://127.0.0.1:5500/veeva-id-partner"
+    "https://defaultbob.github.io/vibe-coding/veeva-id-partner/prod/",
+    "http://127.0.0.1:5500/veeva-id-partner/prod/",
+    "https://defaultbob.github.io/vibe-coding/veeva-id-partner/dev/",
+    "http://127.0.0.1:5500/veeva-id-partner/dev/"
   ],
   "expose_tenant_in_portal": false,
   "tenant_list_url": "https://your-domain.com/tenants",

@@ -12,6 +12,8 @@ See VeevaID Partner API Documentation:
 
 Create 2 pages, in 2 directories under the root of my sire, one for [DEV](id.veevadev.com) and one for [PROD](id.veeva.com).
 
+Provide a landing page at the root with a user friendly way to select dev or prod.
+
 Provide one file for both to pass to Veeva like the below. If unsure of a value use the example
 ```json
 {
