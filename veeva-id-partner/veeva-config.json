@@ -1,8 +1,8 @@
 {
-  "client_id": "david-mills-demo-a7b3c9",
+  "client_id": "david-mills-demo-3",
   "app_name": "VeevaID Partner Demo",
   "app_short_name": "VIDPD",
-  "app_short_description": "demo",
+  "app_short_description": "VeevaID_Partner_Demo",
   "app_dns": "https://defaultbob.github.io",
   "app_home_url": "https://defaultbob.github.io/vibe-coding/",
   "app_svg_logo_url": "https://your-domain.com/logo.svg",
@@ -18,10 +18,8 @@
     "check_switch_callback_url": "https://your-domain.com/callbacks/check-switch"
   },
   "oauth_redirect_urls": [
-    "https://defaultbob.github.io/vibe-coding/veeva-id-partner/prod/",
-    "http://127.0.0.1:5500/veeva-id-partner/prod/",
-    "https://defaultbob.github.io/vibe-coding/veeva-id-partner/dev/",
-    "http://127.0.0.1:5500/veeva-id-partner/dev/"
+    "https://defaultbob.github.io/vibe-coding/veeva-id-partner",
+    "http://127.0.0.1:5500/veeva-id-partner"
   ],
   "expose_tenant_in_portal": false,
   "tenant_list_url": "https://your-domain.com/tenants",
@@ -29,4 +27,3 @@
   "use_interstitial": true,
   "post_logout_redirect_url": "https://defaultbob.github.io/vibe-coding/veeva-id-partner/"
 }
-

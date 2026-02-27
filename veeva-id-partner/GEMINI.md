@@ -43,4 +43,4 @@ Provide one file for both to pass to Veeva like the below. If unsure of a value 
 ```
 
 * `app_dns` requires https://
-* `app_short_description` cannot have spaces
+* `app_short_description` should be empty
