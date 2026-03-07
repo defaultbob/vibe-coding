@@ -13,15 +13,62 @@
     <!-- Load Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Use Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        /* Veeva Design System variables derived from Figma */
+        :root {
+            --veeva-blue: #1453b8; /* rgb(20, 83, 184) */
+            --veeva-blue-hover: #0f4092;
+            --veeva-blue-light: #e3edfc; /* rgb(227, 237, 252) */
+            
+            --text-default: #1d1d1d; /* rgb(29, 29, 29) */
+            --text-placeholder: #cccccc; /* rgb(204, 204, 204) */
+            --text-disabled: #aaaaaa; /* rgb(170, 170, 170) */
+            
+            --error-color: #ce1300; /* rgb(206, 19, 0) */
+            --error-bg: #fdf2f2;
+            
+            --border-color: #e5e7eb;
+            --bg-gray: #f3f4f6;
+        }
+
         body {
             font-family: "Inter", sans-serif;
+            color: var(--text-default);
+            background-color: var(--bg-gray);
         }
+
         /* Custom focus style for the wrapper */
-        .input-wrapper:focus-within {
-            outline: 2px solid #3b82f6; /* blue-500 */
-            outline-offset: 2px;
+        .input-wrapper {
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
         }
+        
+        .input-wrapper:focus-within {
+            outline: none;
+            border-color: var(--veeva-blue);
+            box-shadow: 0 0 0 3px var(--veeva-blue-light);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--veeva-blue);
+            color: white;
+            transition: background-color 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--veeva-blue-hover);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--text-default);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: var(--bg-gray);
+        }
+
         /* Modal styles */
         .modal {
             transition: opacity 0.25s ease;
@@ -29,25 +76,43 @@
         .modal-content {
             transition: transform 0.25s ease;
         }
+        
+        /* Chip Styling overrides */
+        .chip-matched {
+            background-color: var(--veeva-blue-light);
+            color: var(--veeva-blue);
+            border: 1px solid transparent;
+        }
+        .chip-unmatched {
+            background-color: var(--error-bg);
+            color: var(--error-color);
+            border: 1px solid #fca5a5;
+        }
+        .chip-matched .remove-btn:hover { color: var(--veeva-blue-hover); }
+        .chip-unmatched .remove-btn:hover { color: #991b1b; }
+
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen py-12">
+<body class="flex items-start justify-center min-h-screen py-16 px-4">
 
-    <div class="w-full max-w-2xl mx-auto p-6">
-        <div class="flex justify-center items-center gap-4 mb-4">
-            <h1 class="text-2xl font-semibold text-center text-gray-800">Add Users</h1>
+    <div class="w-full max-w-4xl">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold mb-2">Smart Input Parser</h1>
+            <p class="text-sm text-gray-600">
+                Paste raw text, CSV data, or email strings. The system will extract valid users and prompt you to resolve ambiguities.
+            </p>
         </div>
-        <p class="text-center text-gray-600 mb-6">
-            Try pasting: 
-            <code class="bg-gray-200 p-1 rounded text-sm">David Mills, Amy Duong, larry.jovanovic@veeva.com</code>
-            or a column from Excel:
-            <code class="bg-gray-200 p-1 rounded text-sm">David Mills\nAmy Duong\nUnknown Person</code>
-        </p>
 
-        <div class="bg-white rounded-lg shadow-md p-4">
-            <label for="chip-input" class="text-sm font-medium text-gray-700">Add recipients:</label>
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded shadow-sm">
+            <h3 class="text-sm font-semibold text-blue-800 mb-1">Try copying and pasting this sample data:</h3>
+            <pre class="text-xs text-blue-900 overflow-x-auto whitespace-pre-wrap select-all p-2 bg-blue-100/50 rounded">David Mills, Amy Duong, larry.jovanovic@veeva.com
+Unknown Person, "Andy" &lt;andy.han@veeva.com&gt;</pre>
+        </div>
+
+        <div class="bg-white rounded-lg shadow border border-gray-200 p-6 mb-6">
+            <label for="chip-input" class="block text-sm font-semibold text-gray-800 mb-2">Add recipients:</label>
             
-            <div id="input-wrapper" class="relative input-wrapper border border-gray-300 rounded-lg p-2 mt-2 flex flex-wrap items-center gap-2 cursor-text" onclick="focusInput()">
+            <div id="input-wrapper" class="relative input-wrapper border border-gray-300 rounded-md p-2 flex flex-wrap items-center gap-2 cursor-text min-h-[46px]" onclick="focusInput()">
                 
                 <div id="chip-container" class="flex flex-wrap gap-2">
                     <!-- Chips will be added here by JavaScript -->
@@ -56,82 +121,71 @@
                 <input
                     type="text"
                     id="chip-input"
-                    class="flex-1 outline-none p-1 min-w-[150px]"
-                    placeholder="Type name or username..."
+                    class="flex-1 outline-none p-1 min-w-[200px] text-sm bg-transparent"
+                    placeholder="Type name, username, or paste a list..."
                 />
 
-                <button id="copy-button" class="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600" title="Copy usernames (Cmd+C)">
-                    <svg id="copy-icon-svg" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <button id="copy-button" class="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-gray-700 transition-colors bg-white rounded" title="Copy usernames (Cmd+C)">
+                    <svg id="copy-icon-svg" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
-                    <svg id="copy-success-svg" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg id="copy-success-svg" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                 </button>
             </div>
-        </div>
 
-        <!-- Save Button and Message Area -->
-        <div class="mt-6 flex flex-col items-center">
-            <button id="save-button" class="w-full max-w-xs px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors">
-                Save
-            </button>
-            <div id="message-area" class="mt-4 text-sm h-5 text-center">
-                <!-- Validation messages will appear here -->
+            <div class="mt-6 flex items-center justify-between">
+                <div id="message-area" class="text-sm font-medium h-5">
+                    <!-- Validation messages will appear here -->
+                </div>
+                <button id="save-button" class="btn-primary px-6 py-2 text-sm font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Save Recipients
+                </button>
             </div>
         </div>
 
         <!-- Display the collected values -->
-        <div class="mt-6 bg-gray-50 p-4 rounded-lg shadow-inner">
-            <h2 class="font-semibold text-gray-700">Collected Values (User Objects):</h2>
-            <pre id="output" class="mt-2 text-sm text-gray-600 overflow-x-auto">[]</pre>
+        <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg shadow-inner">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">Payload Preview</h2>
+            </div>
+            <pre id="output" class="text-xs text-gray-600 overflow-x-auto bg-white p-3 border rounded shadow-sm">[]</pre>
         </div>
 
-        <!-- Requirements Section -->
-        <div class="mt-6 bg-white rounded-lg shadow-md">
-            <details>
-                <summary class="font-semibold text-gray-700 p-6 cursor-pointer">
-                    Requirements Supported
-                </summary>
-                <ul class="list-disc list-inside space-y-2 text-sm text-gray-600 p-6 pt-0">
-                    <li>As a user, I can paste a list of recipients separated by commas, semicolons, or newlines (from Excel/Sheets).</li>
-                    <li>As a user, I can paste recipients from Gmail/Outlook (e.g., <code class="text-xs">"Name &lt;username&gt;"</code>) and have the app extract just the username.</li>
-                    <li>As a user, I can type a single name or username and press Enter to add it.</li>
-                    <li>As a user, the app searches for matches by both full name and username.</li>
-                    <li>As a user, if my input matches multiple people, I am shown a "wizard" to select the correct person for each ambiguous entry.</li>
-                    <li>As a user, if I paste duplicate recipients, the app only adds one.</li>
-                    <li>As a user, if my input doesn't match anyone, it appears as a red "unmatched" item.</li>
-                    <li>As a user, I am prevented from saving if I have any "unmatched" items, and I see a clear error message.</li>
-                    <li>As a user, I can click a copy icon to copy all validated usernames to my clipboard, separated by newlines.</li>
-                    <li>As a user, I can press Cmd+C or Ctrl+C to copy all validated usernames, formatted for pasting into Excel rows.</li>
-                </ul>
-            </details>
-        </div>
     </div>
 
     <!-- Disambiguation Modal -->
-    <div id="modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 invisible opacity-0">
-        <div id="modal-content" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-lg p-6 transform scale-95">
-            <h2 class="text-lg font-semibold text-gray-800" id="modal-title">Select a Match</h2>
-            <p class="text-sm text-gray-500 mt-1" id="modal-step-counter"></p>
+    <div id="modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-60 invisible opacity-0">
+        <div id="modal-content" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-lg p-6 transform scale-95 border border-gray-200">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900" id="modal-title">Select a Match</h2>
+                    <p class="text-sm text-gray-500 mt-1" id="modal-step-counter"></p>
+                </div>
+            </div>
             
-            <div class="mt-4 space-y-2 max-h-60 overflow-y-auto" id="modal-options-container">
+            <div class="mt-4 space-y-2 max-h-[400px] overflow-y-auto pr-2" id="modal-options-container">
                 <!-- Radio button options will be injected here -->
             </div>
 
-            <div class="mt-6 flex justify-end gap-3">
-                <button id="modal-cancel" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
-                <button id="modal-confirm" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Confirm</button>
+            <div class="mt-6 pt-4 border-t flex justify-end gap-3">
+                <button id="modal-cancel" class="btn-secondary px-4 py-2 text-sm font-medium rounded-md">Cancel & Keep as Raw Text</button>
+                <button id="modal-confirm" class="btn-primary px-4 py-2 text-sm font-medium rounded-md">Confirm Selection</button>
             </div>
         </div>
     </div>
 
     <!-- Template for modal radio options -->
     <template id="modal-option-template">
-        <label class="block p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-            <input type="radio" name="modal-option" class="mr-3">
-            <span class="option-name font-medium text-gray-800"></span>
-            <span class="option-detail text-sm text-gray-500 ml-1"></span>
+        <label class="block p-4 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50/50 cursor-pointer transition-colors relative">
+            <div class="flex items-center">
+                <input type="radio" name="modal-option" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mr-3">
+                <div class="flex flex-col">
+                    <span class="option-name font-semibold text-gray-900 text-sm"></span>
+                    <span class="option-detail text-xs text-gray-500 mt-0.5"></span>
+                </div>
+            </div>
         </label>
     </template>
 
@@ -256,10 +310,10 @@
             let chipTextContent = '';
             
             if (status === 'matched') {
-                chip.className = 'chip bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full flex items-center gap-2 animate-fadeIn';
+                chip.className = 'chip chip-matched text-sm font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 animate-fadeIn';
                 chipTextContent = data.name; // Display name for matched users
             } else { // 'unmatched'
-                chip.className = 'chip bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full flex items-center gap-2 animate-fadeIn';
+                chip.className = 'chip chip-unmatched text-sm font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 animate-fadeIn';
                 chipTextContent = data.input; // Display the raw input
             }
             
@@ -270,13 +324,9 @@
             chip.appendChild(chipText);
 
             const removeButton = document.createElement('button');
-            removeButton.className = 'remove-chip font-bold text-lg leading-none';
+            removeButton.className = 'remove-btn font-bold text-lg leading-none transition-colors px-1 focus:outline-none focus:ring-2 focus:ring-offset-1 rounded-full';
             removeButton.innerHTML = '&times;';
             removeButton.setAttribute('aria-label', `Remove ${chipTextContent}`);
-            
-            removeButton.className += (status === 'matched') 
-                ? ' text-blue-500 hover:text-blue-700' 
-                : ' text-red-500 hover:text-red-700';
             
             removeButton.addEventListener('click', (e) => {
                 e.stopPropagation();
