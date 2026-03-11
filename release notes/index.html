@@ -89,7 +89,7 @@
                     <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Vault Platform</h3>
                     <a href="#security-matrix" class="block py-2 text-sm text-veeva-orange font-bold">Security Matrix Viewer</a>
                     <a href="#" class="block py-2 text-sm text-gray-600 hover:veeva-orange">Object Enhancements</a>
-                    <a href="#" class="block py-2 text-sm text-gray-600 hover:veeva-orange">Developer Portal APIs</a>
+                    <a href="#developer-apis" class="block py-2 text-sm text-gray-600 hover:veeva-orange">Developer Portal APIs</a>
                 </div>
 
                 <div class="pt-4 border-t">
@@ -251,6 +251,55 @@
                         <li><strong>Navigation:</strong> Access via <strong>Business Admin > Security > Security Matrix</strong>.</li>
                         <li><strong>Profile Shortcut:</strong> A new <strong>View Security Matrix</strong> button is available on individual Security Profile detail pages to view the matrix pre-filtered for that specific profile.</li>
                     </ul>
+                </div>
+            </section>
+
+            <hr class="my-10">
+
+            <!-- Developer APIs Section -->
+            <section id="developer-apis">
+                <div class="flex items-center space-x-3 mb-4 text-veeva-blue">
+                    <i class="fa-solid fa-code text-2xl"></i>
+                    <h2 class="text-2xl font-bold">Vault Platform: Developer Portal APIs</h2>
+                </div>
+
+                <h3 class="text-xl font-bold mb-4">REST API v29.3</h3>
+                
+                <div class="prose prose-slate max-w-none text-gray-700 leading-relaxed space-y-4">
+                    <p>
+                        The 29R3 release introduces API v29.3. This version brings new capabilities for developers, including enhanced bulk operations and streamlined query endpoints to improve integration efficiency.
+                    </p>
+                    
+                    <h4 class="font-bold text-lg mt-8 mb-2">Bulk Deletion of Object Records</h4>
+                    <p>
+                        Developers can now delete up to 1,000 object records in a single API call using the new bulk delete endpoint. This feature significantly reduces the time required to sync large datasets between Vault and external systems.
+                    </p>
+                    <div class="bg-gray-800 text-gray-100 p-4 rounded-md text-sm overflow-x-auto my-4 font-mono">
+<code>DELETE /api/v29.3/vobjects/{object_name}
+Content-Type: text/csv
+
+id
+00000000001
+00000000002</code>
+                    </div>
+
+                    <h4 class="font-bold text-lg mt-8 mb-2">VQL Query Timeout Adjustments</h4>
+                    <p>
+                        To ensure platform stability and prevent performance degradation from highly complex queries, the maximum execution time for synchronous VQL queries has been adjusted from 5 minutes to 3 minutes. Queries exceeding this limit will now return a <code>QUERY_TIMEOUT</code> error. Developers are encouraged to use asynchronous query endpoints for large-scale data extraction.
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-circle-info text-blue-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700 font-medium italic">
+                                    For full documentation on API changes, parameter details, and deprecation schedules, please visit the <a href="https://developer.veevavault.com" class="text-veeva-blue hover:underline font-bold" target="_blank">Vault Developer Portal</a>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 

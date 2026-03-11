@@ -1,0 +1,1 @@
+node rebuild_index.js
