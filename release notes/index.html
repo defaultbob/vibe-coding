@@ -263,30 +263,36 @@
                     <h2 class="text-2xl font-bold">Vault Platform: Developer Portal APIs</h2>
                 </div>
 
-                <h3 class="text-xl font-bold mb-4">REST API v29.3</h3>
+                <h3 class="text-xl font-bold mb-4">Security Matrix APIs</h3>
                 
                 <div class="prose prose-slate max-w-none text-gray-700 leading-relaxed space-y-4">
                     <p>
-                        The 29R3 release introduces API v29.3. This version brings new capabilities for developers, including enhanced bulk operations and streamlined query endpoints to improve integration efficiency.
+                        The 29R3 release introduces new API endpoints to support the Security Matrix Viewer, enabling developers to programmatically calculate, cache, and retrieve security permissions.
                     </p>
                     
-                    <h4 class="font-bold text-lg mt-8 mb-2">Bulk Deletion of Object Records</h4>
+                    <h4 class="font-bold text-lg mt-8 mb-2">Calculate Matrix</h4>
                     <p>
-                        Developers can now delete up to 1,000 object records in a single API call using the new bulk delete endpoint. This feature significantly reduces the time required to sync large datasets between Vault and external systems.
+                        The new calculate endpoint returns a matrix of all Admin, Application, Object, Tabs, Pages, Mobile, and API permissions for Security Profiles and their contained permission sets.
                     </p>
                     <div class="bg-gray-800 text-gray-100 p-4 rounded-md text-sm overflow-x-auto my-4 font-mono">
-<code>DELETE /api/v29.3/vobjects/{object_name}
-Content-Type: text/csv
-
-id
-00000000001
-00000000002</code>
+<code>GET /api/{version}/security/matrix/calculate</code>
                     </div>
 
-                    <h4 class="font-bold text-lg mt-8 mb-2">VQL Query Timeout Adjustments</h4>
+                    <h4 class="font-bold text-lg mt-8 mb-2">Cache Matrix</h4>
                     <p>
-                        To ensure platform stability and prevent performance degradation from highly complex queries, the maximum execution time for synchronous VQL queries has been adjusted from 5 minutes to 3 minutes. Queries exceeding this limit will now return a <code>QUERY_TIMEOUT</code> error. Developers are encouraged to use asynchronous query endpoints for large-scale data extraction.
+                        Developers can cache the calculated results directly into the new <code>security_matrix_cache__sys</code> object using the cache endpoint.
                     </p>
+                    <div class="bg-gray-800 text-gray-100 p-4 rounded-md text-sm overflow-x-auto my-4 font-mono">
+<code>POST /api/v24.3/internal/security/matrix/cache</code>
+                    </div>
+
+                     <h4 class="font-bold text-lg mt-8 mb-2">Record Access Check</h4>
+                    <p>
+                        A new access check endpoint accepts a user ID and record ID (for non-document objects) and returns a boolean value representing whether the user can access the record.
+                    </p>
+                    <div class="bg-gray-800 text-gray-100 p-4 rounded-md text-sm overflow-x-auto my-4 font-mono">
+<code>GET /api/v24.3/objects/records/access_check</code>
+                    </div>
 
                     <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
                         <div class="flex">
