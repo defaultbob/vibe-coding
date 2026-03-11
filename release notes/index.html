@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's New in 29R3 - Veeva Vault Release Notes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+        }
+
+        .veeva-orange { color: #ff7900; }
+        .bg-veeva-orange { background-color: #ff7900; }
+        .veeva-blue { color: #0072ce; }
+        .border-veeva { border-left: 4px solid #ff7900; }
+
+        /* Custom Scrollbar for the Matrix Preview */
+        .matrix-container::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .matrix-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            background-color: white;
+            z-index: 10;
+            border-right: 2px solid #e5e7eb;
+        }
+
+        /* Permission Badge Styles */
+        .perm-read { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; } /* Green */
+        .perm-edit { background-color: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; } /* Blue */
+        .perm-delete { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; } /* Purple */
+        .perm-none { background-color: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+
+        .diff-highlight {
+            outline: 2px solid #ef4444;
+            background-color: #fef2f2 !important;
+        }
+
+        nav a.active {
+            color: #ff7900;
+            font-weight: 700;
+            border-right: 3px solid #ff7900;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <img src="https://www.veeva.com/wp-content/themes/veeva2015/assets/img/veeva-logo.png" alt="Veeva Logo" class="h-8">
+                <div class="h-6 w-px bg-gray-300 hidden md:block"></div>
+                <span class="text-xl font-medium hidden md:block">Release Notes</span>
+            </div>
+            <div class="flex items-center space-x-6 text-sm font-medium text-gray-600">
+                <a href="#" class="hover:veeva-orange transition">Release Home</a>
+                <a href="#" class="hover:veeva-orange transition">Veeva Trust</a>
+                <button class="bg-veeva-orange text-white px-4 py-2 rounded text-xs uppercase tracking-wider font-bold">Feedback</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto flex flex-1 w-full px-4 py-8 gap-8">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 flex-shrink-0 hidden lg:block">
+            <nav class="sticky top-24 space-y-1">
+                <div class="mb-4">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">29R3 Release</h3>
+                    <a href="#" class="block py-2 text-sm active">What's New in 29R3</a>
+                    <a href="#" class="block py-2 text-sm text-gray-600 hover:veeva-orange">Release Impact Assessment</a>
+                </div>
+                
+                <div class="pt-4 border-t">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Vault Platform</h3>
+                    <a href="#security-matrix" class="block py-2 text-sm text-veeva-orange font-bold">Security Matrix Viewer</a>
+                    <a href="#" class="block py-2 text-sm text-gray-600 hover:veeva-orange">Object Enhancements</a>
+                    <a href="#" class="block py-2 text-sm text-gray-600 hover:veeva-orange">Developer Portal APIs</a>
+                </div>
+
+                <div class="pt-4 border-t">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Applications</h3>
+                    <a href="#" class="block py-2 text-sm text-gray-600 hover:veeva-orange">Quality</a>
+                    <a href="#" class="block py-2 text-sm text-gray-600 hover:veeva-orange">Clinical</a>
+                    <a href="#" class="block py-2 text-sm text-gray-600 hover:veeva-orange">Commercial</a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 max-w-4xl bg-white shadow-sm border p-8 rounded-lg">
+            <nav class="text-xs text-gray-500 mb-4">
+                <a href="#" class="hover:underline">Release Notes Home</a> &gt; 29R3
+            </nav>
+
+            <h1 class="text-4xl font-light mb-6">What’s New in 29R3</h1>
+            
+            <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                The 29R3 release of Vault includes several enhancements to the Vault Platform and various application suites. These features will be available in Pre-Release Vaults on <strong>November 10, 2024</strong>, and General Availability on <strong>December 5, 2024</strong>.
+            </p>
+
+            <hr class="my-10">
+
+            <!-- Security Matrix Feature Section -->
+            <section id="security-matrix">
+                <div class="flex items-center space-x-3 mb-4 text-veeva-blue">
+                    <i class="fa-solid fa-shield-halved text-2xl"></i>
+                    <h2 class="text-2xl font-bold">Vault Platform: Security</h2>
+                </div>
+
+                <h3 class="text-xl font-bold mb-4" id="security-matrix-title">Security Matrix Viewer</h3>
+                
+                <div class="prose prose-slate max-w-none text-gray-700 leading-relaxed space-y-4">
+                    <p>
+                        As Vault security models grow in complexity, the number of Permission Sets associated with individual Security Profiles increases. Currently, assessing the overlap or gap in permissions requires a manual audit of individual components. 
+                    </p>
+                    <p>
+                        In 29R3, Vault introduces the <strong>Security Matrix Viewer</strong>. This tool allows Security Admins and System Auditors to visualize, analyze, and compare "Effective Permissions" across multiple profiles directly within the Vault UI, eliminating the need to manually aggregate data from the Configuration Report.
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-circle-info text-blue-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700 font-medium italic">
+                                    "Effective Permission" is the resulting access level when multiple Permission Sets are aggregated for a profile.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-lg mt-8 mb-2">Key Features</h4>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Centralized Visualization Grid:</strong> A dual-axis grid showing Security Profiles on the X-axis and Permission Sets/Permissions on the Y-axis.</li>
+                        <li><strong>Difference Mode:</strong> Compare two profiles side-by-side. Vault instantly highlights only the cells where effective permissions diverge.</li>
+                        <li><strong>Hover Tooltips:</strong> Mouse over any permission cell to see the specific source Permission Sets contributing to that value.</li>
+                        <li><strong>FLS Expansion:</strong> Expand Object rows to drill down into Field Level Security (FLS) without leaving the matrix view.</li>
+                        <li><strong>Audit-Ready Exports:</strong> Export the view to .xlsx while maintaining color-coding and including a Metadata Summary sheet for compliance.</li>
+                    </ul>
+
+                    <!-- Live Demo UI Simulation -->
+                    <div class="mt-10 border rounded-lg overflow-hidden shadow-lg bg-gray-50">
+                        <div class="bg-gray-100 p-4 border-b flex justify-between items-center">
+                            <span class="text-xs font-bold text-gray-500 uppercase">Interactive Preview: Security Matrix Viewer</span>
+                            <div class="flex items-center space-x-4">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="diffModeToggle" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-veeva-orange"></div>
+                                    <span class="ml-2 text-xs font-medium text-gray-700">Difference Mode</span>
+                                </label>
+                                <button class="bg-white border px-3 py-1 rounded text-xs flex items-center hover:bg-gray-50 transition">
+                                    <i class="fa-solid fa-file-excel mr-2 text-green-600"></i> Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="matrix-container overflow-x-auto p-4 max-h-[400px]">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th class="p-3 sticky-col border bg-gray-50 font-bold w-48">Permissions / Profiles</th>
+                                        <th class="p-3 border text-center font-bold bg-white w-32">Medical Admin</th>
+                                        <th class="p-3 border text-center font-bold bg-white w-32">Clinical Lead</th>
+                                        <th class="p-3 border text-center font-bold bg-white w-32">Auditor (L1)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-gray-100 font-bold">
+                                        <td class="p-2 sticky-col border-r border-b">APPLICATION</td>
+                                        <td class="p-2 border-b"></td>
+                                        <td class="p-2 border-b"></td>
+                                        <td class="p-2 border-b"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 sticky-col border-r border-b pl-6">Business Admin</td>
+                                        <td class="p-2 border-b text-center"><span class="px-2 py-0.5 rounded-full perm-delete font-bold">R/C/E/D</span></td>
+                                        <td class="p-2 border-b text-center"><span class="px-2 py-0.5 rounded-full perm-edit font-bold">R/E</span></td>
+                                        <td id="diff-cell-1" class="p-2 border-b text-center"><span class="px-2 py-0.5 rounded-full perm-read font-bold">Read</span></td>
+                                    </tr>
+                                    <tr class="bg-gray-100 font-bold">
+                                        <td class="p-2 sticky-col border-r border-b">OBJECTS</td>
+                                        <td class="p-2 border-b"></td>
+                                        <td class="p-2 border-b"></td>
+                                        <td class="p-2 border-b"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 sticky-col border-r border-b pl-6 flex items-center group cursor-pointer">
+                                            <i class="fa-solid fa-chevron-right mr-2 text-gray-400 group-hover:text-veeva-orange transition"></i>
+                                            Quality Event
+                                        </td>
+                                        <td class="p-2 border-b text-center"><span class="px-2 py-0.5 rounded-full perm-delete font-bold">R/C/E/D</span></td>
+                                        <td class="p-2 border-b text-center"><span class="px-2 py-0.5 rounded-full perm-delete font-bold">R/C/E/D</span></td>
+                                        <td id="diff-cell-2" class="p-2 border-b text-center"><span class="px-2 py-0.5 rounded-full perm-read font-bold">Read</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 sticky-col border-r border-b pl-6 flex items-center group cursor-pointer">
+                                            <i class="fa-solid fa-chevron-down mr-2 text-veeva-orange"></i>
+                                            Document Change...
+                                        </td>
+                                        <td class="p-2 border-b text-center"><span class="px-2 py-0.5 rounded-full perm-edit font-bold">R/E</span></td>
+                                        <td class="p-2 border-b text-center"><span class="px-2 py-0.5 rounded-full perm-edit font-bold">R/E</span></td>
+                                        <td class="p-2 border-b text-center"><span class="px-2 py-0.5 rounded-full perm-edit font-bold">R/E</span></td>
+                                    </tr>
+                                    <tr class="bg-gray-50 italic text-gray-500">
+                                        <td class="p-1 sticky-col border-r border-b pl-12 text-[10px]">⤷ Change Type</td>
+                                        <td class="p-1 border-b text-center">Edit</td>
+                                        <td class="p-1 border-b text-center">Edit</td>
+                                        <td class="p-1 border-b text-center">Read</td>
+                                    </tr>
+                                    <tr class="bg-gray-50 italic text-gray-500">
+                                        <td class="p-1 sticky-col border-r border-b pl-12 text-[10px]">⤷ Implementation...</td>
+                                        <td class="p-1 border-b text-center">Read</td>
+                                        <td class="p-1 border-b text-center">Edit</td>
+                                        <td class="p-1 border-b text-center">Read</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-4 bg-white border-t flex items-center justify-between text-[10px] text-gray-500">
+                            <div class="flex space-x-4">
+                                <span class="flex items-center"><span class="w-3 h-3 perm-read inline-block mr-1 rounded-sm"></span> Read</span>
+                                <span class="flex items-center"><span class="w-3 h-3 perm-edit inline-block mr-1 rounded-sm"></span> Edit</span>
+                                <span class="flex items-center"><span class="w-3 h-3 perm-delete inline-block mr-1 rounded-sm"></span> Create/Edit/Delete</span>
+                            </div>
+                            <div>Displaying 3 of 12 Profiles</div>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-lg mt-10 mb-2">Configuration & Access</h4>
+                    <p>
+                        The Security Matrix Viewer is automatically enabled for all customers.
+                    </p>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Permissions:</strong> Users require the <em>Admin: Security: Security Profiles: Read</em> permission to access the matrix.</li>
+                        <li><strong>Navigation:</strong> Access via <strong>Business Admin > Security > Security Matrix</strong>.</li>
+                        <li><strong>Profile Shortcut:</strong> A new <strong>View Security Matrix</strong> button is available on individual Security Profile detail pages to view the matrix pre-filtered for that specific profile.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Footer area in main -->
+            <div class="mt-16 pt-8 border-t text-sm text-gray-500 flex flex-wrap gap-4">
+                <a href="#" class="hover:veeva-orange transition">Release Impact Assessment (PDF)</a>
+                <a href="#" class="hover:veeva-orange transition">Watch the Release Webinar</a>
+                <a href="#" class="hover:veeva-orange transition">Help Documentation</a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Page Footer -->
+    <footer class="bg-gray-800 text-white mt-12 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400 text-sm mb-4">© 2024 Veeva Systems Inc. All rights reserved. Veeva and the Veeva logo are trademarks of Veeva Systems Inc.</p>
+            <div class="flex justify-center space-x-6 text-xs uppercase tracking-widest font-bold">
+                <a href="#" class="hover:text-veeva-orange">Privacy Policy</a>
+                <a href="#" class="hover:text-veeva-orange">Terms of Use</a>
+                <a href="#" class="hover:text-veeva-orange">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const toggle = document.getElementById('diffModeToggle');
+        const diffCells = [
+            document.getElementById('diff-cell-1'),
+            document.getElementById('diff-cell-2')
+        ];
+
+        toggle.addEventListener('change', function() {
+            if(this.checked) {
+                diffCells.forEach(cell => {
+                    cell.classList.add('diff-highlight');
+                });
+            } else {
+                diffCells.forEach(cell => {
+                    cell.classList.remove('diff-highlight');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
