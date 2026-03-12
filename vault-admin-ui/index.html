@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vault Administration</title>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Vis.js for Network Graphs -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    
+    <!-- PrismJS for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+
+    <style>
+        :root {
+            --veeva-blue: #1453b8;
+            --veeva-blue-hover: #0f4092;
+            --veeva-orange: #f8972b;
+            --vault-header-bg: #061937;
+            --text-main: #1d1d1d;
+            --border-color: #e5e7eb;
+            --sidebar-bg: #f8f8f8;
+            --grid-header-bg: #c0c0c0;
+            --page-bg: #f3f4f6; /* slightly gray for landing background */
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-main);
+            background-color: var(--page-bg);
+            margin: 0;
+            overflow: hidden; 
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--veeva-blue); color: white; border-radius: 4px;
+            font-size: 14px; font-weight: 500; padding: 6px 16px; cursor: pointer;
+        }
+        .btn-primary:hover { background-color: var(--veeva-blue-hover); }
+        .btn-secondary {
+            background-color: white; border: 1px solid #dadada; color: #1d1d1d;
+            border-radius: 4px; font-size: 14px; font-weight: 500; padding: 6px 16px; cursor: pointer;
+        }
+        .btn-secondary:hover { background-color: #f9fafb; }
+        .btn-toggle {
+            background-color: white; border: 1px solid var(--veeva-blue); color: var(--veeva-blue);
+            font-size: 13px; font-weight: 500; padding: 4px 12px; cursor: pointer;
+        }
+        .btn-toggle.active {
+            background-color: var(--veeva-blue); color: white;
+        }
+
+        /* Sidebar Tree */
+        .sidebar-scroll::-webkit-scrollbar { width: 6px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 3px; }
+        
+        .tree-item { cursor: pointer; }
+        .tree-item:hover { background-color: white; }
+        .tree-item.active {
+            background-color: white; border-left: 4px solid var(--veeva-orange);
+            font-weight: bold; color: var(--text-main);
+        }
+
+        /* Network Graph Containers */
+        #global-network { width: 100%; height: 400px; border: 1px solid var(--border-color); border-radius: 8px; background: white;}
+        #local-network { width: 100%; height: 350px; border: 1px solid var(--border-color); border-radius: 8px; background: #fafafa;}
+        
+        /* Code View */
+        pre[class*="language-"] {
+            margin: 0; border-radius: 8px; border: 1px solid var(--border-color);
+            max-height: 600px;
+        }
+
+        /* Tiles */
+        .type-tile {
+            background: white; border: 1px solid var(--border-color); border-radius: 8px;
+            padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+            display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between;
+        }
+        .type-tile:hover {
+            transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border-color: var(--veeva-blue);
+        }
+        .type-tile .count {
+            background: #e0e7ff; color: var(--veeva-blue); font-size: 12px; font-weight: bold;
+            padding: 2px 8px; border-radius: 999px;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col text-sm">
+
+    <!-- Global Header -->
+    <header class="h-[88px] flex flex-col flex-shrink-0 z-10 relative shadow-sm">
+        <div class="h-[48px] bg-[var(--vault-header-bg)] flex items-center justify-between px-4">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="goHome()">
+                <span class="text-[var(--veeva-orange)] font-bold text-xl tracking-tight">Veeva</span>
+                <span class="text-white font-light text-xl tracking-tight">Vault</span>
+                <span class="text-gray-300 ml-4 border-l border-gray-600 pl-4 text-sm font-medium">Administration</span>
+            </div>
+            <div class="w-[400px] flex hidden" id="search-container">
+                <input type="text" id="global-search" class="flex-1 px-3 py-1.5 rounded outline-none text-sm" placeholder="Search components...">
+            </div>
+            <div class="flex items-center gap-4 text-white">
+                <button id="btn-home" onclick="goHome()" class="text-sm font-semibold hover:text-[var(--veeva-orange)] hidden">⌂ Home</button>
+                <div class="w-8 h-8 rounded-full bg-[var(--veeva-blue)] flex items-center justify-center font-bold text-sm">DM</div>
+            </div>
+        </div>
+        <div class="h-[40px] bg-[#f8f8f8] border-b border-[#dadada] flex items-end px-4">
+            <div class="px-6 h-full flex items-center bg-white border-b-4 border-[#f8972b] font-bold text-[#1d1d1d]">
+                Configuration
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- ================= HOME PANE ================= -->
+        <div id="home-pane" class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-6xl mx-auto">
+                <h1 class="text-2xl font-light text-gray-800 mb-6">Component Architecture</h1>
+                
+                <div class="mb-8">
+                    <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Global Type Relationships</h2>
+                    <div id="global-network"></div>
+                </div>
+
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Component Types</h2>
+                    <select id="sort-select" class="border border-gray-300 rounded px-2 py-1 text-sm outline-none text-gray-700" onchange="changeSort(this.value)">
+                        <option value="volume">Sort by Volume</option>
+                        <option value="alpha">Sort Alphabetically</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="tile-grid">
+                    <!-- Tiles injected via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= APP PANE ================= -->
+        <div id="app-pane" class="flex-1 flex hidden">
+            <!-- Left Sidebar -->
+            <div class="w-[280px] bg-[var(--sidebar-bg)] border-r border-[var(--border-color)] flex flex-col flex-shrink-0">
+                <div class="px-4 py-3 border-b border-[var(--border-color)] flex justify-between items-center bg-gray-50">
+                    <span class="text-[12px] font-bold text-gray-600 uppercase tracking-wider" id="sidebar-title">Components</span>
+                </div>
+                <div class="flex-1 overflow-y-auto sidebar-scroll pb-10" id="sidebar-tree">
+                    <!-- List injected via JS -->
+                </div>
+            </div>
+
+            <!-- Details Area -->
+            <div class="flex-1 bg-white flex flex-col overflow-hidden">
+                
+                <!-- Empty State -->
+                <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center p-8">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-400 text-2xl">⚡</div>
+                    <h2 class="text-lg font-semibold text-gray-800 mb-1">Select a Component</h2>
+                    <p class="text-[14px] text-gray-500">Choose a component from the sidebar to view its details, relationships, and MDL code.</p>
+                </div>
+
+                <!-- Detail Content -->
+                <div id="content-pane" class="flex-1 flex flex-col hidden overflow-hidden">
+                    <div class="h-[56px] border-b-2 border-[#f8972b] flex items-center justify-between px-6 flex-shrink-0 bg-white">
+                        <div class="flex items-center gap-3">
+                            <h1 class="text-[20px] text-[#1d1d1d] font-normal" id="detail-title">Name</h1>
+                            <span id="detail-badge" class="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-gray-100 border text-gray-600">Type</span>
+                        </div>
+                        <div class="flex border rounded overflow-hidden">
+                            <button class="btn-toggle active border-r-0 rounded-l rounded-r-none" onclick="toggleView('props')" id="btn-view-props">Properties</button>
+                            <button class="btn-toggle rounded-l-none rounded-r" onclick="toggleView('code')" id="btn-view-code">MDL Code</button>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto p-6 bg-white">
+                        
+                        <!-- PROPERTIES VIEW -->
+                        <div id="view-props" class="max-w-5xl mx-auto space-y-6">
+                            <!-- Stats & Basic Info -->
+                            <div class="flex gap-6">
+                                <div class="flex-1 bg-white border rounded shadow-sm">
+                                    <div class="bg-gray-50 px-4 py-2 border-b font-semibold text-[#1d1d1d]">Details</div>
+                                    <div class="p-4 grid grid-cols-2 gap-4 text-[13px]">
+                                        <div><div class="text-gray-500">Label</div><div class="font-medium" id="prop-label"></div></div>
+                                        <div><div class="text-gray-500">Name</div><div class="font-medium" id="prop-name"></div></div>
+                                        <div><div class="text-gray-500">Status</div><div class="font-medium flex items-center gap-1" id="prop-status"></div></div>
+                                    </div>
+                                </div>
+                                <div class="w-1/3 bg-white border rounded shadow-sm">
+                                    <div class="bg-gray-50 px-4 py-2 border-b font-semibold text-[#1d1d1d]">References</div>
+                                    <div class="p-4 flex flex-col justify-center gap-2">
+                                        <div class="text-[13px]"><span class="text-gray-500 w-20 inline-block">Inbound:</span> <span class="font-bold text-lg" id="stat-in">0</span></div>
+                                        <div class="text-[13px]"><span class="text-gray-500 w-20 inline-block">Outbound:</span> <span class="font-bold text-lg" id="stat-out">0</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Graph -->
+                            <div class="bg-white border rounded shadow-sm">
+                                <div class="bg-gray-50 px-4 py-2 border-b font-semibold text-[#1d1d1d]">Relationship Graph</div>
+                                <div class="p-2"><div id="local-network"></div></div>
+                            </div>
+
+                            <!-- Link Lists -->
+                            <div class="grid grid-cols-2 gap-6">
+                                <!-- Inbound -->
+                                <div class="bg-white border rounded shadow-sm">
+                                    <div class="bg-gray-50 px-4 py-2 border-b font-semibold text-[#1d1d1d]">Inbound References (Referenced By)</div>
+                                    <div class="p-0 max-h-60 overflow-y-auto">
+                                        <ul id="list-inbound" class="divide-y text-[13px]"></ul>
+                                    </div>
+                                </div>
+                                <!-- Outbound -->
+                                <div class="bg-white border rounded shadow-sm">
+                                    <div class="bg-gray-50 px-4 py-2 border-b font-semibold text-[#1d1d1d]">Outbound References (References To)</div>
+                                    <div class="p-0 max-h-60 overflow-y-auto">
+                                        <ul id="list-outbound" class="divide-y text-[13px]"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CODE VIEW -->
+                        <div id="view-code" class="hidden max-w-5xl mx-auto h-full flex flex-col">
+                            <pre><code class="language-sql" id="code-block"></code></pre>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Payloads -->
+    <script src="components_data.js"></script>
+    <script src="components_raw.js"></script>
+    
+    <!-- Application Logic -->
+    <script>
+        // Global State
+        let registry = { categories: {}, components: [], categoryStats: {} };
+        let rawData = {};
+        let compMap = new Map();
+        let currentType = null;
+        let currentComponent = null;
+        let sortMode = 'volume'; // 'volume' or 'alpha'
+
+        // Graphs
+        let globalGraph = null;
+        let localGraph = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.vaultComponentsData) registry = window.vaultComponentsData;
+            if (window.vaultRawData) rawData = window.vaultRawData;
+            
+            registry.components.forEach(c => compMap.set(c.id, c));
+            
+            initHome();
+            initSearch();
+            
+            window.addEventListener('popstate', (e) => {
+                if (e.state) {
+                    if (e.state.view === 'home') {
+                        renderHome();
+                    } else if (e.state.view === 'type') {
+                        renderType(e.state.type, false);
+                    } else if (e.state.view === 'component') {
+                        renderComponent(e.state.id, false);
+                    }
+                } else {
+                    renderHome();
+                }
+            });
+            
+            // Initial state
+            history.replaceState({ view: 'home' }, '', '');
+        });
+
+        window.changeSort = function(val) {
+            sortMode = val;
+            renderTiles();
+        }
+
+        function initHome() {
+            renderTiles();
+            buildGlobalGraph();
+        }
+
+        function renderTiles() {
+            // Calculate Top Types based on categoryStats.totalInbound
+            const types = Object.keys(registry.categories).map(cat => ({
+                name: cat,
+                count: registry.categories[cat].length,
+                inbound: registry.categoryStats[cat]?.totalInbound || 0
+            }));
+            
+            if (sortMode === 'volume') {
+                types.sort((a,b) => b.inbound - a.inbound || b.count - a.count);
+            } else {
+                types.sort((a,b) => a.name.localeCompare(b.name));
+            }
+
+            // Render Tiles
+            const grid = document.getElementById('tile-grid');
+            grid.innerHTML = '';
+            types.forEach(t => {
+                if (t.count === 0) return;
+                const div = document.createElement('div');
+                div.className = 'type-tile';
+                div.onclick = () => selectType(t.name);
+                div.innerHTML = `
+                    <div class="text-lg font-semibold text-gray-800 mb-2 truncate w-full" title="${t.name}">${t.name}</div>
+                    <div class="flex justify-between w-full mt-2">
+                        <div class="text-xs text-gray-500">${t.count} items</div>
+                        ${t.inbound > 0 ? `<div class="count" title="Total Inbound References">🔗 ${t.inbound}</div>` : ''}
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function buildGlobalGraph() {
+            const nodes = new vis.DataSet();
+            const edges = new vis.DataSet();
+            const typeNodesMap = new Set();
+            const edgeSet = new Set();
+
+            registry.components.forEach(c => {
+                const sourceCat = c.category;
+                c.outbound.forEach(outTargetId => {
+                    const targetComp = compMap.get(outTargetId);
+                    if (targetComp) {
+                        const targetCat = targetComp.category;
+                        if (sourceCat !== targetCat) {
+                            typeNodesMap.add(sourceCat);
+                            typeNodesMap.add(targetCat);
+                            const edgeKey = `${sourceCat}->${targetCat}`;
+                            if (!edgeSet.has(edgeKey)) {
+                                edgeSet.add(edgeKey);
+                                edges.add({ from: sourceCat, to: targetCat, arrows: 'to', color: { color: '#ccc'} });
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Calculate Top Types to scale nodes
+            const types = Object.keys(registry.categories).map(cat => ({
+                name: cat,
+                inbound: registry.categoryStats[cat]?.totalInbound || 0
+            }));
+
+            typeNodesMap.forEach(type => {
+                const inbound = types.find(t=>t.name===type)?.inbound || 0;
+                // Scale node size slightly by inbound references
+                const size = Math.min(40, 15 + (inbound / 50)); 
+                nodes.add({ 
+                    id: type, 
+                    label: type, 
+                    shape: 'dot', 
+                    size: size,
+                    color: { background: '#f8972b', border: '#d97706' },
+                    font: { size: 14, color: '#1d1d1d' }
+                });
+            });
+
+            const container = document.getElementById('global-network');
+            const data = { nodes, edges };
+            const options = {
+                physics: { stabilization: true, barnesHut: { springLength: 150 } },
+                interaction: { hover: true, dragNodes: true, zoomView: true, dragView: true }
+            };
+            if (globalGraph) globalGraph.destroy();
+            globalGraph = new vis.Network(container, data, options);
+            
+            // Single click a node to open that type
+            globalGraph.on('selectNode', function(params) {
+                if (params.nodes.length > 0) {
+                    selectType(params.nodes[0]);
+                }
+            });
+        }
+
+        window.goHome = function() {
+            history.pushState({ view: 'home' }, '', '');
+            renderHome();
+        }
+
+        function renderHome() {
+            document.getElementById('home-pane').classList.remove('hidden');
+            document.getElementById('app-pane').classList.add('hidden');
+            document.getElementById('btn-home').classList.add('hidden');
+            document.getElementById('search-container').classList.add('hidden');
+            currentType = null;
+            currentComponent = null;
+        }
+
+        window.selectType = function(type) {
+            history.pushState({ view: 'type', type: type }, '', '');
+            renderType(type, true);
+        }
+
+        function renderType(type, focusSidebar = true) {
+            currentType = type;
+            document.getElementById('home-pane').classList.add('hidden');
+            document.getElementById('app-pane').classList.remove('hidden');
+            document.getElementById('btn-home').classList.remove('hidden');
+            document.getElementById('search-container').classList.remove('hidden');
+            
+            document.getElementById('sidebar-title').textContent = type;
+            document.getElementById('empty-state').classList.remove('hidden');
+            document.getElementById('content-pane').classList.add('hidden');
+            
+            renderSidebar();
+            
+            // Clear selections
+            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('active'));
+        }
+
+        function renderSidebar(filter = '') {
+            const sb = document.getElementById('sidebar-tree');
+            sb.innerHTML = '';
+            
+            const term = filter.toLowerCase();
+            let items = registry.components.filter(c => c.category === currentType);
+            
+            if (term) {
+                items = items.filter(c => c.name.toLowerCase().includes(term) || c.label.toLowerCase().includes(term));
+            }
+
+            // Limit to 200 to prevent locking the UI
+            items.slice(0, 200).forEach(comp => {
+                const div = document.createElement('div');
+                div.className = 'tree-item h-[32px] px-[20px] text-[13px] flex items-center truncate border-b border-gray-100 text-gray-700';
+                div.textContent = comp.label !== comp.name ? `${comp.label} (${comp.name})` : comp.name;
+                div.dataset.id = comp.id;
+                div.onclick = () => selectComponent(comp.id);
+                sb.appendChild(div);
+            });
+            
+            if (currentComponent) {
+                const treeEl = document.querySelector(`.tree-item[data-id="${currentComponent.id}"]`);
+                if (treeEl) treeEl.classList.add('active');
+            }
+        }
+
+        function initSearch() {
+            let timer;
+            document.getElementById('global-search').addEventListener('input', (e) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => { renderSidebar(e.target.value); }, 200);
+            });
+        }
+
+        window.selectComponent = function(id) {
+            history.pushState({ view: 'component', id: id }, '', '');
+            renderComponent(id, true);
+        }
+
+        function renderComponent(id, pushState) {
+            const comp = compMap.get(id);
+            if (!comp) return;
+            
+            if (currentType !== comp.category) {
+                currentType = comp.category;
+                renderType(comp.category, false);
+            }
+            
+            currentComponent = comp;
+
+            // UI Updates
+            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('active'));
+            const treeEl = document.querySelector(`.tree-item[data-id="${id}"]`);
+            if (treeEl) treeEl.classList.add('active');
+
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('content-pane').classList.remove('hidden');
+            toggleView('props'); // Default to props
+
+            // Header & Props
+            document.getElementById('detail-title').textContent = comp.label;
+            document.getElementById('detail-badge').textContent = comp.category;
+            document.getElementById('prop-label').textContent = comp.label;
+            document.getElementById('prop-name').textContent = comp.name;
+            document.getElementById('prop-status').innerHTML = `<div class="w-2 h-2 rounded-full ${comp.active?'bg-green-500':'bg-red-500'}"></div> ${comp.active?'Active':'Inactive'}`;
+            
+            document.getElementById('stat-in').textContent = comp.inbound.length;
+            document.getElementById('stat-out').textContent = comp.outbound.length;
+
+            // Links
+            populateLinks('list-inbound', comp.inbound);
+            populateLinks('list-outbound', comp.outbound);
+
+            // Raw Code
+            const codeContent = rawData[comp.id] || '-- No raw data available --';
+            document.getElementById('code-block').textContent = codeContent;
+            Prism.highlightElement(document.getElementById('code-block'));
+
+            // Build Local Graph
+            buildLocalGraph(comp);
+        }
+
+        function populateLinks(containerId, idsArray) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            if (idsArray.length === 0) {
+                container.innerHTML = '<li class="px-4 py-2 text-gray-400 italic">None</li>';
+                return;
+            }
+            idsArray.forEach(id => {
+                const target = compMap.get(id);
+                const li = document.createElement('li');
+                li.className = 'px-4 py-2 hover:bg-gray-50 flex justify-between items-center';
+                
+                if (target) {
+                    li.innerHTML = `
+                        <span class="text-[var(--veeva-blue)] cursor-pointer hover:underline font-medium" onclick="jumpTo('${id}')">${target.name}</span>
+                        <span class="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">${target.category}</span>
+                    `;
+                } else {
+                    li.innerHTML = `<span class="text-gray-500">${id} (External)</span>`;
+                }
+                container.appendChild(li);
+            });
+        }
+
+        window.jumpTo = function(id) {
+            selectComponent(id);
+        }
+
+        window.toggleView = function(view) {
+            const btnProps = document.getElementById('btn-view-props');
+            const btnCode = document.getElementById('btn-view-code');
+            const divProps = document.getElementById('view-props');
+            const divCode = document.getElementById('view-code');
+
+            if (view === 'props') {
+                btnProps.classList.add('active'); btnCode.classList.remove('active');
+                divProps.classList.remove('hidden'); divCode.classList.add('hidden');
+            } else {
+                btnCode.classList.add('active'); btnProps.classList.remove('active');
+                divCode.classList.remove('hidden'); divProps.classList.add('hidden');
+            }
+        }
+
+        function buildLocalGraph(comp) {
+            const nodes = new vis.DataSet();
+            const edges = new vis.DataSet();
+            
+            // Center Node
+            nodes.add({ id: comp.id, label: comp.name, shape: 'box', color: { background: '#1453b8', border: '#0f4092' }, font: { color: 'white' }});
+            
+            const added = new Set([comp.id]);
+
+            // Outbound
+            comp.outbound.forEach(outId => {
+                if (!added.has(outId)) {
+                    added.add(outId);
+                    const t = compMap.get(outId);
+                    const label = t ? t.name : outId;
+                    nodes.add({ id: outId, label: label, shape: 'ellipse', color: { background: '#f8f8f8', border: '#dadada'} });
+                }
+                edges.add({ from: comp.id, to: outId, arrows: 'to', color: { color: '#94a3b8'} });
+            });
+
+            // Inbound
+            comp.inbound.forEach(inbId => {
+                if (!added.has(inbId)) {
+                    added.add(inbId);
+                    const t = compMap.get(inbId);
+                    const label = t ? t.name : inbId;
+                    nodes.add({ id: inbId, label: label, shape: 'ellipse', color: { background: '#fff7ed', border: '#f8972b'} });
+                }
+                edges.add({ from: inbId, to: comp.id, arrows: 'to', color: { color: '#f8972b'} });
+            });
+
+            const container = document.getElementById('local-network');
+            const data = { nodes, edges };
+            const options = {
+                layout: { hierarchical: { direction: 'UD', sortMethod: 'directed' } },
+                physics: false,
+                interaction: { hover: true, dragNodes: true }
+            };
+            if (localGraph) localGraph.destroy();
+            localGraph = new vis.Network(container, data, options);
+            
+            localGraph.on('selectNode', function(params) {
+                if (params.nodes.length > 0 && params.nodes[0] !== comp.id) {
+                    jumpTo(params.nodes[0]);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

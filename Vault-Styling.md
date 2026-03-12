@@ -88,3 +88,7 @@ Uses a 2-column layout below the Global Header.
 - **Cells**: `border-b border-r border-[var(--border-color)] bg-white hover:bg-gray-50 py-2 px-2`.
 
 *(When generating a new Record List, dynamically replace `[Entity]` with the target object name across tabs, sidebar links, titles, and empty states.)*
+
+# Implementation
+
+* use latest version of the https://corgix.vaultdev.com/ library. `npm install @veeva/corgix@https://vaultdevops-node-artifacts.s3-us-west-2.amazonaws.com/releases/release/26.1.1/veeva-corgix-0.89.2.tgz`
