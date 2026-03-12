@@ -1,4 +1,6 @@
-.DS_Store
-.env.tmp/
-.env
 .tmp/
+conductor/
+node_modules/
+.DS_Store
+*.txt
+.env
