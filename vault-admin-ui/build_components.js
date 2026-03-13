@@ -93,6 +93,25 @@ function parseMdlFile(filePath) {
             data.fields = fields;
         }
 
+        // --- NEW: Parse .d file if it exists ---
+        const dFilePath = filePath.replace(/\.mdl$/, '.d');
+        if (fs.existsSync(dFilePath)) {
+            const dContent = fs.readFileSync(dFilePath, 'utf8');
+            const dLines = dContent.split('\n');
+            dLines.forEach(line => {
+                // Example format: depends_on: Object.checklist_design__sys [blocking=true]
+                const match = line.match(/^depends_on:\s*([a-zA-Z0-9_]+)\.([a-zA-Z0-9_.]+)/);
+                if (match) {
+                    const depCategory = match[1];
+                    const depName = match[2];
+                    const depId = `${depCategory}:${depName}`;
+                    if (!data.outbound.includes(depId)) {
+                        data.outbound.push(depId);
+                    }
+                }
+            });
+        }
+
         return { data, raw: content };
     } catch (e) {
         console.error(`Error parsing ${filePath}:`, e.message);
@@ -109,6 +128,7 @@ function scanDirectory() {
     
     const rawData = {};
     const compMap = new Map();
+    const idMap = new Map();
 
     if (!fs.existsSync(COMPONENTS_DIR)) {
         console.error(`Directory not found: ${COMPONENTS_DIR}`);
@@ -145,8 +165,10 @@ function scanDirectory() {
                 registry.components.push(compData);
                 registry.categories[category].push(compData.id);
                 rawData[compData.id] = raw;
+                
                 if (!compMap.has(compData.name)) compMap.set(compData.name, []);
                 compMap.get(compData.name).push(compData);
+                idMap.set(compData.id, compData);
             }
         });
     });
@@ -155,18 +177,30 @@ function scanDirectory() {
     registry.components.forEach(comp => {
         const resolvedOutbound = [];
         comp.outbound.forEach(outboundName => {
-            const targets = compMap.get(outboundName);
-            if (targets && targets.length > 0) {
-                let targetComp = targets.find(t => ['Object', 'Doctype', 'Objectlifecycle', 'Doclifecycle', 'Lifecyclestatetype', 'Picklist'].includes(t.category));
-                if (!targetComp) targetComp = targets[0];
-                
-                resolvedOutbound.push(targetComp.id);
+            let targetComp = null;
+            
+            if (outboundName.includes(':')) {
+                // Extracted from .d file as ID
+                targetComp = idMap.get(outboundName);
+                if (!targetComp) {
+                    resolvedOutbound.push(outboundName); // unresolved
+                }
+            } else {
+                // Extracted from .mdl file as name
+                const targets = compMap.get(outboundName);
+                if (targets && targets.length > 0) {
+                    targetComp = targets.find(t => ['Object', 'Doctype', 'Objectlifecycle', 'Doclifecycle', 'Lifecyclestatetype', 'Picklist'].includes(t.category));
+                    if (!targetComp) targetComp = targets[0];
+                }
+            }
 
+            if (targetComp) {
+                resolvedOutbound.push(targetComp.id);
                 if (!targetComp.inbound.includes(comp.id)) {
                     targetComp.inbound.push(comp.id);
                     registry.categoryStats[targetComp.category].totalInbound++;
                 }
-            } else {
+            } else if (!outboundName.includes(':')) {
                 resolvedOutbound.push(outboundName); // unresolved
             }
         });

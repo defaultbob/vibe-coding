@@ -83,3 +83,26 @@ Understanding these naming conventions, syntax declarations, and property refere
 **Reference Values**
 Reference values are typically like `Object.activity__v`. Subcomponent references like `Field.created_by__sys`. Subcomponent reference attributes are typically paired with another attribute that references the component that subcomponent belongs to.
 
+### 6. Dependency Parsing & Linking (.d files vs MDL)
+
+Vault provides `.d` (dependency) files alongside `.mdl` files during code export. These files contain explicit relationship graphs of what a component requires (e.g. `depends_on: Object.checklist_design__sys [blocking=true]`).
+
+When parsing dependencies purely from `.mdl` text, we encounter several challenges:
+
+1. **Explicit Fully Qualified Names (FQDNs)**
+   Many dependencies use a `Category.name` format (e.g., `Object.invoice__c` or `Page.process_monitor__sys`). These are straightforward to parse.
+   
+2. **Implicit References**
+   Some properties only contain the component name (e.g., `lookup_relationship_name('account__c')`). To resolve these, a parser must maintain an in-memory registry of all known components and their categories to guess that `account__c` belongs to the `Object` category.
+
+3. **Contextual References in Strings/XML**
+   Certain components like `Dashboard` use XML blocks (`dashboard_markup({...})`) where dependencies are embedded as attributes (e.g., `report="Report.english_definitions__c"`). Others, like `Actiontrigger` scripts, reference components via variables (e.g., `$big_order__c`), requiring heuristic matching.
+
+4. **Deep/Logical Dependencies**
+   Some dependencies are inferred from Vault's internal schema rather than the raw text. For example, the `owner('user:User.System')` attribute on a `Job` implicitly creates a dependency on `Object.user__sys`, even though the literal string `user__sys` never appears in the `.mdl`.
+
+#### Proposed MDL Syntax Improvements for Dependency Parsing
+To make `.mdl` files purely declarative and easy to parse without a running Vault instance (like a traditional compiler):
+- **Universal FQDNs**: Mandate `Category.name` format for *all* references. Instead of `lookup_relationship_name('account__c')`, use `lookup_relationship_name('Object.account__c')`.
+- **Explicit Imports**: Introduce an `imports()` or `depends_on()` block at the top of the `.mdl` file (similar to Java or Python) to list all dependencies used in embedded scripts, formulas, or XML payloads. This would remove the need to parse arbitrary strings or ActionScript to find dependencies.
+
