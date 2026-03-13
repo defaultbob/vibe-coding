@@ -98,11 +98,14 @@ When parsing dependencies purely from `.mdl` text, we encounter several challeng
 3. **Contextual References in Strings/XML**
    Certain components like `Dashboard` use XML blocks (`dashboard_markup({...})`) where dependencies are embedded as attributes (e.g., `report="Report.english_definitions__c"`). Others, like `Actiontrigger` scripts, reference components via variables (e.g., `$big_order__c`), requiring heuristic matching.
 
-4. **Deep/Logical Dependencies**
-   Some dependencies are inferred from Vault's internal schema rather than the raw text. For example, the `owner('user:User.System')` attribute on a `Job` implicitly creates a dependency on `Object.user__sys`, even though the literal string `user__sys` never appears in the `.mdl`.
+#### Deep/Logical Dependencies
+Some dependencies are inferred from Vault's internal schema rather than the raw text:
+- **Record References:** The `owner('user:User.System')` attribute on a `Job` implicitly creates a data dependency on a specific User record. The literal string `user__sys` never appears in the `.mdl`. Similarly, `Applicationrole.*` strings in workflows map to specific records in the `application_role__v` object.
+- **Object Lifecycles:** `Objectlifecycle` components inherently belong to a specific Object, but the `.mdl` file for the lifecycle contains no text linking back to it. Instead, the link is only found inside the Object's `available_lifecycles()` attribute. Parsing the lifecycle alone requires guessing the object name (e.g., stripping `_lifecycle` from the name to guess the base object).
 
 #### Proposed MDL Syntax Improvements for Dependency Parsing
 To make `.mdl` files purely declarative and easy to parse without a running Vault instance (like a traditional compiler):
 - **Universal FQDNs**: Mandate `Category.name` format for *all* references. Instead of `lookup_relationship_name('account__c')`, use `lookup_relationship_name('Object.account__c')`.
 - **Explicit Imports**: Introduce an `imports()` or `depends_on()` block at the top of the `.mdl` file (similar to Java or Python) to list all dependencies used in embedded scripts, formulas, or XML payloads. This would remove the need to parse arbitrary strings or ActionScript to find dependencies.
+- **Explicit Parent Linking**: Add a `target_object('Object.name__c')` attribute to `Objectlifecycle` components so the file declares its owner, rather than relying on the object to claim the lifecycle.
 

@@ -6,10 +6,12 @@ const UNMATCHED_FILE = path.join(__dirname, 'unmatched_dependencies.json');
 
 let VALID_CATEGORIES = new Set();
 const nameToCategoryMap = new Map();
+const inboundRelationshipMap = new Map();
 
 function buildRegistry() {
     if (!fs.existsSync(COMPONENTS_DIR)) return;
 
+    // Pass 1: Build basic registry
     fs.readdirSync(COMPONENTS_DIR).forEach(item => {
         if (fs.statSync(path.join(COMPONENTS_DIR, item)).isDirectory() && !item.startsWith('.')) {
             VALID_CATEGORIES.add(item);
@@ -33,6 +35,16 @@ function buildRegistry() {
                     }
                     nameToCategoryMap.get(parentName).add(item);
                 }
+
+                // Pass 1.5: Build inbound relationship map for Objects
+                if (item === 'Object') {
+                    const mdlContent = fs.readFileSync(path.join(categoryPath, file), 'utf8');
+                    const relRegex = /relationship_inbound_name\s*\(\s*'([^']+)'\s*\)/g;
+                    let match;
+                    while ((match = relRegex.exec(mdlContent)) !== null) {
+                        inboundRelationshipMap.set(match[1], compName);
+                    }
+                }
             });
         }
     });
@@ -55,6 +67,11 @@ function parseMdlDependencies(mdlContent) {
     while ((match = fqdnRegex.exec(mdlContent)) !== null) {
         if (VALID_CATEGORIES.has(match[1])) {
             deps.add(`${match[1]}.${match[2]}`);
+        }
+        
+        // Special mapping: Applicationrole references imply a data record dependency on the application_role__v object
+        if (match[1] === 'Applicationrole') {
+            deps.add('Object.application_role__v');
         }
     }
 
@@ -109,6 +126,99 @@ function parseMdlDependencies(mdlContent) {
         parts.forEach(part => {
             resolveName(part).forEach(d => deps.add(d));
         });
+    }
+
+    // Special case for Notification Templates
+    const emailPrefRegex = /email_preferences\s*\(\s*'([^']+)'\s*\)/g;
+    if ((match = emailPrefRegex.exec(mdlContent)) !== null) {
+        deps.add('Picklist.email_preferences__sys');
+    }
+
+    const notifCatRegex = /notification_category\s*\(\s*'([^']+)'\s*\)/g;
+    if ((match = notifCatRegex.exec(mdlContent)) !== null) {
+        deps.add('Picklist.notification_category__sys');
+    }
+
+    // Special case for Jobs (owner)
+    const ownerRegex = /owner\s*\(\s*'user:[^']+'\s*\)/g;
+    if ((match = ownerRegex.exec(mdlContent)) !== null) {
+        deps.add('Object.user__sys');
+    }
+
+    // Special case for Matchingrules (implicitly depend on User Role Setup object)
+    const matchingRuleFieldRegex = /(?:user_role_fields|data_fields)\s*\(/g;
+    if (matchingRuleFieldRegex.test(mdlContent)) {
+        deps.add('Object.user_role_setup__v');
+    }
+
+    // Special case for Typeaction in Objecttypes pointing to Objectactions
+    const typeActionRegex = /Typeaction\s+[a-zA-Z0-9_]+\s*\(\s*action\s*\(\s*'([^']+)'\s*\)/g;
+    while ((match = typeActionRegex.exec(mdlContent)) !== null) {
+        deps.add(`Objectaction.${match[1]}`);
+    }
+
+    // Special case for vault:relatedObject relationship="" in Page Layouts
+    const relatedObjRegex = /<vault:relatedObject[^>]*relationship="([^"]+)"/g;
+    while ((match = relatedObjRegex.exec(mdlContent)) !== null) {
+        let relName = match[1];
+        
+        if (inboundRelationshipMap.has(relName)) {
+            deps.add(`Object.${inboundRelationshipMap.get(relName)}`);
+        } else {
+            // Relationships often end with 'r' in pagelayout XML (e.g., connection_client__sysr -> connection_client__sys)
+            if (relName.endsWith('r')) {
+                relName = relName.slice(0, -1);
+            }
+            resolveName(relName).forEach(d => deps.add(d));
+            
+            // Handle pluralized relationships (e.g., meetingperson_joins__c -> meetingperson_join__c)
+            let singularName = relName.replace(/s__([cv]|sys)$/, '__$1');
+            if (singularName !== relName) {
+                resolveName(singularName).forEach(d => deps.add(d));
+            }
+        }
+    }
+
+    // Special case for vault:field reference="related_object__vr.field_name__c" in Page Layouts
+    const relatedFieldRegex = /<vault:field[^>]*reference="([^"]+)\.[^"]+"/g;
+    while ((match = relatedFieldRegex.exec(mdlContent)) !== null) {
+        let relName = match[1];
+        if (relName.endsWith('r')) {
+            relName = relName.slice(0, -1);
+        }
+        resolveName(relName).forEach(d => deps.add(d));
+    }
+
+    // Special case for vault:wftimeline in Page Layouts (implies dependency on user_task__v)
+    if (/<vault:wftimeline\s*\/>/.test(mdlContent)) {
+        deps.add('Object.user_task__v');
+    }
+
+    // Special case for Objectlifecycle components (guess object from lifecycle name)
+    const lifecycleMatch = mdlContent.match(/RECREATE Objectlifecycle\s+([a-zA-Z0-9_]+)\s*\(/i);
+    if (lifecycleMatch) {
+        let baseName = lifecycleMatch[1];
+        if (baseName === 'vault_membership_lifecycle__sys') {
+            deps.add('Object.user__sys');
+        } else if (baseName.endsWith('_lc__sys')) {
+            let guess = baseName.replace('_lc__sys', '__sys');
+            deps.add(`Object.${guess}`);
+        } else {
+            // Remove known lifecycle suffixes/prefixes to guess the target object
+            baseName = baseName.replace(/_lifecycle__(.)/, '__$1');
+            baseName = baseName.replace(/lifecycle__(.)/, '__$1');
+            deps.add(`Object.${baseName}`);
+        }
+        
+        // If it defines roles, it depends on the application_role__v object implicitly
+        if (mdlContent.includes('application_role(')) {
+            deps.add('Object.application_role__v');
+        }
+    }
+
+    // Edge case for connection_lifecycle__sys checking object type label
+    if (mdlContent.includes('Object.connection__sys.object_type__v') && mdlContent.includes('Vault to Vault')) {
+        deps.add('Objecttype.connection__sys.vault_to_vault__sys');
     }
 
     return Array.from(deps);

@@ -22,7 +22,7 @@ This creates migration and parsing failures across environments, as record names
 The extractor tool should be updated to implement a **Data Dependency Decoupling** pattern using immutable IDs and a centralized manifest.
 
 ### 1. Entity Record Manifests (`.manifest.csv` files)
-Instead of a single centralized registry, the extractor must generate a `.manifest.csv` file for each Entity type (e.g., `user__sys.manifest.csv`, `group__sys.manifest.csv`, `country__v.manifest.csv`) in a dedicated directory. These files map the immutable global IDs to their environment-specific names/values using a simple CSV format.
+Instead of a single centralized registry, the extractor must generate a `.manifest.csv` file for each Entity type (e.g., `user__sys.manifest.csv`, `group__sys.manifest.csv`, `country__v.manifest.csv`, `application_role__v.manifest.csv`) in a dedicated directory. These files map the immutable global IDs to their environment-specific names/values using a simple CSV format.
 
 **Format:**
 ```csv
@@ -31,7 +31,15 @@ id,name
 
 **ID Formatting Rules:**
 - **Users (`user__sys`):** IDs must be numeric integers (e.g., `1`, `452`).
+- **Application Roles (`application_role__v`):** IDs must use the Vault standard alphanumeric format (e.g., `OOU0000000QD013`). Note: These often appear in MDL as `Applicationrole.name__v`, mimicking component syntax, but they are data references.
 - **Other Objects:** IDs must use the Vault standard alphanumeric format (e.g., `OOU0000000QD013`).
+
+**Example: `application_role__v.manifest.csv`**
+```csv
+id,name
+OOU0000000AK001,approver__v
+OOU0000000AK002,editor__v
+```
 
 **Example: `user__sys.manifest.csv`**
 ```csv
@@ -40,33 +48,34 @@ id,name
 452,john.doe@veeva.com
 ```
 
-**Example: `group__sys.manifest.csv`**
-```csv
-id,name
-OOU0000000QD013,all_internal_users__v
-```
-
 ### 2. .mdl File Updates (Immutable References)
 When the extractor parses an `.mdl` file and encounters a record reference, it should replace the hardcoded string with the immutable ID mapped from the entity's manifest.
 
+**Special Note on Applicationrole:**
+References like `role('Applicationrole.approver__v')` should be treated as record references.
+
 **Before (Current State):**
 ```mdl
-RECREATE Job match_edl_items_to_documents__v (
-   owner('user:User.System'),
-   ...
+RECREATE Objectlifecycle user_task_lifecycle__v (
+   Objectlifecyclerole owner__v(
+      application_role('Applicationrole.owner__v'),
+      ...
+   )
 )
 ```
 
 **After (Desired State):**
 ```mdl
-RECREATE Job match_edl_items_to_documents__v (
-   owner('record:1'),
-   ...
+RECREATE Objectlifecycle user_task_lifecycle__v (
+   Objectlifecyclerole owner__v(
+      application_role('record:OOU0000000AK003'),
+      ...
+   )
 )
 ```
 
 ### 3. .d File Updates (Explicit Record Dependencies)
-The `.d` files should explicitly declare these as **Record** dependencies rather than confusing them with **Object** (schema) dependencies.
+The `.d` files should explicitly declare these as **Record** dependencies rather than confusing them with **Object** (schema) dependencies. Note that an `Applicationrole` reference creates a dependency on the specific **Record ID**, and logically implies a schema dependency on `Object.application_role__v`.
 
 **Before (Current State):**
 ```text
@@ -76,6 +85,7 @@ depends_on: Object.user__sys [blocking=true]
 **After (Desired State):**
 ```text
 depends_on: Record.1 [blocking=true]
+depends_on: Record.OOU0000000AK003 [blocking=true]
 ```
 
 ## Parsing Logic for the Extractor
