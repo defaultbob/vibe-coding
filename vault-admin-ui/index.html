@@ -203,7 +203,17 @@
 
                             <!-- Interactive Graph -->
                             <div class="bg-white border rounded shadow-sm">
-                                <div class="bg-gray-50 px-4 py-2 border-b font-semibold text-[#1d1d1d]">Relationship Graph</div>
+                                <div class="bg-gray-50 px-4 py-2 border-b flex justify-between items-center">
+                                    <span class="font-semibold text-[#1d1d1d]">Relationship Graph</span>
+                                    <div class="flex items-center space-x-2 text-sm">
+                                        <label for="graph-hops" class="text-gray-600">Hops:</label>
+                                        <select id="graph-hops" class="border border-gray-300 rounded px-2 py-1 bg-white" onchange="if(currentComponent) buildLocalGraph(currentComponent);">
+                                            <option value="1" selected>1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="p-2"><div id="local-network"></div></div>
                             </div>
 
@@ -553,32 +563,67 @@
             const nodes = new vis.DataSet();
             const edges = new vis.DataSet();
             
-            // Center Node
-            nodes.add({ id: comp.id, label: comp.name, shape: 'box', color: { background: '#1453b8', border: '#0f4092' }, font: { color: 'white' }});
+            const maxHopsSelect = document.getElementById('graph-hops');
+            const maxHops = maxHopsSelect ? parseInt(maxHopsSelect.value, 10) : 1;
+
+            const addedNodes = new Set();
+            const addedEdges = new Set();
             
-            const added = new Set([comp.id]);
+            // Queue format: { id, depth }
+            const queue = [{ id: comp.id, depth: 0 }];
 
-            // Outbound
-            comp.outbound.forEach(outId => {
-                if (!added.has(outId)) {
-                    added.add(outId);
-                    const t = compMap.get(outId);
-                    const label = t ? t.name : outId;
-                    nodes.add({ id: outId, label: label, shape: 'ellipse', color: { background: '#f8f8f8', border: '#dadada'} });
-                }
-                edges.add({ from: comp.id, to: outId, arrows: 'to', color: { color: '#94a3b8'} });
-            });
+            while (queue.length > 0) {
+                const { id: currentId, depth } = queue.shift();
+                
+                if (addedNodes.has(currentId)) continue;
+                addedNodes.add(currentId);
 
-            // Inbound
-            comp.inbound.forEach(inbId => {
-                if (!added.has(inbId)) {
-                    added.add(inbId);
-                    const t = compMap.get(inbId);
-                    const label = t ? t.name : inbId;
-                    nodes.add({ id: inbId, label: label, shape: 'ellipse', color: { background: '#fff7ed', border: '#f8972b'} });
+                const currentComp = compMap.get(currentId);
+                const labelText = currentComp ? `${currentComp.name}\n[${currentComp.category}]` : `${currentId}\n[External]`;
+                
+                if (currentId === comp.id) {
+                    nodes.add({ 
+                        id: currentId, 
+                        label: labelText, 
+                        shape: 'box', 
+                        color: { background: '#1453b8', border: '#0f4092' }, 
+                        font: { color: 'white' }
+                    });
+                } else {
+                    nodes.add({ 
+                        id: currentId, 
+                        label: labelText, 
+                        shape: 'ellipse', 
+                        color: { background: '#f8f8f8', border: '#dadada'} 
+                    });
                 }
-                edges.add({ from: inbId, to: comp.id, arrows: 'to', color: { color: '#f8972b'} });
-            });
+
+                if (currentComp && depth < maxHops) {
+                    // Outbound (References To)
+                    currentComp.outbound.forEach(outId => {
+                        const edgeId = `${currentId}->${outId}`;
+                        if (!addedEdges.has(edgeId)) {
+                            addedEdges.add(edgeId);
+                            edges.add({ from: currentId, to: outId, arrows: 'to', color: { color: '#94a3b8'} });
+                        }
+                        if (!addedNodes.has(outId) && !queue.some(q => q.id === outId)) {
+                            queue.push({ id: outId, depth: depth + 1 });
+                        }
+                    });
+
+                    // Inbound (Referenced By)
+                    currentComp.inbound.forEach(inbId => {
+                        const edgeId = `${inbId}->${currentId}`;
+                        if (!addedEdges.has(edgeId)) {
+                            addedEdges.add(edgeId);
+                            edges.add({ from: inbId, to: currentId, arrows: 'to', color: { color: '#f8972b'} });
+                        }
+                        if (!addedNodes.has(inbId) && !queue.some(q => q.id === inbId)) {
+                            queue.push({ id: inbId, depth: depth + 1 });
+                        }
+                    });
+                }
+            }
 
             const container = document.getElementById('local-network');
             const data = { nodes, edges };
