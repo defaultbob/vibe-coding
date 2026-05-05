@@ -5,3 +5,4 @@ node_modules/
 *.txt
 .env
 PROGRESS.md
+.vdx_error.log
