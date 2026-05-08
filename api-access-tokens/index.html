@@ -4,400 +4,364 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vault - Token Management</title>
+    <link rel="stylesheet" href="./node_modules/@dmills-veeva/vault-vibe-design-system/dist/index.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vault: {
+                            orange: {
+                                lightest: '#ffefd5', lighter: '#fcd19c', light: '#fab463',
+                                DEFAULT: '#f8972b', dark: '#f78b12', darker: '#d9780d', darkest: '#cc6600',
+                            },
+                            blue: {
+                                lightest: '#e3edfc', lighter: '#d1e1fa', light: '#acc8f6',
+                                DEFAULT: '#1453b8', dark: '#104293', darker: '#0c326e', darkest: '#092553',
+                            },
+                            red: {
+                                lightest: '#ffb3b3', lighter: '#ee7d75', light: '#de483a',
+                                DEFAULT: '#ce1300', dark: '#b71307', darker: '#a0140e', darkest: '#891515',
+                            },
+                            green: {
+                                lightest: '#e0f3e0', lighter: '#b1d2a7', light: '#82b16f',
+                                DEFAULT: '#539137', dark: '#427b2e', darker: '#316525', darkest: '#27571f',
+                            },
+                            yellow: {
+                                lightest: '#ffffcc', lighter: '#fff5ad', light: '#ffec8e',
+                                DEFAULT: '#ffe36f', dark: '#ffd950', darker: '#ffd031', darkest: '#e6c10b',
+                            },
+                            gray: {
+                                lightest: '#f8f8f8', lighter: '#f5f5f5', light: '#eeeeee',
+                                DEFAULT: '#dadada', dark: '#cccccc', darker: '#c0c0c0', darkest: '#b3b3b3',
+                            },
+                            primary: '#1453b8',
+                            'primary-hover': '#0c326e',
+                            'primary-active': '#092553',
+                            accent: '#f8972b',
+                            danger: '#ce1300',
+                            success: '#539137',
+                            warning: '#ffe36f',
+                            link: '#1453b8',
+                            body: '#1d1d1d',
+                            muted: '#646464',
+                            placeholder: '#aaaaaa',
+                            disabled: '#aaaaaa',
+                            border: '#dadada',
+                            'border-strong': '#cccccc',
+                            bg: '#ffffff',
+                            'bg-page': '#f5f5f5',
+                            'bg-alt': '#f8f8f8',
+                            'bg-row-hover': '#eff4f6',
+                            'bg-row-selected': '#fff5ad',
+                            required: '#ffffcc',
+                            header: '#061937',
+                            ink: '#1d1d1d',
+                            white: '#ffffff',
+                            black: '#1d1d1d',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Roboto', 'Arial', 'Helvetica', 'sans-serif'],
+                        mono: ['Roboto Mono', 'Menlo', 'Consolas', 'monospace'],
+                    },
+                    fontSize: {
+                        micro: ['9px', { lineHeight: '12px' }],
+                        label: ['10px', { lineHeight: '14px' }],
+                        xs: ['11px', { lineHeight: '15px' }],
+                        sm: ['12px', { lineHeight: '17px' }],
+                        base: ['14px', { lineHeight: '20px' }],
+                        lg: ['16px', { lineHeight: '22px' }],
+                        xl: ['18px', { lineHeight: '24px' }],
+                        '2xl': ['22px', { lineHeight: '28px' }],
+                        '3xl': ['32px', { lineHeight: '38px' }],
+                    },
+                    borderRadius: {
+                        none: '0', xs: '2px', sm: '3px', DEFAULT: '4px', lg: '6px', full: '9999px',
+                    },
+                    boxShadow: {
+                        dropdown: '0 3px 6px rgba(0,0,0,.23)',
+                        modal: '0 8px 10px 1px rgba(0,0,0,.18), 0 3px 14px 2px rgba(0,0,0,.16), 0 5px 5px -3px rgba(0,0,0,.24)',
+                        panel: '0 1px 3px rgba(0,0,0,.12)',
+                        overlay: '0 2px 4px -1px rgba(0,0,0,.2), 0 1px 10px 0 rgba(0,0,0,.12), 0 4px 5px 0 rgba(0,0,0,.14)',
+                    },
+                },
+            },
+        };
+    </script>
     <style>
-        :root {
-            /* Brand Colors */
-            --veeva-blue: #1453b8;
-            --veeva-blue-hover: #0f4092;
-            --veeva-orange: #f8972b;
-            --vault-header-bg: #061937;
-            
-            /* UI Colors */
-            --text-main: #1d1d1d;
-            --text-muted: #808080;
-            --border-color: #e5e7eb;
-            --sidebar-bg: #f8f8f8;
-            --grid-header-bg: #c0c0c0;
-            --page-bg: #ffffff;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            color: var(--text-main);
-            background-color: var(--page-bg);
-        }
-
-        /* Custom transitions */
-        .fade-in {
-            animation: fadeIn 0.2s ease-in-out;
-        }
+        .fade-in { animation: fadeIn 0.2s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            to   { opacity: 1; transform: scale(1); }
         }
-        
-        /* Toggle Switch CSS */
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: var(--veeva-blue);
-        }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: var(--veeva-blue);
-        }
-        .toggle-checkbox:checked + .toggle-label:before {
-            transform: translateX(100%);
-        }
-        .toggle-label:before {
-            transition: transform 0.2s;
-        }
+        .toggle-checkbox:checked { right: 0; border-color: var(--vault-primary); }
+        .toggle-checkbox:checked + .toggle-label { background-color: var(--vault-primary); }
+        .toggle-checkbox:checked + .toggle-label:before { transform: translateX(100%); }
+        .toggle-label:before { transition: transform 0.2s; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- Global Header h-[88px] -->
-    <header class="w-full h-[88px] flex flex-col shrink-0">
-        <!-- Top Row h-[50px] -->
-        <div class="h-[50px] bg-[var(--vault-header-bg)] flex items-center justify-between px-4">
-            <!-- Left: Logo -->
-            <div class="flex items-center">
-                <span class="text-[var(--veeva-orange)] font-bold text-xl tracking-tight">Veeva</span>
-                <span class="text-white font-light text-xl tracking-tight ml-1">Vault</span>
+    <!-- GlobalHeader component -->
+    <header class="flex flex-col shrink-0">
+        <!-- Brand bar: h-11 (44px) -->
+        <div class="h-11 bg-vault-header flex items-center px-4 gap-3">
+            <div class="flex items-center gap-1 flex-shrink-0">
+                <span class="text-vault-accent font-bold text-base leading-none">Veeva</span>
+                <span class="text-white font-light text-base leading-none">Vault</span>
             </div>
-            
-            <!-- Center: Search -->
-            <div class="flex-1 max-w-xl mx-8">
-                <div class="bg-white rounded flex items-center h-8 overflow-hidden">
-                    <div class="px-3 bg-gray-100 border-r text-sm text-[#1d1d1d] flex items-center h-full cursor-pointer hover:bg-gray-200">
-                        All <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                    <input type="text" class="flex-1 px-3 h-full outline-none text-sm text-[#1d1d1d]" placeholder="Search...">
-                    <button class="px-3 text-gray-500 hover:text-[#1d1d1d]">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </button>
+            <div class="flex-1 max-w-xs ml-4">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-2 top-1/2 -translate-y-1/2 text-white/60 text-xs"></i>
+                    <input type="text" class="w-full bg-white/10 border border-white/15 rounded-[2px] pl-6 pr-2 h-6 text-xs text-white placeholder-white/60 focus:outline-none focus:border-white/40" placeholder="Search documents…">
                 </div>
             </div>
-
-            <!-- Right: Utility Icons -->
-            <div class="flex items-center space-x-4 text-white">
-                <button class="hover:text-gray-300">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+            <div class="flex-1"></div>
+            <div class="flex items-center gap-3 text-white/85">
+                <button class="hover:text-white text-base leading-none" aria-label="Apps">
+                    <i class="fa-solid fa-grid-2"></i>
                 </button>
-                <button class="hover:text-gray-300 relative">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                    <span class="absolute -top-1 -right-1 bg-[var(--veeva-orange)] text-white text-[10px] w-3 h-3 flex items-center justify-center rounded-full">3</span>
+                <button class="hover:text-white text-base leading-none relative" aria-label="Notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="absolute -top-1 -right-1 bg-vault-accent text-white text-[9px] w-3 h-3 flex items-center justify-center rounded-full">3</span>
                 </button>
-                <div class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-[#1d1d1d] text-xs font-bold border border-white cursor-pointer">
-                    DM
-                </div>
+                <div class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-vault-ink text-xs font-bold border border-white/30 cursor-pointer">DM</div>
             </div>
         </div>
-
-        <!-- Base Tabs Row h-[38px] -->
-        <div class="h-[38px] bg-[var(--sidebar-bg)] flex justify-between items-end border-b border-gray-300 px-4">
-            <div class="flex space-x-1 h-full">
-                <button class="px-4 h-full flex items-center text-[14px] text-[#1d1d1d] hover:bg-[#eee] rounded-t-sm">Home</button>
-                <button class="px-4 h-full flex items-center text-[14px] text-[#1d1d1d] hover:bg-[#eee] rounded-t-sm">Library</button>
-                <button class="px-4 h-full flex items-center text-[14px] text-[#1d1d1d] hover:bg-[#eee] rounded-t-sm">Reports</button>
-                <button class="px-4 h-full flex items-center text-[14px] bg-white border-b-4 border-[var(--veeva-orange)] font-bold rounded-t-sm">Admin</button>
-            </div>
+        <!-- Tab bar: h-10 (40px) -->
+        <div class="h-10 bg-vault-bg flex items-center border-b border-vault-border px-4">
+            <nav role="tablist" class="flex items-center flex-1 gap-0 h-full">
+                <button role="tab" aria-selected="false" class="relative h-full px-3.5 text-sm cursor-pointer bg-transparent border-0 transition-colors select-none text-vault-muted hover:text-vault-ink">Home</button>
+                <button role="tab" aria-selected="false" class="relative h-full px-3.5 text-sm cursor-pointer bg-transparent border-0 transition-colors select-none text-vault-muted hover:text-vault-ink">Library</button>
+                <button role="tab" aria-selected="false" class="relative h-full px-3.5 text-sm cursor-pointer bg-transparent border-0 transition-colors select-none text-vault-muted hover:text-vault-ink">Reports</button>
+                <button role="tab" aria-selected="true"  class="relative h-full px-3.5 text-sm cursor-pointer bg-transparent border-0 transition-colors select-none text-vault-ink font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-vault-accent after:content-['']">Admin</button>
+            </nav>
         </div>
     </header>
 
     <!-- Main Content -->
     <div class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
-        
-        <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-[20px] font-bold text-[#1d1d1d] mb-2">My Profile</h1>
-            <div class="flex border-b-2 border-[var(--veeva-orange)] overflow-x-auto no-scrollbar pb-2 space-x-4">
-                <button class="text-[#1d1d1d] hover:text-[var(--veeva-orange)] whitespace-nowrap text-[14px]">General</button>
-                <button class="text-[#1d1d1d] hover:text-[var(--veeva-orange)] whitespace-nowrap text-[14px]">Security</button>
-                <button class="text-[var(--veeva-orange)] font-bold whitespace-nowrap text-[14px]">Access Tokens</button>
-                <button class="text-[#1d1d1d] hover:text-[var(--veeva-orange)] whitespace-nowrap text-[14px]">Audit Log</button>
+
+        <!-- PageTitle component: inline border-b-2, font-weight 400, 22px -->
+        <div class="flex flex-col gap-1 mb-6">
+            <div class="flex items-end justify-between gap-4">
+                <div class="flex-1 min-w-0">
+                    <h1 class="text-vault-ink pb-2 border-b-2 border-vault-accent inline-block max-w-full" style="font-size:22px;font-weight:400;line-height:28px">My Profile</h1>
+                </div>
             </div>
+        </div>
+
+        <!-- TabList + Tab components (profile sub-tabs) -->
+        <div role="tablist" class="flex items-center border-b border-vault-border overflow-x-auto mb-6">
+            <button role="tab" aria-selected="false" class="relative px-3.5 py-2 text-sm cursor-pointer border-0 bg-transparent transition-colors select-none whitespace-nowrap text-vault-muted hover:text-vault-ink">General</button>
+            <button role="tab" aria-selected="false" class="relative px-3.5 py-2 text-sm cursor-pointer border-0 bg-transparent transition-colors select-none whitespace-nowrap text-vault-muted hover:text-vault-ink">Security</button>
+            <button role="tab" aria-selected="true"  class="relative px-3.5 py-2 text-sm cursor-pointer border-0 bg-transparent transition-colors select-none whitespace-nowrap text-vault-ink font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-vault-accent after:content-['']">Access Tokens</button>
+            <button role="tab" aria-selected="false" class="relative px-3.5 py-2 text-sm cursor-pointer border-0 bg-transparent transition-colors select-none whitespace-nowrap text-vault-muted hover:text-vault-ink">Audit Log</button>
         </div>
 
         <!-- Token Section Header -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
             <div>
-                <h2 class="text-lg font-semibold text-[#1d1d1d] flex items-center gap-2">
-                    <!-- Shield Icon -->
-                    <svg class="w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                <h2 class="text-base font-semibold text-vault-ink flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-vault-muted text-sm"></i>
                     API Tokens
                 </h2>
-                <p class="text-[14px] text-[var(--text-muted)] mt-1">
-                    Manage personal access tokens. These tokens inherit your permissions.
-                </p>
+                <p class="text-sm text-vault-muted mt-1">Manage personal access tokens. These tokens inherit your permissions.</p>
             </div>
-            
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                
-                <!-- Show Inactive Toggle -->
-                <div class="flex items-center mr-2">
-                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="relative inline-block w-10 align-middle select-none">
                         <input type="checkbox" name="toggle" id="showInactiveToggle" onchange="toggleShowInactive()" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 left-0 transition-all duration-200 ease-in-out"/>
                         <label for="showInactiveToggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
                     </div>
-                    <label for="showInactiveToggle" class="text-[14px] text-[#1d1d1d] font-medium cursor-pointer">Show Inactive</label>
+                    <label for="showInactiveToggle" class="text-sm text-vault-ink cursor-pointer">Show Inactive</label>
                 </div>
-
-                <div class="h-6 w-px bg-gray-300 hidden sm:block"></div>
-
-                <div class="text-[14px] text-[#1d1d1d] bg-[var(--sidebar-bg)] px-3 py-1.5 rounded-sm border border-[var(--border-color)] shadow-sm whitespace-nowrap">
-                    <span id="activeCount" class="font-bold text-[var(--veeva-blue)]">0</span> 
-                    <span class="text-gray-400 mx-1">/</span> 
-                    <span id="maxTokensDisplay">25</span> Active
+                <div class="h-5 w-px bg-vault-border hidden sm:block"></div>
+                <div class="text-sm text-vault-ink bg-vault-bg-alt px-3 h-6 flex items-center rounded-[2px] border border-vault-border whitespace-nowrap">
+                    <span id="activeCount" class="font-bold text-vault-primary">0</span>
+                    <span class="text-vault-muted mx-1">/</span>
+                    <span id="maxTokensDisplay">25</span>&nbsp;Active
                 </div>
-                
-                <button onclick="openModal()" id="createBtn" class="bg-[var(--veeva-blue)] text-white hover:bg-[var(--veeva-blue-hover)] rounded shadow-sm text-[14px] font-medium px-4 py-1.5 flex items-center justify-center gap-2 w-full sm:w-auto transition-colors focus:outline-none">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <!-- Button component: primary variant -->
+                <button onclick="openModal()" id="createBtn" class="inline-flex items-center justify-center h-6 px-3 rounded-[2px] bg-vault-primary border border-vault-primary-hover text-white hover:bg-vault-primary-hover text-sm font-medium gap-1.5 transition-colors focus:outline-none">
+                    <i class="fa-solid fa-plus text-xs"></i>
                     Generate Token
                 </button>
             </div>
         </div>
 
-        <!-- Warning Limit Message -->
-        <div id="limitWarning" class="hidden mb-6 bg-amber-50 border border-amber-200 rounded-sm p-4 flex items-start gap-3">
-            <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-            <div class="text-[14px] text-amber-800">
-                <span class="font-bold">Token limit reached.</span> You must revoke an existing token before creating a new one.
-            </div>
+        <!-- Warning -->
+        <div id="limitWarning" class="hidden mb-6 bg-amber-50 border border-amber-200 rounded-[2px] p-3 flex items-start gap-2.5">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm flex-shrink-0 mt-0.5"></i>
+            <div class="text-sm text-amber-800"><span class="font-bold">Token limit reached.</span> You must revoke an existing token before creating a new one.</div>
         </div>
 
-        <!-- Token List Container -->
-        <div class="bg-white border-t border-l border-[var(--border-color)] shadow-sm overflow-hidden overflow-x-auto">
-            <div class="min-w-[900px]">
-                <!-- Table Header -->
-                <div class="grid grid-cols-12 bg-[var(--grid-header-bg)] text-[#1d1d1d] font-bold text-[12px]">
-                    <div class="col-span-2 border-b border-r border-[#a0a0a0] py-2 px-2">Token Name</div>
-                    <div class="col-span-2 border-b border-r border-[#a0a0a0] py-2 px-2">Client ID</div>
-                    <div class="col-span-1 border-b border-r border-[#a0a0a0] py-2 px-2">Status</div>
-                    <div class="col-span-2 border-b border-r border-[#a0a0a0] py-2 px-2">Last Used</div>
-                    <div class="col-span-2 border-b border-r border-[#a0a0a0] py-2 px-2">Created</div>
-                    <div class="col-span-2 border-b border-r border-[#a0a0a0] py-2 px-2">Expires</div>
-                    <div class="col-span-1 border-b border-r border-[#a0a0a0] py-2 px-2 text-right">Actions</div>
-                </div>
-
-                <!-- Token List -->
-                <div id="tokenGrid">
-                    <!-- Tokens injected via JS -->
-                </div>
-            </div>
+        <!-- DataGrid component -->
+        <div class="w-full overflow-x-auto border border-vault-border">
+            <table class="w-full border-collapse text-sm min-w-[900px]">
+                <thead class="bg-vault-bg-alt">
+                    <tr>
+                        <th class="w-[18%] px-2.5 py-2 text-label font-bold uppercase tracking-[.06em] text-vault-muted border-b-2 border-vault-border text-left">Token Name</th>
+                        <th class="w-[16%] px-2.5 py-2 text-label font-bold uppercase tracking-[.06em] text-vault-muted border-b-2 border-vault-border text-left">Client ID</th>
+                        <th class="w-[9%]  px-2.5 py-2 text-label font-bold uppercase tracking-[.06em] text-vault-muted border-b-2 border-vault-border text-left">Status</th>
+                        <th class="w-[16%] px-2.5 py-2 text-label font-bold uppercase tracking-[.06em] text-vault-muted border-b-2 border-vault-border text-left">Last Used</th>
+                        <th class="w-[16%] px-2.5 py-2 text-label font-bold uppercase tracking-[.06em] text-vault-muted border-b-2 border-vault-border text-left">Created</th>
+                        <th class="w-[16%] px-2.5 py-2 text-label font-bold uppercase tracking-[.06em] text-vault-muted border-b-2 border-vault-border text-left">Expires</th>
+                        <th class="w-[9%]  px-2.5 py-2 text-label font-bold uppercase tracking-[.06em] text-vault-muted border-b-2 border-vault-border text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tokenGrid"></tbody>
+            </table>
         </div>
 
         <!-- Empty State -->
-        <div id="emptyState" class="hidden text-center py-20 bg-white border border-[var(--border-color)] mt-4">
-            <div class="mx-auto h-12 w-12 text-gray-300 mb-3 flex items-center justify-center bg-gray-100 rounded-full">
-                <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <div id="emptyState" class="hidden text-center py-20 bg-white border border-vault-border border-t-0">
+            <div class="mx-auto h-12 w-12 mb-3 flex items-center justify-center bg-vault-bg-alt rounded-full text-vault-muted">
+                <i class="fa-solid fa-shield-halved text-xl"></i>
             </div>
-            <h3 class="text-lg font-bold text-[#1d1d1d]">No tokens found</h3>
-            <p class="mt-1 text-[14px] text-[var(--text-muted)]">Get started by generating a new personal access token.</p>
+            <h3 class="text-base font-bold text-vault-ink">No tokens found</h3>
+            <p class="mt-1 text-sm text-vault-muted">Get started by generating a new personal access token.</p>
         </div>
 
     </div>
 
-    <!-- Modal Backdrop -->
-    <div id="modalBackdrop" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity">
-        <div class="bg-white shadow-xl w-full max-w-lg overflow-hidden transform transition-all fade-in rounded-sm">
-            
+    <!-- Modal component -->
+    <div id="modalBackdrop" class="hidden bg-black/40 fixed inset-0 z-[1000] flex items-center justify-center" aria-modal="true" role="dialog">
+        <div class="bg-vault-bg rounded shadow-modal flex flex-col max-h-[90vh] overflow-hidden fade-in" style="width:520px">
+
             <!-- Modal Header -->
-            <div class="px-6 py-4 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--sidebar-bg)]">
-                <h3 id="modalTitle" class="text-[16px] font-bold text-[#1d1d1d]">Generate New Token</h3>
-                <button onclick="closeModal()" id="modalCloseBtn" class="text-[var(--text-muted)] hover:text-[#1d1d1d]">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
+            <div class="flex items-center justify-between border-b border-vault-border px-4 py-3 flex-shrink-0">
+                <h2 id="modalTitle" class="text-base font-bold text-vault-ink leading-none">Generate New Token</h2>
+                <button id="modalCloseBtn" type="button" onclick="closeModal()" aria-label="Close modal" class="ml-auto text-vault-muted hover:text-vault-ink text-xl leading-none flex-shrink-0">×</button>
             </div>
 
-            <!-- Modal Content: Form -->
-            <div id="modalForm" class="p-6">
-                <form onsubmit="handleCreateToken(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-[14px] font-bold text-[#1d1d1d] mb-1">Note / Description</label>
-                        <input type="text" id="tokenNameInput" required class="w-full px-3 py-2 border border-[#dadada] rounded-sm focus:ring-[var(--veeva-blue)] focus:border-[var(--veeva-blue)] text-[14px]" placeholder="e.g. CI/CD Integration...">
-                        <p class="text-[12px] text-[var(--text-muted)] mt-1">What is this token used for?</p>
+            <!-- Modal Body: Form -->
+            <div id="modalForm" class="flex-1 overflow-y-auto">
+                <form onsubmit="handleCreateToken(event)">
+                    <div class="px-4 py-4 space-y-4">
+                        <!-- TextInput component: h-7, label text-xs font-bold -->
+                        <div class="flex flex-col gap-0.5">
+                            <label for="tokenNameInput" class="text-xs font-bold text-vault-ink">
+                                Note / Description<span class="text-vault-danger ml-0.5">*</span>
+                            </label>
+                            <input type="text" id="tokenNameInput" required placeholder="e.g. CI/CD Integration…"
+                                class="h-7 rounded-[2px] border text-sm px-2 focus:outline-none focus:border-vault-primary bg-vault-required border-vault-primary transition-colors">
+                            <p class="text-label text-vault-muted">What is this token used for?</p>
+                        </div>
+
+                        <!-- TextInput component: select styled to match -->
+                        <div class="flex flex-col gap-0.5">
+                            <label for="tokenExpiryInput" class="text-xs font-bold text-vault-ink">Expiration</label>
+                            <select id="tokenExpiryInput"
+                                class="h-7 rounded-[2px] border text-sm px-2 focus:outline-none focus:border-vault-primary bg-vault-bg border-vault-border transition-colors">
+                                <option value="30days">30 Days</option>
+                                <option value="6months" selected>6 Months (Default)</option>
+                                <option value="1year">1 Year</option>
+                                <option value="never">No Expiration</option>
+                            </select>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-[2px] p-3 flex gap-2.5 items-start text-sm text-blue-800">
+                            <i class="fa-solid fa-circle-info text-blue-500 mt-0.5 flex-shrink-0"></i>
+                            <p>This token will have full read/write access based on your current user permissions.</p>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[14px] font-bold text-[#1d1d1d] mb-1">Expiration</label>
-                        <select id="tokenExpiryInput" class="w-full px-3 py-2 border border-[#dadada] rounded-sm focus:ring-[var(--veeva-blue)] focus:border-[var(--veeva-blue)] bg-white text-[14px]">
-                            <option value="30days">30 Days</option>
-                            <option value="6months" selected>6 Months (Default)</option>
-                            <option value="1year">1 Year</option>
-                            <option value="never">No Expiration</option>
-                        </select>
-                    </div>
-
-                    <div class="bg-blue-50 p-3 rounded-sm flex gap-3 items-start text-[14px] text-blue-800">
-                        <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <p>This token will have full read/write access based on your current user permissions.</p>
-                    </div>
-
-                    <div class="flex justify-end gap-3 pt-4 border-t border-[var(--border-color)] mt-6">
-                        <button type="button" onclick="closeModal()" class="bg-white border border-[#dadada] text-[#1d1d1d] hover:bg-gray-50 rounded shadow-sm text-[14px] font-medium px-4 py-1.5">Cancel</button>
-                        <button type="submit" class="bg-[var(--veeva-blue)] text-white hover:bg-[var(--veeva-blue-hover)] rounded shadow-sm text-[14px] font-medium px-4 py-1.5">Generate Token</button>
+                    <!-- Modal Footer -->
+                    <div class="border-t border-vault-border px-4 py-2.5 flex justify-end gap-1.5 flex-shrink-0">
+                        <button type="button" onclick="closeModal()" class="inline-flex items-center justify-center h-6 px-3 rounded-[2px] bg-vault-gray-lighter border border-vault-border text-vault-ink hover:bg-vault-gray-light text-sm font-medium transition-colors">Cancel</button>
+                        <button type="submit" class="inline-flex items-center justify-center h-6 px-3 rounded-[2px] bg-vault-primary border border-vault-primary-hover text-white hover:bg-vault-primary-hover text-sm font-medium transition-colors">Generate Token</button>
                     </div>
                 </form>
             </div>
 
-            <!-- Modal Content: Success -->
-            <div id="modalSuccess" class="hidden p-6 space-y-6">
-                <div class="flex items-start gap-4 p-4 bg-green-50 border border-green-200 rounded-sm">
-                    <div class="p-2 bg-green-100 rounded-full text-green-600 shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <!-- Modal Body: Success -->
+            <div id="modalSuccess" class="hidden flex-1 overflow-y-auto">
+                <div class="px-4 py-4 space-y-4">
+                    <div class="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-[2px]">
+                        <i class="fa-solid fa-circle-check text-green-600 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <h4 class="text-green-900 font-bold text-sm">Success!</h4>
+                            <p class="text-green-800 text-sm mt-0.5">Make sure to copy your personal access token now. You won't be able to see it again!</p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="text-green-900 font-bold text-[14px]">Success!</h4>
-                        <p class="text-green-800 text-[14px] mt-1">Make sure to copy your personal access token now. You won't be able to see it again!</p>
+                    <div class="flex flex-col gap-0.5">
+                        <label class="text-label font-bold text-vault-muted uppercase tracking-[.06em]">Token Value</label>
+                        <div class="flex gap-2 items-start">
+                            <code id="newTokenValue" class="flex-1 p-2.5 bg-gray-900 text-green-400 font-mono text-sm rounded-[2px] border border-gray-700 break-all"></code>
+                            <button onclick="copyToken()" title="Copy to Clipboard" class="inline-flex items-center justify-center h-7 w-7 rounded-[2px] bg-vault-gray-lighter border border-vault-border text-vault-ink hover:bg-vault-gray-light flex-shrink-0 transition-colors">
+                                <i class="fa-regular fa-copy text-sm"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-                <div>
-                    <label class="block text-[12px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Token Value</label>
-                    <div class="flex gap-2">
-                        <code id="newTokenValue" class="flex-1 block w-full p-3 bg-gray-900 text-green-400 font-mono text-[14px] rounded-sm border border-gray-700 break-all"></code>
-                        <button onclick="copyToken()" class="bg-white border border-[#dadada] text-[#1d1d1d] hover:bg-gray-50 rounded shadow-sm px-3 py-2 shrink-0" title="Copy to Clipboard">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex justify-end pt-4 border-t border-[var(--border-color)]">
-                    <button onclick="closeModal()" class="bg-[var(--veeva-blue)] text-white hover:bg-[var(--veeva-blue-hover)] rounded shadow-sm text-[14px] font-medium px-4 py-1.5">I have copied it</button>
+                <!-- Modal Footer -->
+                <div class="border-t border-vault-border px-4 py-2.5 flex justify-end gap-1.5 flex-shrink-0">
+                    <button onclick="closeModal()" class="inline-flex items-center justify-center h-6 px-3 rounded-[2px] bg-vault-primary border border-vault-primary-hover text-white hover:bg-vault-primary-hover text-sm font-medium transition-colors">I have copied it</button>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- Logic -->
     <script>
-        // --- Configuration ---
         const MAX_TOKENS = 25;
         const STORAGE_KEY = 'vault_user_tokens_v6';
-        
-        // --- State ---
         let tokens = [];
         let showInactive = false;
 
-        // --- Init ---
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTokens();
-            renderTokens();
-        });
+        document.addEventListener('DOMContentLoaded', () => { loadTokens(); renderTokens(); });
 
-        // --- Storage & Data ---
         function loadTokens() {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 tokens = JSON.parse(stored);
-                tokens.forEach(t => { 
-                    if(!t.clientId) t.clientId = generateClientId();
-                    if(t.lastUsed === undefined) t.lastUsed = randomDateWithinLastYear(); 
+                tokens.forEach(t => {
+                    if (!t.clientId) t.clientId = generateClientId();
+                    if (t.lastUsed === undefined) t.lastUsed = randomDateWithinLastYear();
                 });
-            } else {
-                generateMockData();
-                saveTokens();
-            }
+            } else { generateMockData(); saveTokens(); }
         }
 
         function randomDateWithinLastYear() {
             if (Math.random() > 0.8) return null;
-            const date = new Date();
-            date.setDate(date.getDate() - Math.floor(Math.random() * 365));
-            return date.toISOString();
+            const d = new Date();
+            d.setDate(d.getDate() - Math.floor(Math.random() * 365));
+            return d.toISOString();
         }
 
         function generateMockData() {
             tokens = [
-                {
-                    id: 'tok_1',
-                    clientId: 'client_7a8b9c',
-                    name: 'Production Pipeline (CI/CD)',
-                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-                    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-                    createdBy: 'System',
-                    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180).toISOString(),
-                    status: 'active'
-                },
-                {
-                    id: 'tok_2',
-                    clientId: 'client_x9y8z7',
-                    name: 'Local Env - MacBook Pro',
-                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45).toISOString(),
-                    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(),
-                    createdBy: 'You',
-                    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 15).toISOString(),
-                    status: 'active'
-                },
-                {
-                    id: 'tok_3',
-                    clientId: 'client_h2k3m4',
-                    name: 'Staging Server Integration',
-                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 120).toISOString(),
-                    lastUsed: null,
-                    createdBy: 'You',
-                    expiresAt: null,
-                    status: 'inactive'
-                },
-                {
-                    id: 'tok_4',
-                    clientId: 'client_p5q6r7',
-                    name: 'Legacy API Access',
-                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 400).toISOString(),
-                    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString(),
-                    createdBy: 'Admin',
-                    expiresAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
-                    status: 'expired'
-                },
-                {
-                    id: 'tok_5',
-                    clientId: 'client_j9k8l7',
-                    name: 'Mobile App Gateway',
-                    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-                    lastUsed: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-                    createdBy: 'You',
-                    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString(),
-                    status: 'active'
-                }
+                { id:'tok_1', clientId:'client_7a8b9c', name:'Production Pipeline (CI/CD)',  createdDate: new Date(Date.now()-1000*60*60*24*5).toISOString(),   lastUsed: new Date(Date.now()-1000*60*60*2).toISOString(),       createdBy:'System', expiresAt: new Date(Date.now()+1000*60*60*24*180).toISOString(), status:'active' },
+                { id:'tok_2', clientId:'client_x9y8z7', name:'Local Env - MacBook Pro',      createdDate: new Date(Date.now()-1000*60*60*24*45).toISOString(),  lastUsed: new Date(Date.now()-1000*60*60*24).toISOString(),       createdBy:'You',    expiresAt: new Date(Date.now()+1000*60*60*24*15).toISOString(),  status:'active' },
+                { id:'tok_3', clientId:'client_h2k3m4', name:'Staging Server Integration',   createdDate: new Date(Date.now()-1000*60*60*24*120).toISOString(), lastUsed: null,                                                  createdBy:'You',    expiresAt: null,                                                 status:'inactive' },
+                { id:'tok_4', clientId:'client_p5q6r7', name:'Legacy API Access',            createdDate: new Date(Date.now()-1000*60*60*24*400).toISOString(), lastUsed: new Date(Date.now()-1000*60*60*24*60).toISOString(),    createdBy:'Admin',  expiresAt: new Date(Date.now()-1000*60*60*24*30).toISOString(),  status:'expired' },
+                { id:'tok_5', clientId:'client_j9k8l7', name:'Mobile App Gateway',           createdDate: new Date(Date.now()-1000*60*60*24*2).toISOString(),   lastUsed: new Date(Date.now()-1000*60*5).toISOString(),           createdBy:'You',    expiresAt: new Date(Date.now()+1000*60*60*24*365).toISOString(), status:'active' },
             ];
         }
 
-        function generateClientId() {
-            return 'client_' + Math.random().toString(36).substr(2, 6);
-        }
+        function generateClientId() { return 'client_' + Math.random().toString(36).substr(2, 6); }
+        function saveTokens() { localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens)); }
+        function toggleShowInactive() { showInactive = document.getElementById('showInactiveToggle').checked; renderTokens(); }
 
-        function saveTokens() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
-        }
-
-        function toggleShowInactive() {
-            const toggle = document.getElementById('showInactiveToggle');
-            showInactive = toggle.checked;
-            renderTokens();
-        }
-
-        // --- Render ---
         function renderTokens() {
             const grid = document.getElementById('tokenGrid');
             const emptyState = document.getElementById('emptyState');
             const activeCountEl = document.getElementById('activeCount');
             const limitWarning = document.getElementById('limitWarning');
             const createBtn = document.getElementById('createBtn');
-            const maxTokensDisplay = document.getElementById('maxTokensDisplay');
 
             const activeCount = tokens.filter(t => t.status !== 'deleted' && t.status !== 'expired').length;
-            
             let displayTokens = tokens.filter(t => t.status !== 'deleted');
-            if (!showInactive) {
-                displayTokens = displayTokens.filter(t => t.status === 'active');
-            }
+            if (!showInactive) displayTokens = displayTokens.filter(t => t.status === 'active');
 
-            maxTokensDisplay.innerText = MAX_TOKENS;
+            document.getElementById('maxTokensDisplay').innerText = MAX_TOKENS;
             activeCountEl.innerText = activeCount;
-            activeCountEl.className = activeCount >= MAX_TOKENS ? 'font-bold text-red-600' : 'font-bold text-[var(--veeva-blue)]';
-            
+            activeCountEl.className = activeCount >= MAX_TOKENS ? 'font-bold text-vault-danger' : 'font-bold text-vault-primary';
+
             if (activeCount >= MAX_TOKENS) {
                 limitWarning.classList.remove('hidden');
                 createBtn.disabled = true;
@@ -412,92 +376,63 @@
                 grid.innerHTML = '';
                 emptyState.classList.remove('hidden');
                 return;
-            } else {
-                emptyState.classList.add('hidden');
             }
+            emptyState.classList.add('hidden');
 
-            const rowsHtml = displayTokens.map(token => {
-                const isExpired = new Date(token.expiresAt) < new Date() && token.expiresAt !== null;
-                let currentStatus = token.status;
-                if (isExpired) currentStatus = 'expired';
+            const fmt = d => new Date(d).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
 
-                const createdDate = new Date(token.createdDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                const expiresDate = token.expiresAt ? new Date(token.expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Never';
-                
-                const lastUsedDisplay = token.lastUsed 
-                    ? new Date(token.lastUsed).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) 
-                    : '<span class="text-gray-400 italic">Never</span>';
-                
-                let badgeClass = "bg-green-100 text-green-800 border border-green-200";
-                let badgeText = "Active";
-                
-                if (currentStatus === 'inactive') {
-                    badgeClass = "bg-gray-100 text-gray-600 border border-gray-200";
-                    badgeText = "Inactive";
-                } else if (currentStatus === 'expired') {
-                    badgeClass = "bg-red-50 text-red-600 border border-red-200";
-                    badgeText = "Expired";
-                }
-                
-                const dimClass = currentStatus !== 'active' ? 'text-gray-500' : 'text-[#1d1d1d]';
+            // Badge component tones: greenlt=active, graylt=inactive, red=expired
+            const BADGE = {
+                active:   { cls: 'bg-vault-green-lightest text-vault-green-darker', label: 'Active' },
+                inactive: { cls: 'bg-vault-gray-light text-vault-muted',            label: 'Inactive' },
+                expired:  { cls: 'bg-vault-danger text-white',                      label: 'Expired' },
+            };
+            const BADGE_BASE = 'inline-block px-2 py-0.5 text-label font-bold uppercase tracking-wider rounded-[2px]';
 
-                const isChecked = currentStatus === 'active' ? 'checked' : '';
-                const disabledClass = currentStatus === 'expired' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
-                const inputDisabled = currentStatus === 'expired' ? 'disabled' : '';
+            grid.innerHTML = displayTokens.map(token => {
+                const isExpired = token.expiresAt && new Date(token.expiresAt) < new Date();
+                const status = isExpired ? 'expired' : token.status;
+                const badge = BADGE[status] || BADGE.inactive;
+                const dimClass = status !== 'active' ? 'text-vault-muted' : 'text-vault-ink';
+                const lastUsed = token.lastUsed
+                    ? fmt(token.lastUsed)
+                    : '<span class="text-vault-muted italic">Never</span>';
 
                 const toggleId = `toggle_${token.id}`;
-
-                const toggleActionHtml = `
-                    <div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in ${disabledClass}">
-                        <input type="checkbox" name="${toggleId}" id="${toggleId}" ${isChecked} ${inputDisabled} onchange="toggleTokenStatus('${token.id}')" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none ${disabledClass} border-gray-300 left-0 transition-all duration-200 ease-in-out"/>
-                        <label for="${toggleId}" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 ${disabledClass}"></label>
-                    </div>
-                `;
+                const isChecked = status === 'active' ? 'checked' : '';
+                const isDisabled = status === 'expired';
+                const disabledCls = isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
 
                 return `
-                <div class="grid grid-cols-12 bg-white hover:bg-gray-50 group">
-                    <div class="col-span-2 w-full truncate border-b border-r border-[var(--border-color)] py-2 px-2 flex items-center">
-                        <span class="font-medium ${dimClass} text-[13px]" title="${token.name}">${token.name}</span>
-                    </div>
-                    <div class="col-span-2 w-full font-mono text-[12px] text-gray-500 truncate select-all border-b border-r border-[var(--border-color)] py-2 px-2 flex items-center" title="${token.clientId}">
-                        ${token.clientId}
-                    </div>
-                    <div class="col-span-1 w-full border-b border-r border-[var(--border-color)] py-2 px-2 flex items-center">
-                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${badgeClass}">
-                            ${badgeText}
-                        </span>
-                    </div>
-                    <div class="col-span-2 w-full text-[13px] text-gray-600 border-b border-r border-[var(--border-color)] py-2 px-2 flex items-center">
-                         ${lastUsedDisplay}
-                    </div>
-                    <div class="col-span-2 w-full text-[13px] text-gray-500 border-b border-r border-[var(--border-color)] py-2 px-2 flex items-center">
-                         ${createdDate}
-                    </div>
-                    <div class="col-span-2 w-full text-[13px] border-b border-r border-[var(--border-color)] py-2 px-2 flex items-center">
-                         <span class="${currentStatus === 'expired' ? 'text-red-600 font-medium' : 'text-gray-500'}">${expiresDate}</span>
-                    </div>
-                    <div class="col-span-1 w-full flex justify-end items-center border-b border-r border-[var(--border-color)] py-2 px-2">
-                        ${toggleActionHtml}
-                    </div>
-                </div>
-                `;
+                <tr class="${status !== 'active' ? '' : 'hover:bg-vault-bg-row-hover'} group">
+                    <td class="px-2.5 py-1.5 border-b border-vault-gray-light">
+                        <span class="font-medium ${dimClass} text-sm" title="${token.name}">${token.name}</span>
+                    </td>
+                    <td class="px-2.5 py-1.5 border-b border-vault-gray-light font-mono text-xs text-vault-muted select-all" title="${token.clientId}">${token.clientId}</td>
+                    <td class="px-2.5 py-1.5 border-b border-vault-gray-light">
+                        <span class="${BADGE_BASE} ${badge.cls}">${badge.label}</span>
+                    </td>
+                    <td class="px-2.5 py-1.5 border-b border-vault-gray-light text-sm text-vault-muted">${lastUsed}</td>
+                    <td class="px-2.5 py-1.5 border-b border-vault-gray-light text-sm text-vault-muted">${fmt(token.createdDate)}</td>
+                    <td class="px-2.5 py-1.5 border-b border-vault-gray-light text-sm">
+                        <span class="${status === 'expired' ? 'text-vault-danger font-medium' : 'text-vault-muted'}">${token.expiresAt ? fmt(token.expiresAt) : 'Never'}</span>
+                    </td>
+                    <td class="px-2.5 py-1.5 border-b border-vault-gray-light text-right">
+                        <div class="relative inline-block w-10 align-middle select-none ${disabledCls}">
+                            <input type="checkbox" id="${toggleId}" ${isChecked} ${isDisabled ? 'disabled' : ''} onchange="toggleTokenStatus('${token.id}')"
+                                class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none ${disabledCls} border-gray-300 left-0 transition-all duration-200 ease-in-out"/>
+                            <label for="${toggleId}" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 ${disabledCls}"></label>
+                        </div>
+                    </td>
+                </tr>`;
             }).join('');
-
-            grid.innerHTML = rowsHtml;
         }
-
-        // --- Actions ---
 
         function toggleTokenStatus(id) {
             const token = tokens.find(t => t.id === id);
             if (token) {
-                if (token.status === 'active') {
-                    token.status = 'inactive';
-                } else if (token.status === 'inactive') {
-                    token.status = 'active';
-                }
-                saveTokens();
-                renderTokens();
+                token.status = token.status === 'active' ? 'inactive' : 'active';
+                saveTokens(); renderTokens();
             }
         }
 
@@ -511,65 +446,50 @@
             document.getElementById('tokenExpiryInput').value = '6months';
         }
 
-        function closeModal() {
-            document.getElementById('modalBackdrop').classList.add('hidden');
-        }
+        function closeModal() { document.getElementById('modalBackdrop').classList.add('hidden'); }
 
         function handleCreateToken(e) {
             e.preventDefault();
-            
             const name = document.getElementById('tokenNameInput').value;
             const expiryType = document.getElementById('tokenExpiryInput').value;
-            
             let expiryDate = new Date();
-            if (expiryType === '30days') expiryDate.setDate(expiryDate.getDate() + 30);
+            if (expiryType === '30days')  expiryDate.setDate(expiryDate.getDate() + 30);
             else if (expiryType === '6months') expiryDate.setMonth(expiryDate.getMonth() + 6);
-            else if (expiryType === '1year') expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+            else if (expiryType === '1year')   expiryDate.setFullYear(expiryDate.getFullYear() + 1);
             else expiryDate = null;
 
-            const newToken = {
-                id: `tok_${Math.floor(Math.random() * 100000)}`,
+            tokens.unshift({
+                id: `tok_${Math.floor(Math.random()*100000)}`,
                 clientId: generateClientId(),
                 name: name || 'Untitled Token',
                 createdDate: new Date().toISOString(),
-                lastUsed: null,
-                createdBy: 'You',
+                lastUsed: null, createdBy: 'You',
                 expiresAt: expiryDate ? expiryDate.toISOString() : null,
                 status: 'active'
-            };
+            });
+            saveTokens(); renderTokens();
 
-            tokens.unshift(newToken);
-            saveTokens();
-            renderTokens();
-
-            const rawToken = `vlt_${Math.random().toString(36).substr(2, 9)}_${Math.random().toString(36).substr(2, 9)}`;
+            const rawToken = `vlt_${Math.random().toString(36).substr(2,9)}_${Math.random().toString(36).substr(2,9)}`;
             document.getElementById('modalForm').classList.add('hidden');
             document.getElementById('modalSuccess').classList.remove('hidden');
-            document.getElementById('modalCloseBtn').classList.add('hidden');
+            document.getElementById('modalCloseBtn').classList.remove('hidden');
             document.getElementById('modalTitle').innerText = 'Token Generated';
             document.getElementById('newTokenValue').innerText = rawToken;
         }
 
         function copyToken() {
             const val = document.getElementById('newTokenValue').innerText;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(val);
-            } else {
-                const textarea = document.createElement('textarea');
-                textarea.value = val;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
+            if (navigator.clipboard) { navigator.clipboard.writeText(val); }
+            else {
+                const ta = document.createElement('textarea');
+                ta.value = val; document.body.appendChild(ta); ta.select();
+                document.execCommand('copy'); document.body.removeChild(ta);
             }
         }
 
         document.getElementById('modalBackdrop').addEventListener('click', function(e) {
-            if (e.target === this && !document.getElementById('modalSuccess').classList.contains('hidden') === false) {
-                closeModal();
-            }
+            if (e.target === this && document.getElementById('modalSuccess').classList.contains('hidden')) closeModal();
         });
-
     </script>
 </body>
 </html>

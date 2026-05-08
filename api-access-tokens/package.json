@@ -1,0 +1,8 @@
+{
+  "name": "api-access-tokens",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@dmills-veeva/vault-vibe-design-system": "file:../dmills-veeva-vault-vibe-design-system-1.0.0.tgz"
+  }
+}
