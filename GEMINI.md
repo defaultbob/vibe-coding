@@ -1,8 +1,5 @@
-# Vibe coding Repo
+# GEMINI.md
 
-Collection of POCs and experimental static web pages .
-Automatically hosted on [my GitHub Pages site](https://defaultbob.github.io/vibe-coding/) when I push the repo.
-Each prototype should be a static web page/web site. 
+This file provides guidance to Gemini CLI when working with code in this repository.
 
-**IMPORTANT:** Always use and reference `Vault-Styling.md` for layout and styling instructions on all pages in this project.
-**IMPORTANT:** Refer to `MDL-Syntax-and-Structure.md` for Vault configuration MDL structure and syntax.
+Read `AGENTS.md` — it is the canonical guidance file for this project. Treat it as you would GEMINI.md.
