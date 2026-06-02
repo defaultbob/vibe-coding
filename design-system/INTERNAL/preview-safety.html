@@ -1,0 +1,4024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vault · Safety (Pharmacovigilance) Design System Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Variables from DESIGN.md */
+    :root {
+  --color-primary: #1453b8;
+  --color-primary-hover: #104293;
+  --color-primary-active: #092553;
+  --color-accent: #f8972b;
+  --color-on-primary: #ffffff;
+  --color-on-accent: #1d1d1d;
+  --color-danger: #ce1300;
+  --color-success: #539137;
+  --color-warning: #cc6600;
+  --color-info: #1453b8;
+  --color-ink: #1d1d1d;
+  --color-body: #1d1d1d;
+  --color-muted: #646464;
+  --color-placeholder: #cccccc;
+  --color-disabled: #aaaaaa;
+  --color-border: #dadada;
+  --color-border-strong: #cccccc;
+  --color-surface: #ffffff;
+  --color-surface-page: #f5f5f5;
+  --color-surface-alt: #f8f8f8;
+  --color-header: #061937;
+  --color-on-header: #ffffff;
+  --color-row-hover: #eeeeee;
+  --color-row-selected: #fff5ad;
+  --color-required: #ffffcc;
+  --color-link: #0066cc;
+  --color-blue: #1453b8;
+  --color-orange: #f8972b;
+  --color-green: #539137;
+  --color-red: #ce1300;
+  --color-yellow: #ffe36f;
+  --color-gray: #555555;
+  --color-blue-lightest: #e3edfc;
+  --color-blue-lighter: #d1e1fa;
+  --color-blue-light: #acc8f6;
+  --color-blue-default: #1453b8;
+  --color-blue-dark: #104293;
+  --color-blue-darker: #0c326e;
+  --color-blue-darkest: #092553;
+  --color-orange-lightest: #ffefd5;
+  --color-orange-lighter: #fcd19c;
+  --color-orange-light: #fab463;
+  --color-orange-default: #f8972b;
+  --color-orange-dark: #f78b12;
+  --color-orange-darker: #d9780d;
+  --color-orange-darkest: #cc6600;
+  --color-green-lightest: #e0f3e0;
+  --color-green-lighter: #b1d2a7;
+  --color-green-light: #82b16f;
+  --color-green-default: #539137;
+  --color-green-dark: #427b2e;
+  --color-green-darker: #316525;
+  --color-green-darkest: #27571f;
+  --color-red-lightest: #ffb3b3;
+  --color-red-lighter: #ee7d75;
+  --color-red-light: #de483a;
+  --color-red-default: #ce1300;
+  --color-red-dark: #b71307;
+  --color-red-darker: #a0140e;
+  --color-red-darkest: #891515;
+  --color-yellow-lightest: #ffffcc;
+  --color-yellow-lighter: #fff5ad;
+  --color-yellow-light: #ffec8e;
+  --color-yellow-default: #ffe36f;
+  --color-yellow-dark: #ffd950;
+  --color-yellow-darker: #ffd031;
+  --color-yellow-darkest: #e6c10b;
+  --color-silver-lightest: #f8f8f8;
+  --color-silver-lighter: #f5f5f5;
+  --color-silver-light: #eeeeee;
+  --color-silver-default: #dadada;
+  --color-silver-dark: #cccccc;
+  --color-silver-darker: #c0c0c0;
+  --color-silver-darkest: #b3b3b3;
+  --color-gray-lightest: #aaaaaa;
+  --color-gray-lighter: #808080;
+  --color-gray-light: #646464;
+  --color-gray-default: #555555;
+  --color-gray-dark: #414141;
+  --color-gray-darker: #373737;
+  --color-gray-darkest: #333333;
+  --color-teal-lightest: #d2f6fa;
+  --color-teal-lighter: #9fe7ef;
+  --color-teal-light: #63d4e1;
+  --color-teal-default: #009fb4;
+  --color-teal-dark: #00788c;
+  --color-teal-darker: #016073;
+  --color-teal-darkest: #004c5d;
+  --color-slate-lightest: #e1ebf5;
+  --color-slate-lighter: #c6d8ea;
+  --color-slate-light: #a8c0d9;
+  --color-slate-default: #5981a9;
+  --color-slate-dark: #456b90;
+  --color-slate-darker: #345779;
+  --color-slate-darkest: #284766;
+  --color-purple-lightest: #ede7f6;
+  --color-purple-lighter: #d1c4e9;
+  --color-purple-light: #b39ddb;
+  --color-purple-default: #7e57c2;
+  --color-purple-dark: #673ab7;
+  --color-purple-darker: #5e35b1;
+  --color-purple-darkest: #512da8;
+  --color-pink-lightest: #fce4ec;
+  --color-pink-lighter: #f8bbd0;
+  --color-pink-light: #f48fb1;
+  --color-pink-default: #ec407a;
+  --color-pink-dark: #e91e63;
+  --color-pink-darker: #d81b60;
+  --color-pink-darkest: #c2185b;
+  --color-brown-lightest: #f7ece0;
+  --color-brown-lighter: #efd9bb;
+  --color-brown-light: #e4c291;
+  --color-brown-default: #bf8e56;
+  --color-brown-dark: #9d7348;
+  --color-brown-darker: #835f3f;
+  --color-brown-darkest: #6f5136;
+  --rounded-none: alue;
+  --rounded-xs: alue;
+  --rounded-sm: alue;
+  --rounded-md: alue;
+  --rounded-lg: alue;
+  --rounded-full: alue;
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-0-5: 2px;
+  --elevation-panel: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels;
+  --elevation-dropdown: 0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.12), 0 1px 8px 0 rgba(0,0,0,.20)     # 3dp — hover: menus, button/card hover;
+  --elevation-focus: 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12), 0 2px 4px -1px rgba(0,0,0,.20)       # 4dp — focus: moving/dragging elements, card focus;
+  --elevation-sticky: 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12), 0 3px 5px -1px rgba(0,0,0,.20)     # 6dp — sticky: scrolling nav, sliding drawer, panel;
+  --elevation-overlay: 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards;
+  --elevation-modal: 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12), 0 11px 15px -7px rgba(0,0,0,.20) # 24dp — dialog / overlay that takes over the screen;
+      
+      /* Admin and visualizer-specific colors */
+      --preview-bg-dark: #0a0a0c;
+      --preview-sidebar-bg: #f8f9fa;
+      --preview-border: #dadada;
+      --preview-text-main: #1d1d1d;
+      --preview-text-muted: #646464;
+      --preview-accent: #1453b8;
+      --preview-content-bg: #fcfcfc;
+      --preview-card-bg: #ffffff;
+    }
+
+    /* Dark Theme overrides */
+    body.dark-theme {
+      --color-surface: #1e1e24;
+      --color-surface-page: #121214;
+      --color-surface-alt: #1a1a1f;
+      --color-ink: #ffffff;
+      --color-body: #e0e0e0;
+      --color-muted: #a0a0a0;
+      --color-border: #333338;
+      --color-border-strong: #44444c;
+      --color-row-hover: #2d2d34;
+      --color-required: #3c3c1e;
+      --color-silver-lightest: #222226;
+      --color-silver-light: #2c2c32;
+      
+      --preview-sidebar-bg: #16161a;
+      --preview-border: #2d2d34;
+      --preview-text-main: #ffffff;
+      --preview-text-muted: #a0a0a0;
+      --preview-content-bg: #121214;
+      --preview-card-bg: #1e1e24;
+    }
+
+    /* Core Styles for the Style Guide App */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--preview-text-main);
+      background-color: var(--preview-content-bg);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Left Sidebar */
+    .preview-sidebar {
+      width: 260px;
+      background-color: var(--preview-sidebar-bg);
+      border-right: 1px solid var(--preview-border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex-shrink: 0;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .preview-sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--preview-border);
+    }
+    .preview-sidebar-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin: 0 0 12px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .preview-sidebar-title span {
+      background-color: var(--color-blue-lightest);
+      color: var(--color-primary);
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: var(--rounded-sm);
+      font-weight: 500;
+    }
+    .preview-sidebar-desc {
+      font-size: 11px;
+      color: var(--preview-text-muted);
+      margin: 0;
+      line-height: 1.4;
+    }
+    .preview-sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+    }
+    .nav-group-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--preview-text-muted);
+      margin: 16px 0 8px 8px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      color: var(--preview-text-main);
+      text-decoration: none;
+      border-radius: var(--rounded-md);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .nav-item:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+    body.dark-theme .nav-item:hover {
+      background-color: rgba(255, 255, 255, 0.04);
+    }
+    .nav-item.active {
+      background-color: var(--color-blue-lightest);
+      color: var(--color-primary);
+    }
+    body.dark-theme .nav-item.active {
+      background-color: var(--color-blue-darkest);
+      color: var(--color-blue-light);
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle-btn {
+      width: 100%;
+      background-color: var(--color-surface);
+      color: var(--preview-text-main);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--rounded-xs);
+      font-family: 'Roboto', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 12px;
+      transition: all 0.15s ease;
+    }
+    .theme-toggle-btn:hover {
+      background-color: var(--color-row-hover);
+    }
+
+    /* Main Workspace */
+    .preview-content {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      padding: 40px;
+    }
+    .preview-section {
+      display: none;
+      max-width: 1000px;
+    }
+    .preview-section.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section Titles */
+    .section-header {
+      border-bottom: 2px solid var(--color-accent);
+      padding-bottom: 12px;
+      margin-bottom: 32px;
+    }
+    .section-title {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--color-ink);
+      margin: 0 0 8px 0;
+    }
+    .section-desc {
+      font-size: 13px;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    /* Grid Layouts */
+    .grid-swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .swatch-card {
+      background-color: var(--preview-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--rounded-md);
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: var(--elevation-panel);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .swatch-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--elevation-dropdown);
+    }
+    .swatch-color {
+      height: 90px;
+      width: 100%;
+      position: relative;
+    }
+    .swatch-info {
+      padding: 12px;
+    }
+    .swatch-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-ink);
+      margin-bottom: 4px;
+    }
+    .swatch-value {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      color: var(--color-muted);
+    }
+
+    /* Scale Row (Tonal Scales) */
+    .scale-group {
+      background-color: var(--preview-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--rounded-md);
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: var(--elevation-panel);
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .scale-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-ink);
+      margin: 0 0 12px 0;
+      text-transform: capitalize;
+    }
+    .scale-row {
+      display: flex;
+      border-radius: var(--rounded-sm);
+      overflow: hidden;
+      height: 48px;
+    }
+    .scale-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 9px;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 500;
+      position: relative;
+      transition: flex-grow 0.15s ease;
+    }
+    .scale-step:hover {
+      flex-grow: 1.3;
+    }
+    .scale-step .step-name {
+      display: none;
+      margin-bottom: 2px;
+    }
+    .scale-step:hover .step-name, .scale-step:hover .step-hex {
+      display: block;
+    }
+
+    /* Typo specimens */
+    .typo-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--preview-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--rounded-md);
+      box-shadow: var(--elevation-panel);
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .typo-table th, .typo-table td {
+      padding: 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .typo-table th {
+      background-color: var(--color-surface-alt);
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+    .typo-specimen-name {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--color-ink);
+    }
+    .typo-specimen-meta {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      color: var(--color-muted);
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    /* Shapes and Spacing */
+    .spacing-container {
+      background-color: var(--preview-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--rounded-md);
+      padding: 24px;
+      box-shadow: var(--elevation-panel);
+      margin-bottom: 32px;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .spacing-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .spacing-label {
+      width: 120px;
+      font-weight: 500;
+      color: var(--color-muted);
+      font-size: 12px;
+    }
+    .spacing-bar-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    .spacing-bar {
+      height: 16px;
+      background-color: var(--color-blue-light);
+      border-radius: var(--rounded-xs);
+    }
+    .spacing-value-label {
+      margin-left: 12px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      color: var(--color-ink);
+    }
+
+    .shapes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .shape-card {
+      background-color: var(--preview-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--rounded-md);
+      padding: 20px;
+      box-shadow: var(--elevation-panel);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .shape-demo {
+      width: 80px;
+      height: 80px;
+      background-color: var(--color-primary);
+      margin-bottom: 16px;
+    }
+    .shape-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-ink);
+      margin-bottom: 4px;
+    }
+    .shape-value {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      color: var(--color-muted);
+    }
+
+    /* Elevations */
+    .elevations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .elevation-card {
+      background-color: var(--preview-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--rounded-md);
+      padding: 24px;
+      text-align: center;
+      transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .elevation-card:hover {
+      transform: translateY(-2px);
+    }
+    .elevation-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-ink);
+      margin-bottom: 8px;
+    }
+    .elevation-value {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      color: var(--color-muted);
+      line-height: 1.4;
+    }
+
+    /* Component Specimen Layouts */
+    .specimen-group {
+      background-color: var(--preview-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--rounded-md);
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: var(--elevation-panel);
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .specimen-group-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-ink);
+      margin: 0 0 6px 0;
+      border-bottom: 1px dashed var(--color-border);
+      padding-bottom: 8px;
+    }
+    .specimen-group-desc {
+      font-size: 12px;
+      color: var(--color-muted);
+      margin: 0 0 20px 0;
+    }
+    .specimen-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    /* --- PARSED STITCH COMPONENT SPECIFICS --- */
+.vault-button-default {
+  background-color: #ffffff;
+  color: #1d1d1d;
+  border: 1px solid #cccccc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  border-radius: 2px;
+  height: 24px;
+  padding: 0 12px;
+}
+
+.vault-button-default-hover {
+  background-color: #f8f8f8;
+  border: 1px solid #646464;
+}
+
+.vault-button-primary {
+  background-color: #1453b8;
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  border-radius: 2px;
+  height: 24px;
+  padding: 0 12px;
+}
+
+.vault-button-primary-hover {
+  background-color: #104293;
+}
+
+.vault-button-primary-active {
+  background-color: #092553;
+}
+
+.vault-button-ghost {
+  background-color: transparent;
+  color: #1453b8;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  border-radius: 2px;
+  height: 24px;
+  padding: 0 8px;
+}
+
+.vault-button-danger {
+  background-color: #ce1300;
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  border-radius: 2px;
+  height: 24px;
+  padding: 0 12px;
+}
+
+.vault-button-disabled {
+  background-color: #eeeeee;
+  color: #aaaaaa;
+}
+
+.vault-text-input {
+  background-color: #ffffff;
+  color: #1d1d1d;
+  border: 1px solid #cccccc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 2px;
+  height: 28px;
+  padding: 0 8px;
+}
+
+.vault-text-input-focus {
+  border: 1px solid #1453b8;
+}
+
+.vault-text-input-required {
+  background-color: #ffffcc;
+}
+
+.vault-text-input-error {
+  border: 1px solid #ce1300;
+}
+
+.vault-text-input-disabled {
+  background-color: #f8f8f8;
+  color: #aaaaaa;
+}
+
+.vault-textarea {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 2px;
+  padding: 6px 8px;
+}
+
+.vault-checkbox {
+  size: 14px;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
+  checked-color: #1453b8;
+}
+
+.vault-radio {
+  size: 14px;
+  border: 1px solid #cccccc;
+  border-radius: 9999px;
+  checked-color: #1453b8;
+}
+
+.vault-dropdown {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 2px;
+  height: 28px;
+  padding: 0 8px;
+}
+
+.vault-global-header {
+  background-color: #061937;
+  color: #ffffff;
+  height: 44px;
+  padding: 0 16px;
+}
+
+.vault-global-header-tabbar {
+  background-color: #ffffff;
+  color: #1d1d1d;
+  border-bottom: 1px solid #dadada;
+  height: 40px;
+}
+
+.vault-sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid #dadada;
+  width: 220px;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-sidebar-item-active {
+  background-color: #fff5ad;
+  border-left: 3px solid #f8972b;
+  color: #1d1d1d;
+}
+
+.vault-tab {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  padding: 0 12px;
+  height: 36px;
+}
+
+.vault-tab-active {
+  color: #1d1d1d;
+  border-bottom: 3px solid #f8972b;
+}
+
+.vault-breadcrumb {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  separator: ›;
+}
+
+.vault-breadcrumb-link {
+  color: #0066cc;
+}
+
+.vault-page-title {
+  font-family: Roboto;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 400;
+  color: #1d1d1d;
+  border-bottom: 2px solid #f8972b;
+  padding: 0 0 8px 0;
+}
+
+.vault-data-grid-header {
+  background-color: #f8f8f8;
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid #dadada;
+  height: 32px;
+}
+
+.vault-data-grid-row {
+  background-color: #ffffff;
+  color: #1d1d1d;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-bottom: 1px solid #eeeeee;
+  height: 32px;
+}
+
+.vault-data-grid-row-hover {
+  background-color: #eeeeee;
+}
+
+.vault-data-grid-row-selected {
+  background-color: #fff5ad;
+}
+
+.vault-badge {
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.vault-badge-blue {
+  background-color: #e3edfc;
+  color: #104293;
+}
+
+.vault-badge-green {
+  background-color: #e0f3e0;
+  color: #427b2e;
+}
+
+.vault-badge-red {
+  background-color: #ffb3b3;
+  color: #b71307;
+}
+
+.vault-badge-yellow {
+  background-color: #ffe36f;
+  color: #1d1d1d;
+}
+
+.vault-badge-orange {
+  background-color: #ffefd5;
+  color: #f78b12;
+}
+
+.vault-badge-gray {
+  background-color: #eeeeee;
+  color: #646464;
+}
+
+.vault-tag {
+  background-color: #eeeeee;
+  color: #1d1d1d;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.vault-pill {
+  background-color: #e3edfc;
+  color: #104293;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 9999px;
+  padding: 2px 8px;
+}
+
+.vault-avatar {
+  background-color: #f8972b;
+  color: #1d1d1d;
+  border-radius: 9999px;
+  size: 28px;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-link {
+  color: #0066cc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-lifecycle-stage-done {
+  background-color: #539137;
+  color: #ffffff;
+}
+
+.vault-lifecycle-stage-current {
+  background-color: #1453b8;
+  color: #ffffff;
+}
+
+.vault-lifecycle-stage-upcoming {
+  background-color: #eeeeee;
+  color: #646464;
+}
+
+.vault-modal {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12), 0 11px 15px -7px rgba(0,0,0,.20) # 24dp — dialog / overlay that takes over the screen;
+  padding: 0px;
+}
+
+.vault-modal-header {
+  font-family: Roboto;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 400;
+  border-bottom: 1px solid #dadada;
+  padding: 16px 20px;
+}
+
+.vault-modal-footer {
+  background-color: #f8f8f8;
+  border-top: 1px solid #dadada;
+  padding: 12px 20px;
+}
+
+.vault-menu {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.12), 0 1px 8px 0 rgba(0,0,0,.20)     # 3dp — hover: menus, button/card hover;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  padding: 4px 0;
+}
+
+.vault-menu-item-hover {
+  background-color: #eeeeee;
+}
+
+.vault-tooltip {
+  background-color: #1d1d1d;
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.vault-hovercard {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  box-shadow: 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards;
+  padding: 12px;
+}
+
+.vault-notification {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards;
+  width: 360px;
+  padding: 12px 16px;
+  border-left: 4px solid #1453b8;
+}
+
+.vault-notification-success {
+  border-left: 4px solid #539137;
+}
+
+.vault-notification-error {
+  border-left: 4px solid #ce1300;
+}
+
+.vault-notification-warning {
+  border-left: 4px solid #f8972b;
+}
+
+.vault-spinner {
+  color: #1453b8;
+  size: 20px;
+}
+
+.vault-pagination {
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  color: #1d1d1d;
+}
+
+.vault-picker-button {
+  background-color: #ffffff;
+  color: #1d1d1d;
+  border: 1px solid #cccccc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 2px;
+  height: 28px;
+  padding: 0 8px;
+  caret: fas caret-down 14px #1d1d1d;
+  width: 180px   # sizes — xs 48px / s 100px / m 180px (default) / lg-xl 280px / full 100%;
+}
+
+.vault-picker-button-focus {
+  border: 1px solid #1453b8;
+}
+
+.vault-picker-button-required {
+  background-color: #ffffcc;
+}
+
+.vault-picker-button-error {
+  border: 1px solid #ce1300;
+}
+
+.vault-picker-button-disabled {
+  background-color: #f8f8f8;
+  color: #aaaaaa;
+}
+
+.vault-search-box {
+  background-color: #ffffff;
+  color: #1d1d1d;
+  border: 1px solid #cccccc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 2px;
+  height: 28px;
+  padding: 0 8px;
+  search-icon: far search 14px #1d1d1d;
+  clear-icon: far times 14px #1d1d1d;
+}
+
+.vault-search-box-focus {
+  border: 1px solid #1453b8;
+}
+
+.vault-search-box-disabled {
+  background-color: #f8f8f8;
+  color: #aaaaaa;
+}
+
+.vault-search-box-button {
+  0: #;
+  1:  ;
+  2: ";
+  3: o;
+  4: u;
+  5: t;
+  6: e;
+  7: r;
+  8: ";
+  9:  ;
+  10: v;
+  11: a;
+  12: r;
+  13: i;
+  14: a;
+  15: n;
+  16: t;
+  17: :;
+  18:  ;
+  19: a;
+  20:  ;
+  21: 2;
+  22: 8;
+  23: p;
+  24: x;
+  25:  ;
+  26: s;
+  27: q;
+  28: u;
+  29: a;
+  30: r;
+  31: e;
+  32:  ;
+  33: i;
+  34: c;
+  35: o;
+  36: n;
+  37:  ;
+  38: b;
+  39: u;
+  40: t;
+  41: t;
+  42: o;
+  43: n;
+  44:  ;
+  45: a;
+  46: d;
+  47: j;
+  48: a;
+  49: c;
+  50: e;
+  51: n;
+  52: t;
+  53:  ;
+  54: t;
+  55: o;
+  56:  ;
+  57: t;
+  58: h;
+  59: e;
+  60:  ;
+  61: f;
+  62: i;
+  63: e;
+  64: l;
+  65: d;
+}
+
+.vault-backgroundColor {
+  0: #;
+  1: e;
+  2: e;
+  3: e;
+  4: e;
+  5: e;
+  6: e;
+}
+
+.vault-size {
+  0: 2;
+  1: 8;
+  2: p;
+  3: x;
+}
+
+.vault-search-box-button-hover {
+  background-color: #dadada;
+}
+
+.vault-search-box-button-active {
+  background-color: #c0c0c0;
+}
+
+.vault-picklist-multiple {
+  background-color: #ffffff;
+  color: #1d1d1d;
+  border: 1px solid #cccccc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 2px;
+  min-height: 28px;
+  padding: 8px;
+  caret-position: top-right   # caret stays anchored top-right as the field grows;
+  width: 180px   # sizes — sm 100px / md 180px (default) / lg 280px / xl 460px / full 100%;
+}
+
+.vault-picklist-multiple-focus {
+  border: 1px solid #1453b8;
+}
+
+.vault-picklist-multiple-required {
+  background-color: #ffffcc;
+}
+
+.vault-picklist-multiple-error {
+  border: 1px solid #ce1300;
+}
+
+.vault-picklist-multiple-disabled {
+  background-color: #f8f8f8;
+  color: #aaaaaa;
+}
+
+.vault-timepicker {
+  background-color: #ffffff;
+  color: #1d1d1d;
+  border: 1px solid #cccccc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 2px;
+  height: 28px;
+  padding: 0 8px;
+  icon: far clock 14px;
+  width: 180px   # sizes — s 100px / m 180px (default);
+}
+
+.vault-timepicker-focus {
+  border: 1px solid #1453b8;
+}
+
+.vault-timepicker-required {
+  background-color: #ffffcc;
+}
+
+.vault-timepicker-error {
+  border: 1px solid #ce1300;
+}
+
+.vault-timepicker-disabled {
+  background-color: #f8f8f8;
+  color: #aaaaaa;
+}
+
+.vault-split-button-primary {
+  background-color: #1453b8;
+  color: #ffffff;
+  border: 1px solid #1453b8;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 4px;
+  height: 28px;
+  padding: 0 8px;
+  divider: 1px solid rgba(255,255,255,.5);
+  caret: fas caret-down 14px;
+}
+
+.vault-split-button-primary-hover {
+  background-color: #104293;
+  border: 1px solid #104293;
+}
+
+.vault-split-button-primary-focus {
+  border: 1px solid #f8972b;
+}
+
+.vault-split-button-primary-active {
+  background-color: #092553;
+  border: 1px solid #092553;
+}
+
+.vault-split-button-primary-disabled {
+  background-color: #acc8f6;
+  border: 1px solid #acc8f6;
+}
+
+.vault-split-button-secondary {
+  background-color: #eeeeee;
+  color: #1d1d1d;
+  border: 1px solid #cccccc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 4px;
+  height: 28px;
+  padding: 0 8px;
+  divider: 1px solid rgba(0,0,0,.5);
+  caret: fas caret-down 14px;
+}
+
+.vault-split-button-secondary-focus {
+  border: 1px solid #1453b8;
+}
+
+.vault-split-button-secondary-disabled {
+  background-color: #f8f8f8;
+  color: #aaaaaa;
+}
+
+.vault-page-title-padded {
+  0: #;
+  1:  ;
+  2: d;
+  3: e;
+  4: t;
+  5: a;
+  6: i;
+  7: l;
+  8:  ;
+  9: /;
+  10:  ;
+  11: D;
+  12: o;
+  13: c;
+  14: I;
+  15: n;
+  16: f;
+  17: o;
+  18:  ;
+  19: p;
+  20: a;
+  21: g;
+  22: e;
+  23: s;
+  24: :;
+  25:  ;
+  26: a;
+  27: d;
+  28: d;
+  29: s;
+  30:  ;
+  31: 1;
+  32: 2;
+  33: p;
+  34: x;
+  35:  ;
+  36: s;
+  37: i;
+  38: d;
+  39: e;
+  40:  ;
+  41: p;
+  42: a;
+  43: d;
+  44: d;
+  45: i;
+  46: n;
+  47: g;
+  48: ;;
+  49:  ;
+  50: l;
+  51: i;
+  52: s;
+  53: t;
+  54:  ;
+  55: p;
+  56: a;
+  57: g;
+  58: e;
+  59: s;
+  60:  ;
+  61: u;
+  62: s;
+  63: e;
+  64:  ;
+  65: p;
+  66: a;
+  67: g;
+  68: e;
+  69: -;
+  70: t;
+  71: i;
+  72: t;
+  73: l;
+  74: e;
+}
+
+.vault-typography {
+  0: {;
+  1: ";
+  2: f;
+  3: o;
+  4: n;
+  5: t;
+  6: F;
+  7: a;
+  8: m;
+  9: i;
+  10: l;
+  11: y;
+  12: ";
+  13: :;
+  14: ";
+  15: R;
+  16: o;
+  17: b;
+  18: o;
+  19: t;
+  20: o;
+  21: ";
+  22: ,;
+  23: ";
+  24: f;
+  25: o;
+  26: n;
+  27: t;
+  28: S;
+  29: i;
+  30: z;
+  31: e;
+  32: ";
+  33: :;
+  34: ";
+  35: 2;
+  36: 4;
+  37: p;
+  38: x;
+  39: ";
+  40: ,;
+  41: ";
+  42: l;
+  43: i;
+  44: n;
+  45: e;
+  46: H;
+  47: e;
+  48: i;
+  49: g;
+  50: h;
+  51: t;
+  52: ";
+  53: :;
+  54: ";
+  55: 3;
+  56: 2;
+  57: p;
+  58: x;
+  59: ";
+  60: ,;
+  61: ";
+  62: f;
+  63: o;
+  64: n;
+  65: t;
+  66: W;
+  67: e;
+  68: i;
+  69: g;
+  70: h;
+  71: t;
+  72: ";
+  73: :;
+  74: 4;
+  75: 0;
+  76: 0;
+  77: };
+}
+
+.vault-textColor {
+  0: #;
+  1: 1;
+  2: d;
+  3: 1;
+  4: d;
+  5: 1;
+  6: d;
+}
+
+.vault-borderBottom {
+  0: 2;
+  1: p;
+  2: x;
+  3:  ;
+  4: s;
+  5: o;
+  6: l;
+  7: i;
+  8: d;
+  9:  ;
+  10: #;
+  11: f;
+  12: 8;
+  13: 9;
+  14: 7;
+  15: 2;
+  16: b;
+}
+
+.vault-padding {
+  0: 0;
+  1:  ;
+  2: 1;
+  3: 2;
+  4: p;
+  5: x;
+  6:  ;
+  7: 8;
+  8: p;
+  9: x;
+  10:  ;
+  11: 1;
+  12: 2;
+  13: p;
+  14: x;
+}
+
+.vault-object-hovercard-trigger {
+  background-color: #ffffff;
+  box-shadow: 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards;
+  border-top: "2px solid #f8972b"   # the orange divider tell;
+  border-radius: 8px;
+  padding: 12px;
+  title-typography: "{"fontFamily":"Roboto","fontSize":"14px","lineHeight":"20px"}"      # 14px, bold;
+  empty-state-color: #555555;
+}
+
+.vault-object-record-page {
+  background-color: #f5f5f5;
+  padding: 16px 24px;
+}
+
+.vault-object-record-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dadada;
+  font-family: Roboto;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 400;
+  padding: 12px 24px;
+}
+
+.vault-object-section {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels;
+  padding: 0px;
+}
+
+.vault-object-section-header {
+  background-color: #f8f8f8;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #646464;
+  border-bottom: 1px solid #dadada;
+  padding: 8px 16px;
+  height: 32px;
+}
+
+.vault-field-row {
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  padding: 6px 16px;
+  border-bottom: 1px solid #646464;
+}
+
+.vault-field-label {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  width: 200px;
+}
+
+.vault-field-value {
+  color: #1d1d1d;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-field-value-edit {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
+  height: 28px;
+}
+
+.vault-field-value-required {
+  background-color: #ffffcc;
+}
+
+.vault-reference-field {
+  color: #0066cc;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-picklist-value {
+  background-color: #646464;
+  color: #1d1d1d;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+.vault-system-field {
+  color: #646464;
+  font-family: Roboto Mono;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-related-list {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+}
+
+.vault-related-list-header {
+  background-color: #f8f8f8;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #646464;
+  border-bottom: 1px solid #dadada;
+  padding: 8px 12px;
+}
+
+.vault-related-list-count {
+  background-color: #646464;
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 9999px;
+  padding: 1px 6px;
+}
+
+.vault-object-hovercard {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  box-shadow: 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards;
+  width: 320px;
+  padding: 16px;
+}
+
+.vault-object-hovercard-title {
+  font-family: Roboto;
+  font-size: 16px;
+  line-height: 22px;
+  color: #1d1d1d;
+}
+
+.vault-record-dialog {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12), 0 11px 15px -7px rgba(0,0,0,.20) # 24dp — dialog / overlay that takes over the screen;
+  width: 640px;
+}
+
+.vault-record-dialog-header {
+  font-family: Roboto;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 400;
+  border-bottom: 1px solid #dadada;
+  padding: 16px 20px;
+}
+
+.vault-state-badge-active {
+  background-color: #e0f3e0;
+  color: #427b2e;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.vault-state-badge-inactive {
+  background-color: #646464;
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.vault-document-viewer {
+  background-color: #646464;
+}
+
+.vault-document-viewer-toolbar {
+  background-color: #061937;
+  color: #ffffff;
+  height: 40px;
+  padding: 0 12px;
+}
+
+.vault-document-page {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels;
+}
+
+.vault-document-panel {
+  background-color: #ffffff;
+  border-left: 1px solid #dadada;
+  width: 320px;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-document-panel-header {
+  background-color: #f8f8f8;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #646464;
+  border-bottom: 1px solid #dadada;
+  padding: 8px 16px;
+}
+
+.vault-document-title {
+  font-family: Roboto;
+  font-size: 16px;
+  line-height: 22px;
+  color: #1d1d1d;
+}
+
+.vault-document-number {
+  font-family: Roboto Mono;
+  font-size: 12px;
+  line-height: 17px;
+  color: #646464;
+}
+
+.vault-version-badge {
+  background-color: #e3edfc;
+  color: #104293;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+.vault-version-badge-steady {
+  background-color: #e0f3e0;
+  color: #427b2e;
+}
+
+.vault-doc-lifecycle-draft {
+  background-color: #646464;
+  color: #646464;
+}
+
+.vault-doc-lifecycle-in-review {
+  background-color: #ffefd5;
+  color: #f78b12;
+}
+
+.vault-doc-lifecycle-approved {
+  background-color: #e0f3e0;
+  color: #427b2e;
+}
+
+.vault-doc-lifecycle-steady-state {
+  background-color: #539137;
+  color: #ffffff;
+}
+
+.vault-doc-lifecycle-superseded {
+  background-color: #555555;
+  color: #646464;
+}
+
+.vault-annotation-marker {
+  background-color: #ffe36f;
+  border-left: 2px solid #f8972b;
+}
+
+.vault-annotation-note {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  box-shadow: 0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.12), 0 1px 8px 0 rgba(0,0,0,.20)     # 3dp — hover: menus, button/card hover;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  padding: 8px 12px;
+  width: 280px;
+}
+
+.vault-annotation-count {
+  background-color: #f8972b;
+  color: #1d1d1d;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 9999px;
+  padding: 1px 5px;
+}
+
+.vault-document-card {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels;
+  padding: 12px;
+}
+
+.vault-document-type-icon {
+  color: #646464;
+  size: 16px;
+}
+
+.vault-binder-tree {
+  background-color: #ffffff;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-binder-node {
+  padding: 4px 8px;
+  color: #1d1d1d;
+}
+
+.vault-binder-node-selected {
+  background-color: #fff5ad;
+  border-left: 3px solid #f8972b;
+}
+
+.vault-signature-block {
+  background-color: #f8f8f8;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  padding: 12px 16px;
+}
+
+.vault-workflow-timeline {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.vault-workflow-step-completed {
+  background-color: #539137;
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-workflow-step-active {
+  background-color: #1453b8;
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+}
+
+.vault-workflow-step-pending {
+  background-color: #646464;
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-workflow-connector {
+  background-color: #dadada;
+  height: 2px;
+}
+
+.vault-task-card {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-left: 3px solid #1453b8;
+  border-radius: 8px;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels;
+  padding: 12px 16px;
+}
+
+.vault-task-card-overdue {
+  border-left: 3px solid #ce1300;
+}
+
+.vault-task-inbox-row {
+  background-color: #ffffff;
+  border-bottom: 1px solid #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  height: 36px;
+  padding: 0 12px;
+}
+
+.vault-task-inbox-row-unread {
+  background-color: #f8f8f8;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+}
+
+.vault-task-due-badge {
+  background-color: #646464;
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+.vault-task-due-badge-overdue {
+  background-color: #ffb3b3;
+  color: #b71307;
+}
+
+.vault-task-priority-high {
+  color: #ce1300;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.vault-task-priority-normal {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.vault-participant-chip {
+  background-color: #e3edfc;
+  color: #104293;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 9999px;
+  padding: 2px 8px;
+}
+
+.vault-role-label {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.vault-verdict-approve {
+  background-color: #539137;
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  border-radius: 2px;
+  height: 24px;
+  padding: 0 12px;
+}
+
+.vault-verdict-reject {
+  background-color: #ce1300;
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  border-radius: 2px;
+  height: 24px;
+  padding: 0 12px;
+}
+
+.vault-esignature-prompt {
+  background-color: #ffffcc;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  padding: 16px 20px;
+}
+
+.vault-workflow-status-badge {
+  background-color: #e3edfc;
+  color: #104293;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.vault-search-bar {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  height: 28px;
+  padding: 0 8px;
+}
+
+.vault-search-scope-selector {
+  background-color: #f8f8f8;
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-right: 1px solid #dadada;
+  padding: 0 8px;
+}
+
+.vault-facet-group {
+  border-bottom: 1px solid #646464;
+  padding: 8px 0;
+}
+
+.vault-facet-group-header {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+}
+
+.vault-facet-item {
+  color: #1d1d1d;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  padding: 4px 12px;
+}
+
+.vault-facet-item-selected {
+  background-color: #fff5ad;
+  border-left: 3px solid #f8972b;
+}
+
+.vault-facet-count {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-search-result-row {
+  background-color: #ffffff;
+  border-bottom: 1px solid #646464;
+  padding: 10px 16px;
+}
+
+.vault-search-result-row-hover {
+  background-color: #eeeeee;
+}
+
+.vault-search-result-title {
+  color: #0066cc;
+  font-family: Roboto;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.vault-search-result-snippet {
+  color: #1d1d1d;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-search-result-meta {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-search-highlight {
+  background-color: #ffec8e;
+  color: #1d1d1d;
+}
+
+.vault-result-type-icon {
+  color: #646464;
+  size: 16px;
+}
+
+.vault-saved-view-tab {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  padding: 0 12px;
+  height: 32px;
+}
+
+.vault-saved-view-tab-active {
+  color: #1d1d1d;
+  border-bottom: 3px solid #f8972b;
+}
+
+.vault-empty-state {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  padding: 48px 16px;
+}
+
+.vault-empty-state-icon {
+  color: #414141;
+  size: 48px;
+}
+
+.vault-report-toolbar {
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #dadada;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  height: 40px;
+  padding: 0 16px;
+}
+
+.vault-report-grid-header {
+  background-color: #f8f8f8;
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid #dadada;
+  height: 32px;
+}
+
+.vault-report-grid-group-row {
+  background-color: #aaaaaa;
+  color: #1d1d1d;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  height: 28px;
+}
+
+.vault-report-grid-total-row {
+  background-color: #f8f8f8;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  border-top: 2px solid #cccccc;
+}
+
+.vault-filter-bar {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.vault-filter-chip {
+  background-color: #e3edfc;
+  color: #104293;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  border-radius: 9999px;
+  padding: 2px 8px;
+}
+
+.vault-dashboard-tile {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels;
+  padding: 16px;
+}
+
+.vault-dashboard-tile-header {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid #646464;
+  padding: 0 0 8px 0;
+}
+
+.vault-metric-tile-value {
+  color: #1d1d1d;
+  font-family: Roboto;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 400;
+}
+
+.vault-metric-tile-label {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-metric-delta-up {
+  color: #539137;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+}
+
+.vault-metric-delta-down {
+  color: #ce1300;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+}
+
+.vault-chart-card {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels;
+  padding: 16px;
+}
+
+.vault-chart-series-1 {
+  color: #1453b8;
+}
+
+.vault-chart-series-2 {
+  color: #f8972b;
+}
+
+.vault-chart-series-3 {
+  color: #539137;
+}
+
+.vault-chart-series-4 {
+  color: #ce1300;
+}
+
+.vault-chart-legend {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-chart-axis {
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.vault-chart-gridline {
+  color: #646464;
+}
+
+.vault-home-card {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels;
+  padding: 0px;
+}
+
+.vault-home-card-header {
+  background-color: #f8f8f8;
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid #dadada;
+  padding: 8px 16px;
+  height: 36px;
+}
+
+.vault-case-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dadada;
+  padding: 12px 24px;
+}
+
+.vault-case-id {
+  color: #646464;
+  font-family: Roboto Mono;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.vault-seriousness-serious {
+  background-color: #ce1300;
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.vault-seriousness-non-serious {
+  background-color: #646464;
+  color: #646464;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.vault-causality-related {
+  background-color: #ffefd5;
+  color: #f78b12;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.vault-causality-not-related {
+  background-color: #646464;
+  color: #646464;
+}
+
+.vault-expectedness-unexpected {
+  background-color: #ffb3b3;
+  color: #b71307;
+  font-family: Roboto;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.vault-expectedness-expected {
+  background-color: #646464;
+  color: #646464;
+}
+
+.vault-case-status-intake {
+  background-color: #e3edfc;
+  color: #104293;
+}
+
+.vault-case-status-assessment {
+  background-color: #ffefd5;
+  color: #f78b12;
+}
+
+.vault-case-status-submitted {
+  background-color: #e0f3e0;
+  color: #427b2e;
+}
+
+.vault-reporting-clock {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  padding: 8px 12px;
+}
+
+.vault-reporting-clock-on-track {
+  border-left: 4px solid #539137;
+  color: #539137;
+}
+
+.vault-reporting-clock-due-soon {
+  border-left: 4px solid #f8972b;
+  color: #f78b12;
+}
+
+.vault-reporting-clock-overdue {
+  border-left: 4px solid #ce1300;
+  color: #ce1300;
+}
+
+.vault-narrative-section {
+  background-color: #ffffff;
+  border: 1px solid #dadada;
+  border-radius: 8px;
+  font-family: Roboto;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 16px;
+}
+
+.vault-adverse-event-row {
+  border-bottom: 1px solid #646464;
+  font-family: Roboto;
+  font-size: 12px;
+  line-height: 17px;
+  height: 32px;
+}
+
+.vault-meddra-term-chip {
+  background-color: #e3edfc;
+  color: #104293;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+    /* Component interactive adjustments & helpers */
+    .vault-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: all 0.15s ease;
+      font-family: 'Roboto', sans-serif;
+    }
+    .vault-button-default:hover {
+      background-color: var(--color-silver-lightest);
+      border: 1px solid var(--color-muted);
+    }
+    .vault-button-primary:hover {
+      background-color: var(--color-primary-hover);
+    }
+    .vault-button-primary:active {
+      background-color: var(--color-primary-active);
+    }
+    .vault-button-danger:hover {
+      opacity: 0.9;
+    }
+    .vault-button-disabled {
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Form Controls */
+    .vault-input {
+      font-family: 'Roboto', sans-serif;
+      box-sizing: border-box;
+      outline: none;
+      transition: border 0.15s ease;
+    }
+    .vault-text-input:focus {
+      border: 1px solid var(--color-primary);
+    }
+    .vault-textarea {
+      min-height: 80px;
+      width: 100%;
+      resize: vertical;
+    }
+    .vault-checkbox-container, .vault-radio-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      user-select: none;
+    }
+    .vault-checkbox-input, .vault-radio-input {
+      appearance: none;
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--rounded-xs);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      outline: none;
+      margin: 0;
+    }
+    .vault-checkbox-input {
+      width: 14px;
+      height: 14px;
+    }
+    .vault-radio-input {
+      width: 14px;
+      height: 14px;
+      border-radius: var(--rounded-full);
+    }
+    .vault-checkbox-input:checked {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+    .vault-checkbox-input:checked::before {
+      content: '✓';
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+    }
+    .vault-radio-input:checked {
+      background-color: var(--color-surface);
+      border-color: var(--color-primary);
+      border-width: 4px;
+    }
+
+    /* Navigation & Chrome previews */
+    .chrome-mockup {
+      border: 1px solid var(--color-border);
+      border-radius: var(--rounded-md);
+      overflow: hidden;
+      box-shadow: var(--elevation-panel);
+      width: 100%;
+      background-color: var(--color-surface-page);
+      transition: border-color 0.2s ease;
+    }
+    .mockup-header {
+      background-color: var(--color-header);
+      color: var(--color-on-header);
+      height: 44px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mockup-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+    .mockup-logo-icon {
+      width: 16px;
+      height: 16px;
+      background-color: var(--color-accent);
+      border-radius: var(--rounded-xs);
+    }
+    .mockup-header-search {
+      width: 300px;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: var(--rounded-xs);
+      height: 24px;
+      border: none;
+      padding: 0 8px;
+      color: white;
+      font-size: 11px;
+    }
+    .mockup-header-search::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .mockup-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mockup-avatar {
+      background-color: var(--color-accent);
+      color: var(--color-on-accent);
+      border-radius: var(--rounded-full);
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .mockup-tabbar {
+      background-color: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      height: 40px;
+      display: flex;
+      padding: 0 16px;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .mockup-tab {
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: var(--color-muted);
+      font-family: 'Roboto', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      height: 100%;
+      cursor: pointer;
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+    .mockup-tab.active {
+      color: var(--color-body);
+      border-bottom: 3px solid var(--color-accent);
+    }
+
+    .mockup-body {
+      display: flex;
+      height: 300px;
+    }
+    .mockup-sidebar {
+      background-color: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      width: 220px;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 0;
+      flex-shrink: 0;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .mockup-sidebar-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      color: var(--color-body);
+      font-size: 12px;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+    }
+    .mockup-sidebar-item.active {
+      background-color: var(--color-row-hover);
+      border-left: 3px solid var(--color-accent);
+      font-weight: 500;
+    }
+    .mockup-main {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    /* Breadcrumbs */
+    .mockup-breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-muted);
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .mockup-breadcrumbs a {
+      color: var(--color-link);
+      text-decoration: none;
+    }
+    .mockup-breadcrumbs span.separator {
+      color: var(--color-muted);
+    }
+
+    /* Page title */
+    .mockup-page-title {
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--color-ink);
+      border-bottom: 2px solid var(--color-accent);
+      padding-bottom: 8px;
+      margin: 0 0 16px 0;
+    }
+
+    /* Grid Table Mockup */
+    .mockup-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--color-surface);
+      transition: background-color 0.2s ease;
+    }
+    .mockup-table th {
+      background-color: var(--color-surface-alt);
+      color: var(--color-muted);
+      font-family: 'Roboto', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--color-border);
+      padding: 8px 12px;
+      text-align: left;
+      height: 32px;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .mockup-table td {
+      border-bottom: 1px solid var(--color-silver-light);
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--color-body);
+      height: 32px;
+      transition: border-color 0.2s ease;
+    }
+    .mockup-table tr.hoverable:hover td {
+      background-color: var(--color-row-hover);
+    }
+    .mockup-table tr.selected td {
+      background-color: #fff5ad; /* row-selected tell */
+    }
+    body.dark-theme .mockup-table tr.selected td {
+      background-color: #3d3b1e;
+    }
+
+    /* Badges & tags */
+    .vault-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Roboto', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-radius: var(--rounded-sm);
+      padding: 2px 6px;
+      white-space: nowrap;
+    }
+    .vault-badge-blue { background-color: var(--color-blue-lightest); color: var(--color-blue-dark); }
+    .vault-badge-green { background-color: var(--color-green-lightest); color: var(--color-green-dark); }
+    .vault-badge-red { background-color: var(--color-red-lightest); color: var(--color-red-dark); }
+    .vault-badge-yellow { background-color: var(--color-yellow); color: var(--color-ink); }
+    .vault-badge-orange { background-color: var(--color-orange-lightest); color: var(--color-orange-dark); }
+    .vault-badge-gray { background-color: var(--color-silver-light); color: var(--color-muted); }
+
+    .vault-tag {
+      background-color: var(--color-silver-light);
+      color: var(--color-body);
+      font-family: 'Roboto', sans-serif;
+      font-size: 11px;
+      border-radius: var(--rounded-sm);
+      padding: 2px 6px;
+      display: inline-flex;
+    }
+    .vault-pill {
+      background-color: var(--color-blue-lightest);
+      color: var(--color-blue-dark);
+      font-family: 'Roboto', sans-serif;
+      font-size: 11px;
+      border-radius: var(--rounded-full);
+      padding: 2px 8px;
+      display: inline-flex;
+    }
+
+    /* Lifecycle chevron pipeline */
+    .lifecycle-pipeline {
+      display: flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 500;
+      margin: 16px 0;
+    }
+    .lifecycle-step {
+      padding: 6px 16px 6px 24px;
+      position: relative;
+      background-color: var(--color-silver-light);
+      color: var(--color-muted);
+      margin-right: 4px;
+    }
+    .lifecycle-step:first-child {
+      padding-left: 16px;
+      border-top-left-radius: var(--rounded-sm);
+      border-bottom-left-radius: var(--rounded-sm);
+    }
+    .lifecycle-step:last-child {
+      border-top-right-radius: var(--rounded-sm);
+      border-bottom-right-radius: var(--rounded-sm);
+    }
+    .lifecycle-step::after {
+      content: '';
+      position: absolute;
+      right: -10px;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-top: 13px solid transparent;
+      border-bottom: 14px solid transparent;
+      border-left: 10px solid var(--color-silver-light);
+      z-index: 2;
+    }
+    .lifecycle-step::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-top: 13px solid transparent;
+      border-bottom: 14px solid transparent;
+      border-left: 10px solid var(--color-surface);
+      z-index: 1;
+    }
+    .lifecycle-step:first-child::before {
+      display: none;
+    }
+    .lifecycle-step.done {
+      background-color: var(--color-green);
+      color: var(--color-on-primary);
+    }
+    .lifecycle-step.done::after {
+      border-left-color: var(--color-green);
+    }
+    .lifecycle-step.current {
+      background-color: var(--color-primary);
+      color: var(--color-on-primary);
+    }
+    .lifecycle-step.current::after {
+      border-left-color: var(--color-primary);
+    }
+    .lifecycle-step.upcoming {
+      background-color: var(--color-silver-light);
+      color: var(--color-muted);
+    }
+
+    /* Modal Overlay Specimen */
+    .modal-specimen {
+      background-color: var(--color-surface);
+      border-radius: var(--rounded-md);
+      box-shadow: var(--elevation-modal);
+      border: 1px solid var(--color-border);
+      width: 100%;
+      max-width: 500px;
+      margin: 16px 0;
+      overflow: hidden;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .modal-specimen-header {
+      font-size: 20px;
+      font-weight: 400;
+      border-bottom: 1px solid var(--color-border);
+      padding: 16px 20px;
+      color: var(--color-ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-specimen-body {
+      padding: 20px;
+      font-size: 12px;
+      color: var(--color-body);
+    }
+    .modal-specimen-footer {
+      background-color: var(--color-surface-alt);
+      border-top: 1px solid var(--color-border);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* Menu mockup */
+    .menu-specimen {
+      background-color: var(--color-surface);
+      border-radius: var(--rounded-md);
+      box-shadow: var(--elevation-dropdown);
+      border: 1px solid var(--color-border);
+      width: 180px;
+      padding: 4px 0;
+      display: inline-flex;
+      flex-direction: column;
+    }
+    .menu-specimen-item {
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--color-body);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .menu-specimen-item:hover {
+      background-color: var(--color-row-hover);
+    }
+
+    /* Toasts */
+    .toast-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 360px;
+    }
+    .toast {
+      background-color: var(--color-surface);
+      border-radius: var(--rounded-md);
+      box-shadow: var(--elevation-overlay);
+      border: 1px solid var(--color-border);
+      width: 360px;
+      padding: 12px 16px;
+      border-left: 4px solid var(--color-primary);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .toast-success { border-left-color: var(--color-success); }
+    .toast-error { border-left-color: var(--color-danger); }
+    .toast-warning { border-left-color: var(--color-accent); }
+    .toast-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-ink);
+    }
+    .toast-body {
+      font-size: 11px;
+      color: var(--color-muted);
+    }
+
+    /* Spinners & Pagination */
+    .vault-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--color-silver-light);
+      border-top: 2px solid var(--color-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .vault-pagination {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--color-body);
+    }
+    .pagination-btn {
+      padding: 2px 8px;
+      border: 1px solid var(--color-border);
+      background-color: var(--color-surface);
+      cursor: pointer;
+      border-radius: var(--rounded-xs);
+    }
+    .pagination-btn:hover {
+      background-color: var(--color-silver-lightest);
+    }
+    .pagination-btn.active {
+      background-color: var(--color-blue-lightest);
+      color: var(--color-primary);
+      border-color: var(--color-blue-light);
+    }
+
+    /* Copy tooltip indicator */
+    .copied-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background-color: var(--color-ink);
+      color: white;
+      padding: 8px 16px;
+      border-radius: var(--rounded-sm);
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: var(--elevation-overlay);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .copied-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  
+    /* Component Library Styling */
+    .component-library-container {
+      margin-top: 24px;
+    }
+    .library-search-bar {
+      margin-bottom: 24px;
+      width: 100%;
+    }
+    .library-search-bar input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px;
+      font-size: 13px;
+      border: 1px solid var(--preview-border);
+      border-radius: var(--rounded-md);
+      background-color: var(--color-surface);
+      color: var(--preview-text-main);
+      outline: none;
+    }
+    .lib-group {
+      margin-bottom: 32px;
+    }
+    .lib-group-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-primary);
+      border-bottom: 1px solid var(--preview-border);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .lib-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .lib-card {
+      background-color: var(--preview-card-bg);
+      border: 1px solid var(--preview-border);
+      border-radius: var(--rounded-md);
+      box-shadow: var(--elevation-panel);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .lib-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--elevation-dropdown);
+    }
+    .lib-card-header {
+      padding: 12px;
+      background-color: var(--color-surface-alt);
+      border-bottom: 1px solid var(--preview-border);
+    }
+    .lib-card-name {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-ink);
+    }
+    .lib-card-specimen {
+      padding: 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--preview-content-bg);
+      border-bottom: 1px dashed var(--preview-border);
+      flex-grow: 1;
+      min-height: 80px;
+    }
+    .lib-card-props {
+      padding: 12px;
+      font-size: 11px;
+      font-family: 'Roboto Mono', monospace;
+      max-height: 120px;
+      overflow-y: auto;
+      background-color: var(--color-surface);
+      border-top: 1px solid var(--preview-border);
+      color: var(--preview-text-muted);
+    }
+    .lib-card-props div {
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .lib-card-props div strong {
+      color: var(--color-primary);
+    }
+  
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <div class="preview-sidebar">
+    <div class="preview-sidebar-header">
+      <h1 class="preview-sidebar-title">Vault · Safety (Pharmacovigilance) <span>alpha</span></h1>
+      <p class="preview-sidebar-desc">Application components for Vault Safety — adverse-event cases, seriousness/causality/expectedness assessment, the regulatory reporting clock, narratives, and MedDRA coding. Extends the Vault platform layers (DESIGN-platform.md), which extend the global DESIGN.md foundations.</p>
+      
+      <!-- Theme Toggle -->
+      <button class="theme-toggle-btn" onclick="toggleTheme()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+        <span id="theme-btn-text">Switch to Dark Mode</span>
+      </button>
+    </div>
+    <div class="preview-sidebar-nav">
+      <div class="nav-group-title">Foundations</div>
+      <div class="nav-item active" onclick="showSection('colors')">Colors</div>
+      <div class="nav-item" onclick="showSection('typography')">Typography</div>
+      <div class="nav-item" onclick="showSection('shapes-spacing')">Shapes & Spacing</div>
+      <div class="nav-item" onclick="showSection('elevation')">Elevation</div>
+      
+      
+      <div class="nav-group-title">Component Library</div>
+      <div class="nav-item" onclick="showSection('component-library')">Dynamic Visualizer</div>
+  
+      <div class="nav-group-title">Components</div>
+      <div class="nav-item" onclick="showSection('comp-buttons')">Buttons</div>
+      <div class="nav-item" onclick="showSection('comp-forms')">Form Controls</div>
+      <div class="nav-item" onclick="showSection('comp-navigation')">Navigation & Chrome</div>
+      <div class="nav-item" onclick="showSection('comp-data')">Data Display</div>
+      <div class="nav-item" onclick="showSection('comp-overlays')">Overlays</div>
+      <div class="nav-item" onclick="showSection('comp-feedback')">Feedback & State</div>
+    </div>
+  </div>
+
+  <!-- Main Workspace -->
+  <div class="preview-content">
+
+    <!-- ================= COLORS ================= -->
+    
+    <!-- ================= COMPONENT LIBRARY ================= -->
+    <div id="section-component-library" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Component Library</h2>
+        <p class="section-desc">Dynamic visualization and style inspection for the additional components declared in <code>DESIGN-safety.md</code>.</p>
+      </div>
+
+      <div class="component-library-container">
+        <div class="library-search-bar">
+          <input type="text" id="lib-search" placeholder="Search components by name, property, or source..." oninput="filterComponents()">
+        </div>
+        <div id="components-by-source"></div>
+      </div>
+    </div>
+  
+
+    <div id="section-colors" class="preview-section active">
+      <div class="section-header">
+        <h2 class="section-title">Colors</h2>
+        <p class="section-desc">Regulated desktop UI built around a distinct blue/orange brand pair and semantic surfaces.</p>
+      </div>
+
+      <h3 style="font-size:16px; margin: 24px 0 12px 0;">Brand & Semantics</h3>
+      <div class="grid-swatches">
+        <div class="swatch-card" onclick="copyValue('--color-primary', '#1453b8')">
+          <div class="swatch-color" style="background-color: var(--color-primary);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">primary (Blue Action)</div>
+            <div class="swatch-value">#1453b8</div>
+          </div>
+        </div>
+        <div class="swatch-card" onclick="copyValue('--color-accent', '#f8972b')">
+          <div class="swatch-color" style="background-color: var(--color-accent);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">accent (Orange Indicator)</div>
+            <div class="swatch-value">#f8972b</div>
+          </div>
+        </div>
+        <div class="swatch-card" onclick="copyValue('--color-header', '#061937')">
+          <div class="swatch-color" style="background-color: var(--color-header);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">header (Navy Chrome)</div>
+            <div class="swatch-value">#061937</div>
+          </div>
+        </div>
+        <div class="swatch-card" onclick="copyValue('--color-required', '#ffffcc')">
+          <div class="swatch-color" style="background-color: var(--color-required);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">required (Input Yellow)</div>
+            <div class="swatch-value">#ffffcc</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:16px; margin: 24px 0 12px 0;">State & Feedback</h3>
+      <div class="grid-swatches">
+        <div class="swatch-card" onclick="copyValue('--color-success', '#539137')">
+          <div class="swatch-color" style="background-color: var(--color-success);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">success</div>
+            <div class="swatch-value">#539137</div>
+          </div>
+        </div>
+        <div class="swatch-card" onclick="copyValue('--color-warning', '#cc6600')">
+          <div class="swatch-color" style="background-color: var(--color-warning);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">warning</div>
+            <div class="swatch-value">#cc6600</div>
+          </div>
+        </div>
+        <div class="swatch-card" onclick="copyValue('--color-danger', '#ce1300')">
+          <div class="swatch-color" style="background-color: var(--color-danger);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">danger</div>
+            <div class="swatch-value">#ce1300</div>
+          </div>
+        </div>
+        <div class="swatch-card" onclick="copyValue('--color-row-hover', '#eeeeee')">
+          <div class="swatch-color" style="background-color: var(--color-row-hover);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">row-hover</div>
+            <div class="swatch-value">#eeeeee</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:16px; margin: 24px 0 12px 0;">Tonal Scales</h3>
+      <div class="scale-group">
+        <h4 class="scale-title">Blue Scale</h4>
+        <div class="scale-row">
+          <div class="scale-step" style="background-color: var(--color-blue-lightest); color: var(--color-blue-darkest);" onclick="copyValue('--color-blue-lightest', '#e3edfc')">
+            <span class="step-name">lightest</span><span class="step-hex">#e3edfc</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-blue-light); color: var(--color-blue-darkest);" onclick="copyValue('--color-blue-light', '#acc8f6')">
+            <span class="step-name">light</span><span class="step-hex">#acc8f6</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-blue-default); color: white;" onclick="copyValue('--color-blue-default', '#1453b8')">
+            <span class="step-name">default</span><span class="step-hex">#1453b8</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-blue-dark); color: white;" onclick="copyValue('--color-blue-dark', '#104293')">
+            <span class="step-name">dark</span><span class="step-hex">#104293</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-blue-darkest); color: white;" onclick="copyValue('--color-blue-darkest', '#092553')">
+            <span class="step-name">darkest</span><span class="step-hex">#092553</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="scale-group">
+        <h4 class="scale-title">Orange Scale</h4>
+        <div class="scale-row">
+          <div class="scale-step" style="background-color: var(--color-orange-lightest); color: var(--color-orange-darkest);" onclick="copyValue('--color-orange-lightest', '#ffefd5')">
+            <span class="step-name">lightest</span><span class="step-hex">#ffefd5</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-orange-light); color: var(--color-orange-darkest);" onclick="copyValue('--color-orange-light', '#fab463')">
+            <span class="step-name">light</span><span class="step-hex">#fab463</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-orange-default); color: white;" onclick="copyValue('--color-orange-default', '#f8972b')">
+            <span class="step-name">default</span><span class="step-hex">#f8972b</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-orange-darkest); color: white;" onclick="copyValue('--color-orange-darkest', '#cc6600')">
+            <span class="step-name">darkest</span><span class="step-hex">#cc6600</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="scale-group">
+        <h4 class="scale-title">Silver & Gray Scale</h4>
+        <div class="scale-row">
+          <div class="scale-step" style="background-color: var(--color-silver-lightest); color: var(--color-gray-darkest);" onclick="copyValue('--color-silver-lightest', '#f8f8f8')">
+            <span class="step-name">silver-lightest</span><span class="step-hex">#f8f8f8</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-silver-light); color: var(--color-gray-darkest);" onclick="copyValue('--color-silver-light', '#eeeeee')">
+            <span class="step-name">silver-light</span><span class="step-hex">#eeeeee</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-silver-default); color: var(--color-gray-darkest);" onclick="copyValue('--color-silver-default', '#dadada')">
+            <span class="step-name">silver-default</span><span class="step-hex">#dadada</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-gray-default); color: white;" onclick="copyValue('--color-gray-default', '#555555')">
+            <span class="step-name">gray-default</span><span class="step-hex">#555555</span>
+          </div>
+          <div class="scale-step" style="background-color: var(--color-gray-darkest); color: white;" onclick="copyValue('--color-gray-darkest', '#333333')">
+            <span class="step-name">gray-darkest</span><span class="step-hex">#333333</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TYPOGRAPHY ================= -->
+    <div id="section-typography" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Typography</h2>
+        <p class="section-desc">Roboto is the primary workspace driver. Scale is small and condensed for high information density.</p>
+      </div>
+
+      <table class="typo-table">
+        <thead>
+          <tr>
+            <th style="width: 240px;">Style & Tokens</th>
+            <th>Specimen Preview (Roboto)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="typo-specimen-name">page-title</div>
+              <div class="typo-specimen-meta">Roboto, 22px, Regular<br>Line-height: 28px</div>
+            </td>
+            <td>
+              <div style="font-family: Roboto; font-size: 22px; font-weight: 400; line-height: 28px; color: var(--color-ink);">
+                Vault Document Registry
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="typo-specimen-name">h1</div>
+              <div class="typo-specimen-meta">Roboto, 20px, Regular<br>Line-height: 28px</div>
+            </td>
+            <td>
+              <div style="font-family: Roboto; font-size: 20px; font-weight: 400; line-height: 28px; color: var(--color-ink);">
+                Configure System Object Fields
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="typo-specimen-name">lg</div>
+              <div class="typo-specimen-meta">Roboto, 16px, Regular<br>Line-height: 22px</div>
+            </td>
+            <td>
+              <div style="font-family: Roboto; font-size: 16px; font-weight: 400; line-height: 22px; color: var(--color-ink);">
+                Document Metadata Properties
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="typo-specimen-name">base</div>
+              <div class="typo-specimen-meta">Roboto, 14px, Regular<br>Line-height: 20px</div>
+            </td>
+            <td>
+              <div style="font-family: Roboto; font-size: 14px; font-weight: 400; line-height: 20px; color: var(--color-ink);">
+                Use the grid below to inspect audit trails and review lifecycles.
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="typo-specimen-name">sm-medium</div>
+              <div class="typo-specimen-meta">Roboto, 12px, Medium (500)<br>Line-height: 17px</div>
+            </td>
+            <td>
+              <div style="font-family: Roboto; font-size: 12px; font-weight: 500; line-height: 17px; color: var(--color-ink);">
+                SAVE AND RE-SUBMIT WORKFLOW
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="typo-specimen-name">sm (Default Body)</div>
+              <div class="typo-specimen-meta">Roboto, 12px, Regular<br>Line-height: 17px</div>
+            </td>
+            <td>
+              <div style="font-family: Roboto; font-size: 12px; font-weight: 400; line-height: 17px; color: var(--color-ink);">
+                Veeva Vault is a cloud-based content management platform built specifically for the global life sciences industry.
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="typo-specimen-name">label-caps</div>
+              <div class="typo-specimen-meta">Roboto, 10px, Bold (700)<br>Line-height: 14px, Space: 0.06em</div>
+            </td>
+            <td>
+              <div style="font-family: Roboto; font-size: 10px; font-weight: 700; line-height: 14px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-muted);">
+                DOCUMENT TYPE / LIFECYCLE STATE
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="typo-specimen-name">xs</div>
+              <div class="typo-specimen-meta">Roboto, 11px, Regular<br>Line-height: 15px</div>
+            </td>
+            <td>
+              <div style="font-family: Roboto; font-size: 11px; font-weight: 400; line-height: 15px; color: var(--color-muted);">
+                Created by System Admin on 2026-06-02 10:34:00 UTC
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="typo-specimen-name">mono</div>
+              <div class="typo-specimen-meta">Roboto Mono, 12px, Regular<br>Line-height: 17px</div>
+            </td>
+            <td>
+              <div style="font-family: 'Roboto Mono', monospace; font-size: 12px; font-weight: 400; line-height: 17px; color: var(--color-ink);">
+                id: "V-2026-90432-XYZ"
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ================= SHAPES & SPACING ================= -->
+    <div id="section-shapes-spacing" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Shapes & Spacing</h2>
+        <p class="section-desc">Strict 4px spacing rhythm with nearly square corner-radii to promote dense and predictable utility.</p>
+      </div>
+
+      <div class="spacing-container">
+        <h3 style="font-size:16px; margin: 0 0 20px 0;">4px Rhythm spacing</h3>
+        <div class="spacing-row">
+          <div class="spacing-label">spacing.0.5</div>
+          <div class="spacing-bar-container">
+            <div class="spacing-bar" style="width: var(--spacing-0-5);"></div>
+            <div class="spacing-value-label">2px</div>
+          </div>
+        </div>
+        <div class="spacing-row">
+          <div class="spacing-label">spacing.1</div>
+          <div class="spacing-bar-container">
+            <div class="spacing-bar" style="width: var(--spacing-1);"></div>
+            <div class="spacing-value-label">4px</div>
+          </div>
+        </div>
+        <div class="spacing-row">
+          <div class="spacing-label">spacing.2</div>
+          <div class="spacing-bar-container">
+            <div class="spacing-bar" style="width: var(--spacing-2);"></div>
+            <div class="spacing-value-label">8px</div>
+          </div>
+        </div>
+        <div class="spacing-row">
+          <div class="spacing-label">spacing.3</div>
+          <div class="spacing-bar-container">
+            <div class="spacing-bar" style="width: var(--spacing-3);"></div>
+            <div class="spacing-value-label">12px</div>
+          </div>
+        </div>
+        <div class="spacing-row">
+          <div class="spacing-label">spacing.4</div>
+          <div class="spacing-bar-container">
+            <div class="spacing-bar" style="width: var(--spacing-4);"></div>
+            <div class="spacing-value-label">16px</div>
+          </div>
+        </div>
+        <div class="spacing-row">
+          <div class="spacing-label">spacing.6</div>
+          <div class="spacing-bar-container">
+            <div class="spacing-bar" style="width: var(--spacing-6);"></div>
+            <div class="spacing-value-label">24px</div>
+          </div>
+        </div>
+        <div class="spacing-row">
+          <div class="spacing-label">spacing.8</div>
+          <div class="spacing-bar-container">
+            <div class="spacing-bar" style="width: var(--spacing-8);"></div>
+            <div class="spacing-value-label">32px</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:16px; margin: 24px 0 16px 0;">Corner Radius</h3>
+      <div class="shapes-grid">
+        <div class="shape-card">
+          <div class="shape-demo" style="border-radius: var(--rounded-none);"></div>
+          <div class="shape-label">rounded.none</div>
+          <div class="shape-value">0px</div>
+        </div>
+        <div class="shape-card">
+          <div class="shape-demo" style="border-radius: var(--rounded-xs);"></div>
+          <div class="shape-label">rounded.xs (Controls)</div>
+          <div class="shape-value">2px</div>
+        </div>
+        <div class="shape-card">
+          <div class="shape-demo" style="border-radius: var(--rounded-sm);"></div>
+          <div class="shape-label">rounded.sm</div>
+          <div class="shape-value">4px</div>
+        </div>
+        <div class="shape-card">
+          <div class="shape-demo" style="border-radius: var(--rounded-md);"></div>
+          <div class="shape-label">rounded.md (Containers)</div>
+          <div class="shape-value">8px</div>
+        </div>
+        <div class="shape-card">
+          <div class="shape-demo" style="border-radius: var(--rounded-full);"></div>
+          <div class="shape-label">rounded.full (Avatars/Pills)</div>
+          <div class="shape-value">9999px</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= ELEVATION ================= -->
+    <div id="section-elevation" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Elevation & Shadows</h2>
+        <p class="section-desc">Flat in-page containers are standard. Shadows represent overlays, context shifts, or floating states.</p>
+      </div>
+
+      <div class="elevations-grid">
+        <div class="elevation-card" style="box-shadow: var(--elevation-panel);">
+          <div class="elevation-label">elevation.panel</div>
+          <div class="elevation-value">0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels</div>
+        </div>
+        <div class="elevation-card" style="box-shadow: var(--elevation-dropdown);">
+          <div class="elevation-label">elevation.dropdown</div>
+          <div class="elevation-value">0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.12), 0 1px 8px 0 rgba(0,0,0,.20)     # 3dp — hover: menus, button/card hover</div>
+        </div>
+        <div class="elevation-card" style="box-shadow: var(--elevation-overlay);">
+          <div class="elevation-label">elevation.overlay</div>
+          <div class="elevation-value">0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards</div>
+        </div>
+        <div class="elevation-card" style="box-shadow: var(--elevation-modal);">
+          <div class="elevation-label">elevation.modal</div>
+          <div class="elevation-value">0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12), 0 11px 15px -7px rgba(0,0,0,.20) # 24dp — dialog / overlay that takes over the screen</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= BUTTONS ================= -->
+    <div id="section-comp-buttons" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Buttons</h2>
+        <p class="section-desc">24px high utility buttons with 2px radius and clear action semantics.</p>
+      </div>
+
+      <div class="specimen-group">
+        <div class="specimen-group-title">Primary & Defaults</div>
+        <div class="specimen-group-desc">Primary actions use Vault Blue. Secondary operations use bordered default buttons.</div>
+        <div class="specimen-row">
+          <button class="vault-button vault-button-primary">Primary Action</button>
+          <button class="vault-button vault-button-default">Secondary Action</button>
+          <button class="vault-button vault-button-ghost">Cancel/Ghost</button>
+          <button class="vault-button vault-button-danger">Delete/Danger</button>
+        </div>
+      </div>
+
+      <div class="specimen-group">
+        <div class="specimen-group-title">Interactive States</div>
+        <div class="specimen-group-desc">Disabled actions use low contrast silver backdrops. Hover states are dense and structured.</div>
+        <div class="specimen-row">
+          <button class="vault-button vault-button-primary" style="background-color: var(--color-primary-hover)">Primary Hover</button>
+          <button class="vault-button vault-button-primary" style="background-color: var(--color-primary-active)">Primary Active</button>
+          <button class="vault-button vault-button-default vault-button-disabled" style="background-color: var(--color-silver-light); color: var(--color-disabled);">Disabled Action</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FORM CONTROLS ================= -->
+    <div id="section-comp-forms" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Form Controls</h2>
+        <p class="section-desc">Utilitarian form elements. Under Vault rules, required fields feature a yellow background indicator.</p>
+      </div>
+
+      <div class="specimen-group">
+        <div class="specimen-group-title">Text Inputs</div>
+        <div class="specimen-group-desc">Required fields use required yellow background color. Errors flag custom boundaries.</div>
+        <div class="specimen-row" style="display:flex; flex-direction:column; align-items:flex-start; gap:16px;">
+          <div style="display:flex; flex-direction:column; gap:4px; width:100%; max-width:300px;">
+            <label style="font-size:11px; font-weight:700; color:var(--color-muted);">DEFAULT TEXT FIELD</label>
+            <input type="text" class="vault-input vault-text-input" placeholder="Enter metadata value..." value="Clinical Trial B-903">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; width:100%; max-width:300px;">
+            <label style="font-size:11px; font-weight:700; color:var(--color-muted);">REQUIRED TEXT FIELD <span style="color:var(--color-danger)">*</span></label>
+            <input type="text" class="vault-input vault-text-input vault-text-input-required" placeholder="Mandatory field..." value="Veeva-System-User">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; width:100%; max-width:300px;">
+            <label style="font-size:11px; font-weight:700; color:var(--color-muted);">ERROR STATE FIELD</label>
+            <input type="text" class="vault-input vault-text-input vault-text-input-error" placeholder="Fix validation error..." value="Wrong Date Format">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; width:100%; max-width:300px;">
+            <label style="font-size:11px; font-weight:700; color:var(--color-muted);">DISABLED FIELD</label>
+            <input type="text" class="vault-input vault-text-input vault-text-input-disabled" disabled placeholder="System-populated value..." value="V-ID-890432-AUTO">
+          </div>
+        </div>
+      </div>
+
+      <div class="specimen-group">
+        <div class="specimen-group-title">Checkbox, Radio, & Dropdowns</div>
+        <div class="specimen-group-desc">Compact controls designed for dense form metadata.</div>
+        <div class="specimen-row" style="gap:32px;">
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <label class="vault-checkbox-container">
+              <input type="checkbox" class="vault-checkbox-input" checked>
+              <span>Enable Document Audit Trails</span>
+            </label>
+            <label class="vault-checkbox-container">
+              <input type="checkbox" class="vault-checkbox-input">
+              <span>Auto-populate lifecycle stage</span>
+            </label>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <label class="vault-radio-container">
+              <input type="radio" name="radiogroup" class="vault-radio-input" checked>
+              <span>Regulated Document</span>
+            </label>
+            <label class="vault-radio-container">
+              <input type="radio" name="radiogroup" class="vault-radio-input">
+              <span>Internal Only Reference</span>
+            </label>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; width:100%; max-width:200px;">
+            <label style="font-size:11px; font-weight:700; color:var(--color-muted);">LIFECYCLE STATUS</label>
+            <select class="vault-dropdown" style="width:100%;">
+              <option>Draft</option>
+              <option selected>In Review</option>
+              <option>Approved / Released</option>
+              <option>Obsolete</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= NAVIGATION & CHROME ================= -->
+    <div id="section-comp-navigation" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Navigation & Chrome</h2>
+        <p class="section-desc">Fixed-layout shells that organize enterprise metadata hierarchies predictably.</p>
+      </div>
+
+      <div class="chrome-mockup">
+        <!-- Brand Global Header -->
+        <div class="mockup-header">
+          <div class="mockup-logo">
+            <div class="mockup-logo-icon"></div>
+            <span>Veeva Vault</span>
+          </div>
+          <input type="text" class="mockup-header-search" placeholder="Search Documents, Objects, and Workflows...">
+          <div class="mockup-user">
+            <span style="font-size:11px; opacity:0.8;">John Doe (Admin)</span>
+            <div class="mockup-avatar">JD</div>
+          </div>
+        </div>
+
+        <!-- Tabbar Navigation -->
+        <div class="mockup-tabbar">
+          <a class="mockup-tab active">Library</a>
+          <a class="mockup-tab">My Tasks (3)</a>
+          <a class="mockup-tab">Reports & Dashboards</a>
+          <a class="mockup-tab">Admin Console</a>
+        </div>
+
+        <div class="mockup-body">
+          <!-- Sidebar -->
+          <div class="mockup-sidebar">
+            <a class="mockup-sidebar-item active">All Documents</a>
+            <a class="mockup-sidebar-item">Clinical Protocols</a>
+            <a class="mockup-sidebar-item">Regulatory Submissions</a>
+            <a class="mockup-sidebar-item">Standard Operating Procedures</a>
+            <a class="mockup-sidebar-item">Quality Audits</a>
+          </div>
+
+          <!-- Main Content Area -->
+          <div class="mockup-main">
+            <!-- Breadcrumbs -->
+            <div class="mockup-breadcrumbs">
+              <a href="#">Vault Library</a>
+              <span class="separator">›</span>
+              <a href="#">All Documents</a>
+              <span class="separator">›</span>
+              <span style="color:var(--color-muted)">Clinical Trials</span>
+            </div>
+
+            <!-- Page Title -->
+            <h2 class="mockup-page-title">Clinical Protocols Registry</h2>
+
+            <p style="font-size:12px; color:var(--color-muted); margin:0;">
+              This registry catalogues the complete list of authorized study plans and protocol schemas in effect.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= DATA DISPLAY ================= -->
+    <div id="section-comp-data" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Data Display</h2>
+        <p class="section-desc">High-density data rendering. Tables reuse regular, hovered, and pale-yellow selected states.</p>
+      </div>
+
+      <div class="specimen-group">
+        <div class="specimen-group-title">Standard Data Grid</div>
+        <div class="specimen-group-desc">Row-hover states are functional. Selected rows feature the unmistakable Vault selected yellow tell.</div>
+        
+        <table class="mockup-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>NAME</th>
+              <th>TYPE</th>
+              <th>STATUS</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hoverable">
+              <td style="font-family:'Roboto Mono', monospace;">V-DOC-102943</td>
+              <td style="font-weight: 500;"><a href="#" style="color:var(--color-link); text-decoration:none;">Phase III Cardiovascular Study Plan</a></td>
+              <td>Clinical Protocol</td>
+              <td><span class="vault-badge vault-badge-green">Approved</span></td>
+              <td><a href="#" style="color:var(--color-link); text-decoration:none; font-size:11px;">Edit Properties</a></td>
+            </tr>
+            <tr class="selected">
+              <td style="font-family:'Roboto Mono', monospace;">V-DOC-102944</td>
+              <td style="font-weight: 500;"><a href="#" style="color:var(--color-link); text-decoration:none;">SOP-2026-Quality-Validation-Procedures</a></td>
+              <td>SOP</td>
+              <td><span class="vault-badge vault-badge-yellow">In Review</span></td>
+              <td><a href="#" style="color:var(--color-link); text-decoration:none; font-size:11px;">Edit Properties</a></td>
+            </tr>
+            <tr class="hoverable">
+              <td style="font-family:'Roboto Mono', monospace;">V-DOC-102945</td>
+              <td style="font-weight: 500;"><a href="#" style="color:var(--color-link); text-decoration:none;">Investigator Brochure (Compound-X)</a></td>
+              <td>Submissions</td>
+              <td><span class="vault-badge vault-badge-blue">Draft</span></td>
+              <td><a href="#" style="color:var(--color-link); text-decoration:none; font-size:11px;">Edit Properties</a></td>
+            </tr>
+            <tr class="hoverable">
+              <td style="font-family:'Roboto Mono', monospace;">V-DOC-102946</td>
+              <td style="font-weight: 500;"><a href="#" style="color:var(--color-link); text-decoration:none; font-size:11px; color:var(--color-danger);">Obsolete Protocol Draft (2025)</a></td>
+              <td>Clinical Protocol</td>
+              <td><span class="vault-badge vault-badge-red">Rejected</span></td>
+              <td><a href="#" style="color:var(--color-link); text-decoration:none; font-size:11px;">Restore</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="specimen-group">
+        <div class="specimen-group-title">Metadata Badges, Tags & Pills</div>
+        <div class="specimen-group-desc">Semantic badges represent workflow states. Pills and tags describe categorizations.</div>
+        <div class="specimen-row">
+          <span class="vault-badge vault-badge-blue">Blue Badge</span>
+          <span class="vault-badge vault-badge-green">Green Badge</span>
+          <span class="vault-badge vault-badge-red">Red Badge</span>
+          <span class="vault-badge vault-badge-yellow">Yellow Badge</span>
+          <span class="vault-badge vault-badge-orange">Orange Badge</span>
+          <span class="vault-badge vault-badge-gray">Gray Badge</span>
+          <span class="vault-tag">Document-Tag</span>
+          <span class="vault-pill">System-Pill</span>
+        </div>
+      </div>
+
+      <div class="specimen-group">
+        <div class="specimen-group-title">Lifecycle Progress bar</div>
+        <div class="specimen-group-desc">A pipeline mapping document or workflow states (Done, Current, Upcoming).</div>
+        <div class="lifecycle-pipeline">
+          <div class="lifecycle-step done">Draft</div>
+          <div class="lifecycle-step done">Collaborative Review</div>
+          <div class="lifecycle-step current">Manager Approvals</div>
+          <div class="lifecycle-step upcoming">Final Release</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= OVERLAYS ================= -->
+    <div id="section-comp-overlays" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Overlays</h2>
+        <p class="section-desc">Floating interfaces that interrupt task environments safely to preserve state context.</p>
+      </div>
+
+      <div class="specimen-group">
+        <div class="specimen-group-title">Modal Panel Shell</div>
+        <div class="specimen-group-desc">Modal dialog elements with high depth elevation shadow mappings.</div>
+        <div class="modal-specimen">
+          <div class="modal-specimen-header">
+            <span>Add Study Investigator</span>
+            <span style="font-size: 16px; cursor: pointer;">&times;</span>
+          </div>
+          <div class="modal-specimen-body">
+            <p style="margin-top:0;">Search and bind study investigators to the active clinical protocol profile.</p>
+            <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:12px;">
+              <label style="font-size:10px; font-weight:700; color:var(--color-muted);">INVESTIGATOR EMAIL</label>
+              <input type="text" class="vault-input vault-text-input" placeholder="Type name or address..." style="width:100%;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:10px; font-weight:700; color:var(--color-muted);">FACILITY REFERENCE</label>
+              <select class="vault-dropdown" style="width:100%;">
+                <option>Select Facility...</option>
+                <option>Boston Biomedical Labs</option>
+                <option>Zurich Health Institute</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-specimen-footer">
+            <button class="vault-button vault-button-ghost">Close</button>
+            <button class="vault-button vault-button-primary">Add investigator</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="specimen-group" style="display:flex; gap:40px;">
+        <div>
+          <div class="specimen-group-title">Context Dropdown Menu</div>
+          <div class="specimen-group-desc">Clean floating popup menus for workflow selections.</div>
+          <div class="menu-specimen">
+            <div class="menu-specimen-item"><span>View History</span> <span style="font-size:9px; color:var(--color-muted);">ctrl+h</span></div>
+            <div class="menu-specimen-item"><span>Export Metadata</span></div>
+            <div class="menu-specimen-item" style="border-top: 1px solid var(--color-border); color:var(--color-danger)"><span>Archive SOP</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="specimen-group-title">Tooltips & Popovers</div>
+          <div class="specimen-group-desc">Utilizes flat borders or dense dark backgrounds.</div>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="vault-tooltip" style="display:inline-flex; width:fit-content;">This field must comply with FDA Title 21 CFR Part 11 rules.</div>
+            <div class="vault-hovercard" style="width: 260px;">
+              <div style="font-weight:700; font-size:12px; margin-bottom:4px; color:var(--color-ink);">John Doe</div>
+              <div style="font-size:11px; color:var(--color-muted); margin-bottom:8px;">Quality Assurance Officer</div>
+              <div style="font-size:11px;">Last logged in 12 mins ago. Responsible for Cardiorespiratory compliance tasks.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FEEDBACK & STATE ================= -->
+    <div id="section-comp-feedback" class="preview-section">
+      <div class="section-header">
+        <h2 class="section-title">Feedback & State</h2>
+        <p class="section-desc">Toast notifications and loading state indicators optimized for scan feedback.</p>
+      </div>
+
+      <div class="specimen-group">
+        <div class="specimen-group-title">Toast Notifications</div>
+        <div class="specimen-group-desc">360px alert elements styled with bold left-borders to immediately deliver contextual meaning.</div>
+        <div class="toast-container">
+          <div class="toast">
+            <div class="toast-title">Information Status Alert</div>
+            <div class="toast-body">Audit log background processing task has initiated successfully.</div>
+          </div>
+          <div class="toast toast-success">
+            <div class="toast-title">Success Status Alert</div>
+            <div class="toast-body">The standard operating procedure SOP-1029 has been released.</div>
+          </div>
+          <div class="toast toast-warning">
+            <div class="toast-title">Warning Status Alert</div>
+            <div class="toast-body">The active trial contains unsigned study investigator compliance slips.</div>
+          </div>
+          <div class="toast toast-error">
+            <div class="toast-title">Danger/Error Status Alert</div>
+            <div class="toast-body">Unable to save document: Signature verification failed validation.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="specimen-group" style="display:flex; gap:40px;">
+        <div>
+          <div class="specimen-group-title">Spinner Progress</div>
+          <div class="specimen-group-desc">Primary blue loading indicator.</div>
+          <div class="vault-spinner"></div>
+        </div>
+
+        <div>
+          <div class="specimen-group-title">Data Grid Pagination</div>
+          <div class="specimen-group-desc">Dense pagination control blocks.</div>
+          <div class="vault-pagination">
+            <div class="pagination-btn">‹ Previous</div>
+            <div class="pagination-btn active">1</div>
+            <div class="pagination-btn">2</div>
+            <div class="pagination-btn">3</div>
+            <div class="pagination-btn">Next ›</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Copied Toast Component -->
+  <div id="copied-toast" class="copied-toast">Copied CSS Var!</div>
+
+  <script>
+    
+    const targetFileName = "DESIGN-safety.md";
+    const componentsData = {"button-default":{"backgroundColor":"#ffffff","textColor":"#1d1d1d","border":"1px solid #cccccc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","rounded":"2px","height":"24px","padding":"0 12px"},"button-default-hover":{"backgroundColor":"#f8f8f8","border":"1px solid #646464"},"button-primary":{"backgroundColor":"#1453b8","textColor":"#ffffff","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","rounded":"2px","height":"24px","padding":"0 12px"},"button-primary-hover":{"backgroundColor":"#104293"},"button-primary-active":{"backgroundColor":"#092553"},"button-ghost":{"backgroundColor":"transparent","textColor":"#1453b8","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","rounded":"2px","height":"24px","padding":"0 8px"},"button-danger":{"backgroundColor":"#ce1300","textColor":"#ffffff","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","rounded":"2px","height":"24px","padding":"0 12px"},"button-disabled":{"backgroundColor":"#eeeeee","textColor":"#aaaaaa"},"text-input":{"backgroundColor":"#ffffff","textColor":"#1d1d1d","border":"1px solid #cccccc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"2px","height":"28px","padding":"0 8px"},"text-input-focus":{"border":"1px solid #1453b8"},"text-input-required":{"backgroundColor":"#ffffcc"},"text-input-error":{"border":"1px solid #ce1300"},"text-input-disabled":{"backgroundColor":"#f8f8f8","textColor":"#aaaaaa"},"textarea":{"backgroundColor":"#ffffff","border":"1px solid #cccccc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"2px","padding":"6px 8px"},"checkbox":{"size":"14px","border":"1px solid #cccccc","rounded":"2px","checkedColor":"#1453b8"},"radio":{"size":"14px","border":"1px solid #cccccc","rounded":"9999px","checkedColor":"#1453b8"},"dropdown":{"backgroundColor":"#ffffff","border":"1px solid #cccccc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"2px","height":"28px","padding":"0 8px"},"global-header":{"backgroundColor":"#061937","textColor":"#ffffff","height":"44px","padding":"0 16px"},"global-header-tabbar":{"backgroundColor":"#ffffff","textColor":"#1d1d1d","borderBottom":"1px solid #dadada","height":"40px"},"sidebar":{"backgroundColor":"#ffffff","borderRight":"1px solid #dadada","width":"220px","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"sidebar-item-active":{"backgroundColor":"#fff5ad","borderLeft":"3px solid #f8972b","textColor":"#1d1d1d"},"tab":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","padding":"0 12px","height":"36px"},"tab-active":{"textColor":"#1d1d1d","borderBottom":"3px solid #f8972b"},"breadcrumb":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","separator":"›"},"breadcrumb-link":{"textColor":"#0066cc"},"page-title":{"typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"24px\",\"lineHeight\":\"32px\",\"fontWeight\":400}","textColor":"#1d1d1d","borderBottom":"2px solid #f8972b","padding":"0 0 8px 0"},"data-grid-header":{"backgroundColor":"#f8f8f8","textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","borderBottom":"1px solid #dadada","height":"32px"},"data-grid-row":{"backgroundColor":"#ffffff","textColor":"#1d1d1d","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","borderBottom":"1px solid #eeeeee","height":"32px"},"data-grid-row-hover":{"backgroundColor":"#eeeeee"},"data-grid-row-selected":{"backgroundColor":"#fff5ad"},"badge":{"typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"2px 6px"},"badge-blue":{"backgroundColor":"#e3edfc","textColor":"#104293"},"badge-green":{"backgroundColor":"#e0f3e0","textColor":"#427b2e"},"badge-red":{"backgroundColor":"#ffb3b3","textColor":"#b71307"},"badge-yellow":{"backgroundColor":"#ffe36f","textColor":"#1d1d1d"},"badge-orange":{"backgroundColor":"#ffefd5","textColor":"#f78b12"},"badge-gray":{"backgroundColor":"#eeeeee","textColor":"#646464"},"tag":{"backgroundColor":"#eeeeee","textColor":"#1d1d1d","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"4px","padding":"2px 6px"},"pill":{"backgroundColor":"#e3edfc","textColor":"#104293","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"9999px","padding":"2px 8px"},"avatar":{"backgroundColor":"#f8972b","textColor":"#1d1d1d","rounded":"9999px","size":"28px","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"link":{"textColor":"#0066cc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"lifecycle-stage-done":{"backgroundColor":"#539137","textColor":"#ffffff"},"lifecycle-stage-current":{"backgroundColor":"#1453b8","textColor":"#ffffff"},"lifecycle-stage-upcoming":{"backgroundColor":"#eeeeee","textColor":"#646464"},"modal":{"backgroundColor":"#ffffff","rounded":"8px","elevation":"0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12), 0 11px 15px -7px rgba(0,0,0,.20) # 24dp — dialog / overlay that takes over the screen","padding":0},"modal-header":{"typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"20px\",\"lineHeight\":\"28px\",\"fontWeight\":400}","borderBottom":"1px solid #dadada","padding":"16px 20px"},"modal-footer":{"backgroundColor":"#f8f8f8","borderTop":"1px solid #dadada","padding":"12px 20px"},"menu":{"backgroundColor":"#ffffff","rounded":"8px","elevation":"0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.12), 0 1px 8px 0 rgba(0,0,0,.20)     # 3dp — hover: menus, button/card hover","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","padding":"4px 0"},"menu-item-hover":{"backgroundColor":"#eeeeee"},"tooltip":{"backgroundColor":"#1d1d1d","textColor":"#ffffff","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"4px","padding":"4px 8px"},"hovercard":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","elevation":"0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards","padding":"12px"},"notification":{"backgroundColor":"#ffffff","rounded":"8px","elevation":"0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards","width":"360px","padding":"12px 16px","borderLeft":"4px solid #1453b8"},"notification-success":{"borderLeft":"4px solid #539137"},"notification-error":{"borderLeft":"4px solid #ce1300"},"notification-warning":{"borderLeft":"4px solid #f8972b"},"spinner":{"color":"#1453b8","size":"20px"},"pagination":{"typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","textColor":"#1d1d1d"},"picker-button":{"backgroundColor":"#ffffff","textColor":"#1d1d1d","border":"1px solid #cccccc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"2px","height":"28px","padding":"0 8px","caret":"fas caret-down 14px #1d1d1d","width":"180px   # sizes — xs 48px / s 100px / m 180px (default) / lg-xl 280px / full 100%"},"picker-button-focus":{"border":"1px solid #1453b8"},"picker-button-required":{"backgroundColor":"#ffffcc"},"picker-button-error":{"border":"1px solid #ce1300"},"picker-button-disabled":{"backgroundColor":"#f8f8f8","textColor":"#aaaaaa"},"search-box":{"backgroundColor":"#ffffff","textColor":"#1d1d1d","border":"1px solid #cccccc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"2px","height":"28px","padding":"0 8px","searchIcon":"far search 14px #1d1d1d","clearIcon":"far times 14px #1d1d1d"},"search-box-focus":{"border":"1px solid #1453b8"},"search-box-disabled":{"backgroundColor":"#f8f8f8","textColor":"#aaaaaa"},"search-box-button":"# \"outer\" variant: a 28px square icon button adjacent to the field","backgroundColor":"#eeeeee","size":"28px","search-box-button-hover":{"backgroundColor":"#dadada"},"search-box-button-active":{"backgroundColor":"#c0c0c0"},"picklist-multiple":{"backgroundColor":"#ffffff","textColor":"#1d1d1d","border":"1px solid #cccccc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"2px","minHeight":"28px","padding":"8px","caretPosition":"top-right   # caret stays anchored top-right as the field grows","width":"180px   # sizes — sm 100px / md 180px (default) / lg 280px / xl 460px / full 100%"},"picklist-multiple-focus":{"border":"1px solid #1453b8"},"picklist-multiple-required":{"backgroundColor":"#ffffcc"},"picklist-multiple-error":{"border":"1px solid #ce1300"},"picklist-multiple-disabled":{"backgroundColor":"#f8f8f8","textColor":"#aaaaaa"},"timepicker":{"backgroundColor":"#ffffff","textColor":"#1d1d1d","border":"1px solid #cccccc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"2px","height":"28px","padding":"0 8px","icon":"far clock 14px","width":"180px   # sizes — s 100px / m 180px (default)"},"timepicker-focus":{"border":"1px solid #1453b8"},"timepicker-required":{"backgroundColor":"#ffffcc"},"timepicker-error":{"border":"1px solid #ce1300"},"timepicker-disabled":{"backgroundColor":"#f8f8f8","textColor":"#aaaaaa"},"split-button-primary":{"backgroundColor":"#1453b8","textColor":"#ffffff","border":"1px solid #1453b8","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"4px","height":"28px","padding":"0 8px","divider":"1px solid rgba(255,255,255,.5)","caret":"fas caret-down 14px"},"split-button-primary-hover":{"backgroundColor":"#104293","border":"1px solid #104293"},"split-button-primary-focus":{"border":"1px solid #f8972b"},"split-button-primary-active":{"backgroundColor":"#092553","border":"1px solid #092553"},"split-button-primary-disabled":{"backgroundColor":"#acc8f6","border":"1px solid #acc8f6"},"split-button-secondary":{"backgroundColor":"#eeeeee","textColor":"#1d1d1d","border":"1px solid #cccccc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"4px","height":"28px","padding":"0 8px","divider":"1px solid rgba(0,0,0,.5)","caret":"fas caret-down 14px"},"split-button-secondary-focus":{"border":"1px solid #1453b8"},"split-button-secondary-disabled":{"backgroundColor":"#f8f8f8","textColor":"#aaaaaa"},"page-title-padded":"# detail / DocInfo pages: adds 12px side padding; list pages use page-title","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"24px\",\"lineHeight\":\"32px\",\"fontWeight\":400}","textColor":"#1d1d1d","borderBottom":"2px solid #f8972b","padding":"0 12px 8px 12px","object-hovercard-trigger":{"backgroundColor":"#ffffff","elevation":"0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards","borderTop":"\"2px solid #f8972b\"   # the orange divider tell","rounded":"8px","padding":"12px","titleTypography":"\"{\"fontFamily\":\"Roboto\",\"fontSize\":\"14px\",\"lineHeight\":\"20px\"}\"      # 14px, bold","emptyStateColor":"#555555"},"object-record-page":{"backgroundColor":"#f5f5f5","padding":"16px 24px"},"object-record-header":{"backgroundColor":"#ffffff","borderBottom":"1px solid #dadada","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"24px\",\"lineHeight\":\"32px\",\"fontWeight\":400}","padding":"12px 24px"},"object-section":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","elevation":"0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels","padding":0},"object-section-header":{"backgroundColor":"#f8f8f8","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","textColor":"#646464","borderBottom":"1px solid #dadada","padding":"8px 16px","height":"32px"},"field-row":{"typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","padding":"6px 16px","borderBottom":"1px solid #646464"},"field-label":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","width":"200px"},"field-value":{"textColor":"#1d1d1d","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"field-value-edit":{"backgroundColor":"#ffffff","border":"1px solid #cccccc","rounded":"2px","height":"28px"},"field-value-required":{"backgroundColor":"#ffffcc"},"reference-field":{"textColor":"#0066cc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"picklist-value":{"backgroundColor":"#646464","textColor":"#1d1d1d","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"4px","padding":"1px 6px"},"system-field":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto Mono\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"related-list":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px"},"related-list-header":{"backgroundColor":"#f8f8f8","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","textColor":"#646464","borderBottom":"1px solid #dadada","padding":"8px 12px"},"related-list-count":{"backgroundColor":"#646464","textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"9999px","padding":"1px 6px"},"object-hovercard":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","elevation":"0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.20) # 8dp — notifications, alerts, hovercards","width":"320px","padding":"16px"},"object-hovercard-title":{"typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"16px\",\"lineHeight\":\"22px\"}","textColor":"#1d1d1d"},"record-dialog":{"backgroundColor":"#ffffff","rounded":"8px","elevation":"0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12), 0 11px 15px -7px rgba(0,0,0,.20) # 24dp — dialog / overlay that takes over the screen","width":"640px"},"record-dialog-header":{"typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"20px\",\"lineHeight\":\"28px\",\"fontWeight\":400}","borderBottom":"1px solid #dadada","padding":"16px 20px"},"state-badge-active":{"backgroundColor":"#e0f3e0","textColor":"#427b2e","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"2px 6px"},"state-badge-inactive":{"backgroundColor":"#646464","textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"2px 6px"},"document-viewer":{"backgroundColor":"#646464"},"document-viewer-toolbar":{"backgroundColor":"#061937","textColor":"#ffffff","height":"40px","padding":"0 12px"},"document-page":{"backgroundColor":"#ffffff","border":"1px solid #cccccc","elevation":"0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels"},"document-panel":{"backgroundColor":"#ffffff","borderLeft":"1px solid #dadada","width":"320px","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"document-panel-header":{"backgroundColor":"#f8f8f8","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","textColor":"#646464","borderBottom":"1px solid #dadada","padding":"8px 16px"},"document-title":{"typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"16px\",\"lineHeight\":\"22px\"}","textColor":"#1d1d1d"},"document-number":{"typography":"{\"fontFamily\":\"Roboto Mono\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","textColor":"#646464"},"version-badge":{"backgroundColor":"#e3edfc","textColor":"#104293","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"1px 6px"},"version-badge-steady":{"backgroundColor":"#e0f3e0","textColor":"#427b2e"},"doc-lifecycle-draft":{"backgroundColor":"#646464","textColor":"#646464"},"doc-lifecycle-in-review":{"backgroundColor":"#ffefd5","textColor":"#f78b12"},"doc-lifecycle-approved":{"backgroundColor":"#e0f3e0","textColor":"#427b2e"},"doc-lifecycle-steady-state":{"backgroundColor":"#539137","textColor":"#ffffff"},"doc-lifecycle-superseded":{"backgroundColor":"#555555","textColor":"#646464"},"annotation-marker":{"backgroundColor":"#ffe36f","borderLeft":"2px solid #f8972b"},"annotation-note":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","elevation":"0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.12), 0 1px 8px 0 rgba(0,0,0,.20)     # 3dp — hover: menus, button/card hover","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","padding":"8px 12px","width":"280px"},"annotation-count":{"backgroundColor":"#f8972b","textColor":"#1d1d1d","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"9999px","padding":"1px 5px"},"document-card":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","elevation":"0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels","padding":"12px"},"document-type-icon":{"color":"#646464","size":"16px"},"binder-tree":{"backgroundColor":"#ffffff","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"binder-node":{"padding":"4px 8px","textColor":"#1d1d1d"},"binder-node-selected":{"backgroundColor":"#fff5ad","borderLeft":"3px solid #f8972b"},"signature-block":{"backgroundColor":"#f8f8f8","border":"1px solid #dadada","rounded":"8px","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","padding":"12px 16px"},"workflow-timeline":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","padding":"16px"},"workflow-step-completed":{"backgroundColor":"#539137","textColor":"#ffffff","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"workflow-step-active":{"backgroundColor":"#1453b8","textColor":"#ffffff","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}"},"workflow-step-pending":{"backgroundColor":"#646464","textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"workflow-connector":{"backgroundColor":"#dadada","height":"2px"},"task-card":{"backgroundColor":"#ffffff","border":"1px solid #dadada","borderLeft":"3px solid #1453b8","rounded":"8px","elevation":"0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels","padding":"12px 16px"},"task-card-overdue":{"borderLeft":"3px solid #ce1300"},"task-inbox-row":{"backgroundColor":"#ffffff","borderBottom":"1px solid #646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","height":"36px","padding":"0 12px"},"task-inbox-row-unread":{"backgroundColor":"#f8f8f8","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}"},"task-due-badge":{"backgroundColor":"#646464","textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"1px 6px"},"task-due-badge-overdue":{"backgroundColor":"#ffb3b3","textColor":"#b71307"},"task-priority-high":{"color":"#ce1300","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}"},"task-priority-normal":{"color":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}"},"participant-chip":{"backgroundColor":"#e3edfc","textColor":"#104293","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"9999px","padding":"2px 8px"},"role-label":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}"},"verdict-approve":{"backgroundColor":"#539137","textColor":"#ffffff","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","rounded":"2px","height":"24px","padding":"0 12px"},"verdict-reject":{"backgroundColor":"#ce1300","textColor":"#ffffff","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","rounded":"2px","height":"24px","padding":"0 12px"},"esignature-prompt":{"backgroundColor":"#ffffcc","border":"1px solid #cccccc","rounded":"8px","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","padding":"16px 20px"},"workflow-status-badge":{"backgroundColor":"#e3edfc","textColor":"#104293","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"2px 6px"},"search-bar":{"backgroundColor":"#ffffff","border":"1px solid #cccccc","rounded":"2px","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","height":"28px","padding":"0 8px"},"search-scope-selector":{"backgroundColor":"#f8f8f8","textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","borderRight":"1px solid #dadada","padding":"0 8px"},"facet-group":{"borderBottom":"1px solid #646464","padding":"8px 0"},"facet-group-header":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","padding":"4px 12px"},"facet-item":{"textColor":"#1d1d1d","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","padding":"4px 12px"},"facet-item-selected":{"backgroundColor":"#fff5ad","borderLeft":"3px solid #f8972b"},"facet-count":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"search-result-row":{"backgroundColor":"#ffffff","borderBottom":"1px solid #646464","padding":"10px 16px"},"search-result-row-hover":{"backgroundColor":"#eeeeee"},"search-result-title":{"textColor":"#0066cc","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"14px\",\"lineHeight\":\"20px\"}"},"search-result-snippet":{"textColor":"#1d1d1d","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"search-result-meta":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"search-highlight":{"backgroundColor":"#ffec8e","textColor":"#1d1d1d"},"result-type-icon":{"color":"#646464","size":"16px"},"saved-view-tab":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","padding":"0 12px","height":"32px"},"saved-view-tab-active":{"textColor":"#1d1d1d","borderBottom":"3px solid #f8972b"},"empty-state":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","padding":"48px 16px"},"empty-state-icon":{"color":"#414141","size":"48px"},"report-toolbar":{"backgroundColor":"#f8f8f8","borderBottom":"1px solid #dadada","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","height":"40px","padding":"0 16px"},"report-grid-header":{"backgroundColor":"#f8f8f8","textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","borderBottom":"1px solid #dadada","height":"32px"},"report-grid-group-row":{"backgroundColor":"#aaaaaa","textColor":"#1d1d1d","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","height":"28px"},"report-grid-total-row":{"backgroundColor":"#f8f8f8","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","borderTop":"2px solid #cccccc"},"filter-bar":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","padding":"8px 12px"},"filter-chip":{"backgroundColor":"#e3edfc","textColor":"#104293","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","rounded":"9999px","padding":"2px 8px"},"dashboard-tile":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","elevation":"0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels","padding":"16px"},"dashboard-tile-header":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","borderBottom":"1px solid #646464","padding":"0 0 8px 0"},"metric-tile-value":{"textColor":"#1d1d1d","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"24px\",\"lineHeight\":\"32px\",\"fontWeight\":400}"},"metric-tile-label":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"metric-delta-up":{"color":"#539137","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}"},"metric-delta-down":{"color":"#ce1300","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}"},"chart-card":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","elevation":"0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels","padding":"16px"},"chart-series-1":{"color":"#1453b8"},"chart-series-2":{"color":"#f8972b"},"chart-series-3":{"color":"#539137"},"chart-series-4":{"color":"#ce1300"},"chart-legend":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"chart-axis":{"color":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}"},"chart-gridline":{"color":"#646464"},"home-card":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","elevation":"0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20)        # 2dp — resting: cards, tiles, side panels","padding":0},"home-card-header":{"backgroundColor":"#f8f8f8","textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","borderBottom":"1px solid #dadada","padding":"8px 16px","height":"36px"},"case-header":{"backgroundColor":"#ffffff","borderBottom":"1px solid #dadada","typography":"{typography.page-title}","padding":"12px 24px"},"case-id":{"textColor":"#646464","typography":"{\"fontFamily\":\"Roboto Mono\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}"},"seriousness-serious":{"backgroundColor":"#ce1300","textColor":"#ffffff","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"2px 6px"},"seriousness-non-serious":{"backgroundColor":"#646464","textColor":"#646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"2px 6px"},"causality-related":{"backgroundColor":"#ffefd5","textColor":"#f78b12","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"2px 6px"},"causality-not-related":{"backgroundColor":"#646464","textColor":"#646464"},"expectedness-unexpected":{"backgroundColor":"#ffb3b3","textColor":"#b71307","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"10px\",\"lineHeight\":\"14px\",\"fontWeight\":700,\"letterSpacing\":\"0.06em\"}","rounded":"4px","padding":"2px 6px"},"expectedness-expected":{"backgroundColor":"#646464","textColor":"#646464"},"case-status-intake":{"backgroundColor":"#e3edfc","textColor":"#104293"},"case-status-assessment":{"backgroundColor":"#ffefd5","textColor":"#f78b12"},"case-status-submitted":{"backgroundColor":"#e0f3e0","textColor":"#427b2e"},"reporting-clock":{"backgroundColor":"#ffffff","border":"1px solid #cccccc","rounded":"8px","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\",\"fontWeight\":500}","padding":"8px 12px"},"reporting-clock-on-track":{"borderLeft":"4px solid #539137","color":"#539137"},"reporting-clock-due-soon":{"borderLeft":"4px solid #f8972b","color":"#f78b12"},"reporting-clock-overdue":{"borderLeft":"4px solid #ce1300","color":"#ce1300"},"narrative-section":{"backgroundColor":"#ffffff","border":"1px solid #dadada","rounded":"8px","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"14px\",\"lineHeight\":\"20px\"}","padding":"16px"},"adverse-event-row":{"borderBottom":"1px solid #646464","typography":"{\"fontFamily\":\"Roboto\",\"fontSize\":\"12px\",\"lineHeight\":\"17px\"}","height":"32px"},"meddra-term-chip":{"backgroundColor":"#e3edfc","textColor":"#104293","typography":"{typography.xs}","rounded":"4px","padding":"1px 6px"}};
+    const componentSources = {"case-header":"DESIGN-safety.md","case-id":"DESIGN-safety.md","seriousness-serious":"DESIGN-safety.md","seriousness-non-serious":"DESIGN-safety.md","causality-related":"DESIGN-safety.md","causality-not-related":"DESIGN-safety.md","expectedness-unexpected":"DESIGN-safety.md","expectedness-expected":"DESIGN-safety.md","case-status-intake":"DESIGN-safety.md","case-status-assessment":"DESIGN-safety.md","case-status-submitted":"DESIGN-safety.md","reporting-clock":"DESIGN-safety.md","reporting-clock-on-track":"DESIGN-safety.md","reporting-clock-due-soon":"DESIGN-safety.md","reporting-clock-overdue":"DESIGN-safety.md","narrative-section":"DESIGN-safety.md","adverse-event-row":"DESIGN-safety.md","meddra-term-chip":"DESIGN-safety.md","object-record-page":"DESIGN-platform.md","object-record-header":"DESIGN-platform.md","object-section":"DESIGN-platform.md","object-section-header":"DESIGN-platform.md","field-row":"DESIGN-platform.md","field-label":"DESIGN-platform.md","field-value":"DESIGN-platform.md","field-value-edit":"DESIGN-platform.md","field-value-required":"DESIGN-platform.md","reference-field":"DESIGN-platform.md","picklist-value":"DESIGN-platform.md","system-field":"DESIGN-platform.md","related-list":"DESIGN-platform.md","related-list-header":"DESIGN-platform.md","related-list-count":"DESIGN-platform.md","object-hovercard":"DESIGN-platform.md","object-hovercard-title":"DESIGN-platform.md","record-dialog":"DESIGN-platform.md","record-dialog-header":"DESIGN-platform.md","state-badge-active":"DESIGN-platform.md","state-badge-inactive":"DESIGN-platform.md","document-viewer":"DESIGN-platform.md","document-viewer-toolbar":"DESIGN-platform.md","document-page":"DESIGN-platform.md","document-panel":"DESIGN-platform.md","document-panel-header":"DESIGN-platform.md","document-title":"DESIGN-platform.md","document-number":"DESIGN-platform.md","version-badge":"DESIGN-platform.md","version-badge-steady":"DESIGN-platform.md","doc-lifecycle-draft":"DESIGN-platform.md","doc-lifecycle-in-review":"DESIGN-platform.md","doc-lifecycle-approved":"DESIGN-platform.md","doc-lifecycle-steady-state":"DESIGN-platform.md","doc-lifecycle-superseded":"DESIGN-platform.md","annotation-marker":"DESIGN-platform.md","annotation-note":"DESIGN-platform.md","annotation-count":"DESIGN-platform.md","document-card":"DESIGN-platform.md","document-type-icon":"DESIGN-platform.md","binder-tree":"DESIGN-platform.md","binder-node":"DESIGN-platform.md","binder-node-selected":"DESIGN-platform.md","signature-block":"DESIGN-platform.md","workflow-timeline":"DESIGN-platform.md","workflow-step-completed":"DESIGN-platform.md","workflow-step-active":"DESIGN-platform.md","workflow-step-pending":"DESIGN-platform.md","workflow-connector":"DESIGN-platform.md","task-card":"DESIGN-platform.md","task-card-overdue":"DESIGN-platform.md","task-inbox-row":"DESIGN-platform.md","task-inbox-row-unread":"DESIGN-platform.md","task-due-badge":"DESIGN-platform.md","task-due-badge-overdue":"DESIGN-platform.md","task-priority-high":"DESIGN-platform.md","task-priority-normal":"DESIGN-platform.md","participant-chip":"DESIGN-platform.md","role-label":"DESIGN-platform.md","verdict-approve":"DESIGN-platform.md","verdict-reject":"DESIGN-platform.md","esignature-prompt":"DESIGN-platform.md","workflow-status-badge":"DESIGN-platform.md","search-bar":"DESIGN-platform.md","search-scope-selector":"DESIGN-platform.md","facet-group":"DESIGN-platform.md","facet-group-header":"DESIGN-platform.md","facet-item":"DESIGN-platform.md","facet-item-selected":"DESIGN-platform.md","facet-count":"DESIGN-platform.md","search-result-row":"DESIGN-platform.md","search-result-row-hover":"DESIGN-platform.md","search-result-title":"DESIGN-platform.md","search-result-snippet":"DESIGN-platform.md","search-result-meta":"DESIGN-platform.md","search-highlight":"DESIGN-platform.md","result-type-icon":"DESIGN-platform.md","saved-view-tab":"DESIGN-platform.md","saved-view-tab-active":"DESIGN-platform.md","empty-state":"DESIGN-platform.md","empty-state-icon":"DESIGN-platform.md","report-toolbar":"DESIGN-platform.md","report-grid-header":"DESIGN-platform.md","report-grid-group-row":"DESIGN-platform.md","report-grid-total-row":"DESIGN-platform.md","filter-bar":"DESIGN-platform.md","filter-chip":"DESIGN-platform.md","dashboard-tile":"DESIGN-platform.md","dashboard-tile-header":"DESIGN-platform.md","metric-tile-value":"DESIGN-platform.md","metric-tile-label":"DESIGN-platform.md","metric-delta-up":"DESIGN-platform.md","metric-delta-down":"DESIGN-platform.md","chart-card":"DESIGN-platform.md","chart-series-1":"DESIGN-platform.md","chart-series-2":"DESIGN-platform.md","chart-series-3":"DESIGN-platform.md","chart-series-4":"DESIGN-platform.md","chart-legend":"DESIGN-platform.md","chart-axis":"DESIGN-platform.md","chart-gridline":"DESIGN-platform.md","home-card":"DESIGN-platform.md","home-card-header":"DESIGN-platform.md","button-default":"DESIGN.md","button-default-hover":"DESIGN.md","button-primary":"DESIGN.md","button-primary-hover":"DESIGN.md","button-primary-active":"DESIGN.md","button-ghost":"DESIGN.md","button-danger":"DESIGN.md","button-disabled":"DESIGN.md","text-input":"DESIGN.md","text-input-focus":"DESIGN.md","text-input-required":"DESIGN.md","text-input-error":"DESIGN.md","text-input-disabled":"DESIGN.md","textarea":"DESIGN.md","checkbox":"DESIGN.md","radio":"DESIGN.md","dropdown":"DESIGN.md","global-header":"DESIGN.md","global-header-tabbar":"DESIGN.md","sidebar":"DESIGN.md","sidebar-item-active":"DESIGN.md","tab":"DESIGN.md","tab-active":"DESIGN.md","breadcrumb":"DESIGN.md","breadcrumb-link":"DESIGN.md","page-title":"DESIGN.md","data-grid-header":"DESIGN.md","data-grid-row":"DESIGN.md","data-grid-row-hover":"DESIGN.md","data-grid-row-selected":"DESIGN.md","badge":"DESIGN.md","badge-blue":"DESIGN.md","badge-green":"DESIGN.md","badge-red":"DESIGN.md","badge-yellow":"DESIGN.md","badge-orange":"DESIGN.md","badge-gray":"DESIGN.md","tag":"DESIGN.md","pill":"DESIGN.md","avatar":"DESIGN.md","link":"DESIGN.md","lifecycle-stage-done":"DESIGN.md","lifecycle-stage-current":"DESIGN.md","lifecycle-stage-upcoming":"DESIGN.md","modal":"DESIGN.md","modal-header":"DESIGN.md","modal-footer":"DESIGN.md","menu":"DESIGN.md","menu-item-hover":"DESIGN.md","tooltip":"DESIGN.md","hovercard":"DESIGN.md","notification":"DESIGN.md","notification-success":"DESIGN.md","notification-error":"DESIGN.md","notification-warning":"DESIGN.md","spinner":"DESIGN.md","pagination":"DESIGN.md","picker-button":"DESIGN.md","picker-button-focus":"DESIGN.md","picker-button-required":"DESIGN.md","picker-button-error":"DESIGN.md","picker-button-disabled":"DESIGN.md","search-box":"DESIGN.md","search-box-focus":"DESIGN.md","search-box-disabled":"DESIGN.md","search-box-button":"DESIGN.md","backgroundColor":"DESIGN.md","size":"DESIGN.md","search-box-button-hover":"DESIGN.md","search-box-button-active":"DESIGN.md","picklist-multiple":"DESIGN.md","picklist-multiple-focus":"DESIGN.md","picklist-multiple-required":"DESIGN.md","picklist-multiple-error":"DESIGN.md","picklist-multiple-disabled":"DESIGN.md","timepicker":"DESIGN.md","timepicker-focus":"DESIGN.md","timepicker-required":"DESIGN.md","timepicker-error":"DESIGN.md","timepicker-disabled":"DESIGN.md","split-button-primary":"DESIGN.md","split-button-primary-hover":"DESIGN.md","split-button-primary-focus":"DESIGN.md","split-button-primary-active":"DESIGN.md","split-button-primary-disabled":"DESIGN.md","split-button-secondary":"DESIGN.md","split-button-secondary-focus":"DESIGN.md","split-button-secondary-disabled":"DESIGN.md","page-title-padded":"DESIGN.md","typography":"DESIGN.md","textColor":"DESIGN.md","borderBottom":"DESIGN.md","padding":"DESIGN.md","object-hovercard-trigger":"DESIGN.md"};
+
+    function renderLibrary() {
+      const container = document.getElementById('components-by-source');
+      if (!container) return;
+      container.innerHTML = '';
+
+      // Group components by source
+      const groups = {};
+      for (const [compName, spec] of Object.entries(componentsData)) {
+        // Skip state modifiers like -hover, -active, -focus, -disabled, -required, -error unless they're stand-alone
+        const isStateModifier = compName.includes('-hover') || compName.includes('-active') || compName.includes('-focus') || compName.includes('-disabled') || compName.includes('-required') || compName.includes('-error');
+        if (isStateModifier) continue;
+
+        const source = componentSources[compName] || 'Unknown';
+        if (source !== targetFileName) continue; // Only include the additional items for this system
+        
+        if (!groups[source]) groups[source] = [];
+        groups[source].push({ name: compName, spec });
+      }
+
+      // Render groups
+      for (const [source, comps] of Object.entries(groups)) {
+        const groupSection = document.createElement('div');
+        groupSection.className = 'lib-group';
+        groupSection.innerHTML = `
+          <h3 class="lib-group-title">${source}</h3>
+          <div class="lib-grid"></div>
+        `;
+        const grid = groupSection.querySelector('.lib-grid');
+
+        comps.forEach(comp => {
+          const card = document.createElement('div');
+          card.className = 'lib-card';
+          card.setAttribute('data-name', comp.name);
+          card.setAttribute('data-source', source);
+
+          // Render interactive specimen
+          let specimenHtml = '';
+          const name = comp.name;
+          const cleanName = name.replace(/^(button-|text-input-|site-status-|subject-status-|qms-state-|mlr-|reviewer-|doc-lifecycle-|task-)/, '').replace(/-/g, ' ');
+          
+          if (name.includes('button-') || name.includes('button')) {
+            specimenHtml = `<button class="vault-button vault-\${name}">\${cleanName}</button>`;
+          } else if (name.includes('input') || name.includes('search-box')) {
+            specimenHtml = `<input type="text" class="vault-input vault-\${name}" value="\${cleanName}" placeholder="\${cleanName}">`;
+          } else if (name.includes('textarea')) {
+            specimenHtml = `<textarea class="vault-\${name}" placeholder="\${cleanName}"></textarea>`;
+          } else if (name.includes('badge') || name.includes('status-') || name.includes('state-') || name.includes('tag') || name.includes('pill') || name.includes('chip') || name.includes('marker')) {
+            specimenHtml = `<span class="vault-badge vault-\${name}">\${cleanName.toUpperCase()}</span>`;
+          } else if (name.includes('link')) {
+            specimenHtml = `<a href="#" class="vault-\${name}">\${cleanName}</a>`;
+          } else if (name.includes('banner')) {
+            specimenHtml = `<div class="vault-\${name}" style="width:100%; text-align:center;">\${cleanName.toUpperCase()}</div>`;
+          } else {
+            // Generic container
+            specimenHtml = `<div class="vault-\${name}" style="padding:12px; width:100%; min-height:32px; text-align:center;">\${cleanName}</div>`;
+          }
+
+          // Format properties list for style inspection
+          let propsList = '';
+          for (const [p, v] of Object.entries(comp.spec)) {
+            propsList += `<div><strong>\${p}:</strong> <span>\${JSON.stringify(v).replace(/"/g, '')}</span></div>`;
+          }
+
+          card.innerHTML = `
+            <div class="lib-card-header">
+              <div class="lib-card-name">\${name}</div>
+            </div>
+            <div class="lib-card-specimen">
+              \${specimenHtml}
+            </div>
+            <div class="lib-card-props">
+              \${propsList}
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        container.appendChild(groupSection);
+      }
+    }
+
+    function filterComponents() {
+      const q = document.getElementById('lib-search').value.toLowerCase();
+      const cards = document.querySelectorAll('.lib-card');
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name').toLowerCase();
+        const source = card.getAttribute('data-source').toLowerCase();
+        const cardText = card.innerText.toLowerCase();
+        if (name.includes(q) || source.includes(q) || cardText.includes(q)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Hide empty groups
+      const groups = document.querySelectorAll('.lib-group');
+      groups.forEach(group => {
+        const visibleCards = group.querySelectorAll('.lib-card[style="display: flex;"], .lib-card:not([style])');
+        if (visibleCards.length === 0) {
+          group.style.display = 'none';
+        } else {
+          group.style.display = 'block';
+        }
+      });
+    }
+
+    window.addEventListener('load', () => {
+      renderLibrary();
+    });
+  
+
+    // Handle tab switching inside style guide
+    function showSection(sectionId) {
+      // Toggle nav active state
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => item.classList.remove('active'));
+      
+      const activeNav = Array.from(navItems).find(item => item.getAttribute('onclick').includes(sectionId));
+      if (activeNav) activeNav.classList.add('active');
+
+      // Toggle sections
+      const sections = document.querySelectorAll('.preview-section');
+      sections.forEach(section => {
+        section.classList.remove('active');
+        if (section.id === 'section-' + sectionId) {
+          section.classList.add('active');
+        }
+      });
+      
+      // Reset scroll position on switch
+      document.querySelector('.preview-content').scrollTop = 0;
+    }
+
+    // Copy token to clipboard utility
+    function copyValue(varName, hexValue) {
+      const copyText = `var(${varName})`;
+      navigator.clipboard.writeText(copyText).then(() => {
+        const toast = document.getElementById('copied-toast');
+        toast.innerText = 'Copied: ' + copyText + ' (' + hexValue + ')';
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 1500);
+      });
+    }
+
+    // Toggle between Light and Dark Theme
+    function toggleTheme() {
+      const body = document.body;
+      const btnText = document.getElementById('theme-btn-text');
+      const isDark = body.classList.toggle('dark-theme');
+      
+      if (isDark) {
+        btnText.innerText = 'Switch to Light Mode';
+      } else {
+        btnText.innerText = 'Switch to Dark Mode';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veeva Vault Design System Preview Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #1453b8;
+      --color-primary-hover: #104293;
+      --color-accent: #f8972b;
+      --color-header: #061937;
+      --color-ink: #1d1d1d;
+      --color-body: #1d1d1d;
+      --color-muted: #646464;
+      --color-border: #dadada;
+      --color-surface-page: #f5f5f5;
+      --color-surface: #ffffff;
+      
+      --elevation-panel: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20);
+      --elevation-dropdown: 0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.12), 0 1px 8px 0 rgba(0,0,0,.20);
+    }
+
+    body.dark-theme {
+      --color-surface: #1e1e24;
+      --color-surface-page: #121214;
+      --color-ink: #ffffff;
+      --color-body: #e0e0e0;
+      --color-muted: #a0a0a0;
+      --color-border: #2d2d34;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--color-surface-page);
+      color: var(--color-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Top Navy Brand Header */
+    .brand-header {
+      background-color: var(--color-header);
+      color: white;
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--elevation-panel);
+    }
+    .brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo-icon {
+      width: 18px;
+      height: 18px;
+      background-color: var(--color-accent);
+      border-radius: 2px;
+    }
+    .theme-toggle-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease;
+    }
+    .theme-toggle-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Main Hub Body */
+    .hub-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 40px;
+      flex: 1;
+    }
+
+    .hub-hero {
+      border-bottom: 2px solid var(--color-accent);
+      padding-bottom: 20px;
+      margin-bottom: 40px;
+    }
+    .hub-hero-title {
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--color-ink);
+      margin: 0 0 10px 0;
+    }
+    .hub-hero-desc {
+      font-size: 15px;
+      color: var(--color-muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* Systems Grid */
+    .systems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+    }
+
+    .system-card {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      box-shadow: var(--elevation-panel);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .system-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--elevation-dropdown);
+    }
+
+    .system-card-header {
+      padding: 16px 20px;
+      background-color: var(--color-surface-page);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    body.dark-theme .system-card-header {
+      background-color: rgba(255,255,255,0.02);
+    }
+
+    .system-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .system-id-badge {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 10px;
+      background-color: var(--color-primary);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .system-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .system-desc {
+      font-size: 13px;
+      color: var(--color-muted);
+      line-height: 1.5;
+      margin: 0 0 16px 0;
+      flex: 1;
+    }
+    .system-source {
+      font-size: 11px;
+      color: var(--color-muted);
+      margin-bottom: 20px;
+    }
+    .system-source code {
+      background-color: var(--color-surface-page);
+      padding: 2px 4px;
+      border-radius: 2px;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .system-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .action-btn {
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .primary-btn {
+      background-color: var(--color-primary);
+      color: white;
+    }
+    .primary-btn:hover {
+      background-color: var(--color-primary-hover);
+    }
+    .secondary-btn {
+      background-color: var(--color-surface);
+      color: var(--color-body);
+      border: 1px solid var(--color-border);
+    }
+    .secondary-btn:hover {
+      background-color: var(--color-surface-page);
+    }
+
+    /* Footer */
+    .hub-footer {
+      text-align: center;
+      padding: 40px;
+      font-size: 12px;
+      color: var(--color-muted);
+      border-top: 1px solid var(--color-border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Hub Navigation -->
+  <div class="brand-header">
+    <div class="brand-title">
+      <div class="brand-logo-icon"></div>
+      <span>Veeva Vault Design Preview Hub</span>
+    </div>
+    <button class="theme-toggle-btn" onclick="toggleTheme()">
+      <span id="theme-btn-text">Switch to Dark Mode</span>
+    </button>
+  </div>
+
+  <div class="hub-container">
+    <div class="hub-hero">
+      <h1 class="hub-hero-title">Veeva Vault Systems Hub</h1>
+      <p class="hub-hero-desc">Navigate smoothly across the global public foundations, cross-cutting internal platform layers, and regulatory application verticals. Previews are compiled directly from the hierarchical <code>extends:</code> chain of <code>DESIGN.md</code> source definitions.</p>
+    </div>
+
+    <!-- Hub Grid -->
+    <div class="systems-grid">
+      
+      <div class="system-card">
+        <div class="system-card-header">
+          <div class="system-name">Core Foundations (Public)</div>
+          <span class="system-id-badge">foundations</span>
+        </div>
+        <div class="system-body">
+          <p class="system-desc">Veeva Vault global design tokens, core components, and signature brand "tells".</p>
+          <div class="system-source">Source: <code>PUBLIC/DESIGN.md</code></div>
+          <div class="system-actions">
+            <a href="PUBLIC/preview.html" class="action-btn primary-btn">Open Live Preview</a>
+            <a href="https://github.com/google-labs-code/design.md" target="_blank" class="action-btn secondary-btn">View DESIGN.md Spec</a>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="system-card">
+        <div class="system-card-header">
+          <div class="system-name">Platform Layers (Internal)</div>
+          <span class="system-id-badge">platform</span>
+        </div>
+        <div class="system-body">
+          <p class="system-desc">Shared cross-cutting platform layouts: Record Pages, Document Viewer, Workflow Timelines, Facented Search, and Report Dashboards.</p>
+          <div class="system-source">Source: <code>INTERNAL/DESIGN-platform.md</code></div>
+          <div class="system-actions">
+            <a href="INTERNAL/preview-platform.html" class="action-btn primary-btn">Open Live Preview</a>
+            <a href="https://github.com/google-labs-code/design.md" target="_blank" class="action-btn secondary-btn">View DESIGN.md Spec</a>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="system-card">
+        <div class="system-card-header">
+          <div class="system-name">Clinical CTMS/eTMF (Internal)</div>
+          <span class="system-id-badge">clinical</span>
+        </div>
+        <div class="system-body">
+          <p class="system-desc">Vertical application layer: Study context banners, site and subject status cards, milestone timelines, and eTMF completeness rings.</p>
+          <div class="system-source">Source: <code>INTERNAL/DESIGN-clinical.md</code></div>
+          <div class="system-actions">
+            <a href="INTERNAL/preview-clinical.html" class="action-btn primary-btn">Open Live Preview</a>
+            <a href="https://github.com/google-labs-code/design.md" target="_blank" class="action-btn secondary-btn">View DESIGN.md Spec</a>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="system-card">
+        <div class="system-card-header">
+          <div class="system-name">Commercial PromoMats (Internal)</div>
+          <span class="system-id-badge">commercial</span>
+        </div>
+        <div class="system-body">
+          <p class="system-desc">Vertical application layer: Promotional piece review (MLR), claims reference linking, expiration timelines, and distribution channel badges.</p>
+          <div class="system-source">Source: <code>INTERNAL/DESIGN-commercial.md</code></div>
+          <div class="system-actions">
+            <a href="INTERNAL/preview-commercial.html" class="action-btn primary-btn">Open Live Preview</a>
+            <a href="https://github.com/google-labs-code/design.md" target="_blank" class="action-btn secondary-btn">View DESIGN.md Spec</a>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="system-card">
+        <div class="system-card-header">
+          <div class="system-name">Quality QMS/Training (Internal)</div>
+          <span class="system-id-badge">quality</span>
+        </div>
+        <div class="system-body">
+          <p class="system-desc">Vertical application layer: Quality event headers (CAPA/Deviation), severity and state mapping, root-cause analysis panels, and training rows.</p>
+          <div class="system-source">Source: <code>INTERNAL/DESIGN-quality.md</code></div>
+          <div class="system-actions">
+            <a href="INTERNAL/preview-quality.html" class="action-btn primary-btn">Open Live Preview</a>
+            <a href="https://github.com/google-labs-code/design.md" target="_blank" class="action-btn secondary-btn">View DESIGN.md Spec</a>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="system-card">
+        <div class="system-card-header">
+          <div class="system-name">Regulatory RIM/eCTD (Internal)</div>
+          <span class="system-id-badge">regulatory</span>
+        </div>
+        <div class="system-body">
+          <p class="system-desc">Vertical application layer: Submissions eCTD module hierarchies, registration statuses across country maps, and regulatory commitment timelines.</p>
+          <div class="system-source">Source: <code>INTERNAL/DESIGN-regulatory.md</code></div>
+          <div class="system-actions">
+            <a href="INTERNAL/preview-regulatory.html" class="action-btn primary-btn">Open Live Preview</a>
+            <a href="https://github.com/google-labs-code/design.md" target="_blank" class="action-btn secondary-btn">View DESIGN.md Spec</a>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="system-card">
+        <div class="system-card-header">
+          <div class="system-name">Safety Pharmacovigilance (Internal)</div>
+          <span class="system-id-badge">safety</span>
+        </div>
+        <div class="system-body">
+          <p class="system-desc">Vertical application layer: Adverse-event case triage, seriousness/causality/expectedness assessment cards, MedDRA coding chips, and the mission-critical regulatory reporting clock.</p>
+          <div class="system-source">Source: <code>INTERNAL/DESIGN-safety.md</code></div>
+          <div class="system-actions">
+            <a href="INTERNAL/preview-safety.html" class="action-btn primary-btn">Open Live Preview</a>
+            <a href="https://github.com/google-labs-code/design.md" target="_blank" class="action-btn secondary-btn">View DESIGN.md Spec</a>
+          </div>
+        </div>
+      </div>
+    
+    </div>
+  </div>
+
+  <div class="hub-footer">
+    Veeva Systems © 2026. Controlled token system visualizer hub.
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const body = document.body;
+      const btnText = document.getElementById('theme-btn-text');
+      const isDark = body.classList.toggle('dark-theme');
+      if (isDark) {
+        btnText.innerText = 'Switch to Light Mode';
+      } else {
+        btnText.innerText = 'Switch to Dark Mode';
+      }
+    }
+  </script>
+</body>
+</html>
