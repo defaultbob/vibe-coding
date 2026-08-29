@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -7,8 +8,8 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicks/and:wght@600;700&display=swap');
-    
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@600;700&display=swap');
+
     * {
       font-family: 'Fredoka', 'Quicksand', sans-serif;
       user-select: none;
@@ -16,7 +17,8 @@
       touch-action: manipulation;
     }
 
-    body, html {
+    body,
+    html {
       margin: 0;
       padding: 0;
       overflow: hidden;
@@ -30,6 +32,7 @@
     .bubble-btn {
       transition: transform 0.15s ease, background-color 0.15s ease;
     }
+
     .bubble-btn:active {
       transform: scale(0.92);
     }
@@ -38,36 +41,46 @@
     ::-webkit-scrollbar {
       width: 6px;
     }
+
     ::-webkit-scrollbar-track {
       background: rgba(0, 0, 0, 0.05);
       border-radius: 8px;
     }
+
     ::-webkit-scrollbar-thumb {
       background: #f472b6;
       border-radius: 8px;
     }
   </style>
 </head>
+
 <body class="flex items-center justify-center min-h-screen">
 
   <!-- Main Game Frame -->
-  <div class="relative w-full h-full max-w-5xl max-h-[760px] md:rounded-3xl shadow-2xl overflow-hidden bg-stone-900 border-4 border-amber-200/50 flex flex-col">
-    
+  <div
+    class="relative w-full h-full max-w-5xl max-h-[760px] md:rounded-3xl shadow-2xl overflow-hidden bg-stone-900 border-4 border-amber-200/50 flex flex-col">
+
     <!-- Top HUD Bar -->
-    <header class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-3 md:px-5 py-2.5 bg-white/80 backdrop-blur-md border-b border-amber-200/60 text-stone-800">
-      
+    <header
+      class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-3 md:px-5 py-2.5 bg-white/80 backdrop-blur-md border-b border-amber-200/60 text-stone-800">
+
       <!-- Crumble Profile -->
       <div class="flex items-center gap-2.5">
         <div class="relative">
-          <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-pink-100 border-2 border-pink-400 flex items-center justify-center text-2xl shadow-inner cursor-pointer active:scale-95 transition" id="hud-profile-btn" title="View Crumble Stats">
+          <div
+            class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-pink-100 border-2 border-pink-400 flex items-center justify-center text-2xl shadow-inner cursor-pointer active:scale-95 transition"
+            id="hud-profile-btn" title="View Crumble Stats">
             🐩
           </div>
-          <span id="equipped-indicator" class="absolute -bottom-1 -right-1 text-xs bg-pink-500 text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">💖</span>
+          <span id="equipped-indicator"
+            class="absolute -bottom-1 -right-1 text-xs bg-pink-500 text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">💖</span>
         </div>
         <div>
           <div class="flex items-center gap-1.5">
             <span class="font-extrabold text-stone-900 text-sm md:text-base leading-none">Crumble</span>
-            <span id="hud-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 font-bold border border-pink-200">Scruffy Pup</span>
+            <span id="hud-badge"
+              class="text-[10px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 font-bold border border-pink-200">Scruffy
+              Pup</span>
           </div>
           <div class="flex items-center gap-2 mt-1 text-[11px] text-stone-600 font-semibold">
             <span>Energy:</span>
@@ -80,7 +93,8 @@
       </div>
 
       <!-- Resources Inventory Pill -->
-      <div class="flex items-center gap-2 md:gap-3 bg-amber-50/90 border border-amber-200 px-3 py-1.5 rounded-2xl shadow-sm text-xs md:text-sm font-bold">
+      <div
+        class="flex items-center gap-2 md:gap-3 bg-amber-50/90 border border-amber-200 px-3 py-1.5 rounded-2xl shadow-sm text-xs md:text-sm font-bold">
         <div class="flex items-center gap-1" title="Biscuits / Currency">
           <span>🦴</span>
           <span id="res-biscuits" class="text-amber-900">0</span>
@@ -101,20 +115,24 @@
 
       <!-- Action & Modal Buttons -->
       <div class="flex items-center gap-2">
-        <button id="btn-open-home" class="bubble-btn px-2.5 py-1.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs flex items-center gap-1 shadow-md">
+        <button id="btn-open-home"
+          class="bubble-btn px-2.5 py-1.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs flex items-center gap-1 shadow-md">
           <span>🏡</span>
           <span class="hidden sm:inline">Home</span>
         </button>
-        <button id="btn-open-owners" class="bubble-btn px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1 shadow-md">
+        <button id="btn-open-owners"
+          class="bubble-btn px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1 shadow-md">
           <span>👥</span>
           <span class="hidden sm:inline">Owners</span>
           <span id="owners-count-badge" class="bg-amber-700 text-white text-[9px] px-1 rounded-full">0/4</span>
         </button>
-        <button id="btn-open-shop" class="bubble-btn px-2.5 py-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs flex items-center gap-1 shadow-md">
+        <button id="btn-open-shop"
+          class="bubble-btn px-2.5 py-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs flex items-center gap-1 shadow-md">
           <span>🛒</span>
           <span class="hidden sm:inline">Upgrades</span>
         </button>
-        <button id="audio-btn" class="w-8 h-8 rounded-xl bg-white text-stone-700 border border-stone-200 flex items-center justify-center text-sm shadow-sm">
+        <button id="audio-btn"
+          class="w-8 h-8 rounded-xl bg-white text-stone-700 border border-stone-200 flex items-center justify-center text-sm shadow-sm">
           🔊
         </button>
       </div>
@@ -124,33 +142,42 @@
     <canvas id="gameWorld" class="w-full h-full block cursor-crosshair"></canvas>
 
     <!-- Bottom Alert / Interaction Toast Banner -->
-    <div id="interaction-prompt" class="absolute bottom-16 md:bottom-6 left-1/2 -translate-x-1/2 z-20 bg-stone-900/85 backdrop-blur-md text-white px-4 py-2 rounded-2xl border border-amber-300/40 text-xs md:text-sm font-semibold shadow-xl flex items-center gap-2 pointer-events-none transition-all duration-200 opacity-0 translate-y-3">
+    <div id="interaction-prompt"
+      class="absolute bottom-16 md:bottom-6 left-1/2 -translate-x-1/2 z-20 bg-stone-900/85 backdrop-blur-md text-white px-4 py-2 rounded-2xl border border-amber-300/40 text-xs md:text-sm font-semibold shadow-xl flex items-center gap-2 pointer-events-none transition-all duration-200 opacity-0 translate-y-3">
       <span id="prompt-icon" class="text-lg">✨</span>
       <span id="prompt-text">Press SPACE or Tap Action to interact</span>
     </div>
 
     <!-- Virtual Touch Joystick & Action Buttons for Mobile -->
-    <div id="touch-controls" class="absolute bottom-4 left-4 right-4 z-20 flex justify-between items-end pointer-events-none md:hidden">
+    <div id="touch-controls"
+      class="absolute bottom-4 left-4 right-4 z-20 flex justify-between items-end pointer-events-none md:hidden">
       <!-- D-Pad Controls -->
-      <div class="pointer-events-auto grid grid-cols-3 gap-1 w-32 h-32 bg-white/70 backdrop-blur-md p-1 rounded-3xl border border-amber-200 shadow-xl">
+      <div
+        class="pointer-events-auto grid grid-cols-3 gap-1 w-32 h-32 bg-white/70 backdrop-blur-md p-1 rounded-3xl border border-amber-200 shadow-xl">
         <div></div>
-        <button id="dpad-up" class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">▲</button>
+        <button id="dpad-up"
+          class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">▲</button>
         <div></div>
-        <button id="dpad-left" class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">◀</button>
+        <button id="dpad-left"
+          class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">◀</button>
         <div class="flex items-center justify-center text-[10px] text-stone-500 font-bold">🐾</div>
-        <button id="dpad-right" class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">▶</button>
+        <button id="dpad-right"
+          class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">▶</button>
         <div></div>
-        <button id="dpad-down" class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">▼</button>
+        <button id="dpad-down"
+          class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">▼</button>
         <div></div>
       </div>
 
       <!-- Action Buttons -->
       <div class="pointer-events-auto flex flex-col gap-2">
-        <button id="touch-sniff-btn" class="bubble-btn w-14 h-14 bg-gradient-to-tr from-amber-400 to-amber-500 text-amber-950 font-black rounded-2xl shadow-lg border border-amber-300 flex flex-col items-center justify-center text-xs">
+        <button id="touch-sniff-btn"
+          class="bubble-btn w-14 h-14 bg-gradient-to-tr from-amber-400 to-amber-500 text-amber-950 font-black rounded-2xl shadow-lg border border-amber-300 flex flex-col items-center justify-center text-xs">
           <span class="text-base">👃</span>
           <span>Sniff</span>
         </button>
-        <button id="touch-action-btn" class="bubble-btn w-14 h-14 bg-gradient-to-tr from-pink-500 to-rose-500 text-white font-black rounded-2xl shadow-lg border border-pink-300 flex flex-col items-center justify-center text-xs">
+        <button id="touch-action-btn"
+          class="bubble-btn w-14 h-14 bg-gradient-to-tr from-pink-500 to-rose-500 text-white font-black rounded-2xl shadow-lg border border-pink-300 flex flex-col items-center justify-center text-xs">
           <span class="text-base">🐾</span>
           <span>Interact</span>
         </button>
@@ -160,8 +187,10 @@
     <!-- ========================================================================= -->
     <!-- MODAL: HOME CUSTOMIZER & UPGRADES                                         -->
     <!-- ========================================================================= -->
-    <div id="modal-home" class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
-      <div class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[85%] flex flex-col shadow-2xl border-4 border-pink-300">
+    <div id="modal-home"
+      class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
+      <div
+        class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[85%] flex flex-col shadow-2xl border-4 border-pink-300">
         <div class="flex items-center justify-between pb-3 border-b border-stone-200">
           <div class="flex items-center gap-2">
             <span class="text-2xl">🏡</span>
@@ -170,7 +199,8 @@
               <p class="text-xs text-stone-500">Upgrade your home and rest your paws!</p>
             </div>
           </div>
-          <button class="modal-close-btn w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">✕</button>
+          <button
+            class="modal-close-btn w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">✕</button>
         </div>
 
         <div class="overflow-y-auto py-3 space-y-3 flex-1">
@@ -180,7 +210,8 @@
               <h3 class="font-extrabold text-stone-800 text-sm">🛏️ Take a Scruffy Nap</h3>
               <p class="text-xs text-stone-600">Rest inside your dog bed to fully replenish Energy!</p>
             </div>
-            <button id="btn-rest-home" class="bubble-btn px-3 py-2 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-xs shadow">
+            <button id="btn-rest-home"
+              class="bubble-btn px-3 py-2 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-xs shadow">
               Nap (Rest)
             </button>
           </div>
@@ -197,8 +228,10 @@
     <!-- ========================================================================= -->
     <!-- MODAL: OWNERS / ADOPTION SYSTEM                                           -->
     <!-- ========================================================================= -->
-    <div id="modal-owners" class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
-      <div class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[85%] flex flex-col shadow-2xl border-4 border-amber-300">
+    <div id="modal-owners"
+      class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
+      <div
+        class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[85%] flex flex-col shadow-2xl border-4 border-amber-300">
         <div class="flex items-center justify-between pb-3 border-b border-stone-200">
           <div class="flex items-center gap-2">
             <span class="text-2xl">👥</span>
@@ -207,7 +240,8 @@
               <p class="text-xs text-stone-500">Befriend townspeople to earn loving owners and exclusive outfits!</p>
             </div>
           </div>
-          <button class="modal-close-btn w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">✕</button>
+          <button
+            class="modal-close-btn w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">✕</button>
         </div>
 
         <div id="owners-list" class="overflow-y-auto py-3 space-y-3 flex-1">
@@ -219,8 +253,10 @@
     <!-- ========================================================================= -->
     <!-- MODAL: UPGRADE SHOP & MERCHANT                                            -->
     <!-- ========================================================================= -->
-    <div id="modal-shop" class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
-      <div class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[85%] flex flex-col shadow-2xl border-4 border-indigo-300">
+    <div id="modal-shop"
+      class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
+      <div
+        class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[85%] flex flex-col shadow-2xl border-4 border-indigo-300">
         <div class="flex items-center justify-between pb-3 border-b border-stone-200">
           <div class="flex items-center gap-2">
             <span class="text-2xl">🛒</span>
@@ -229,7 +265,8 @@
               <p class="text-xs text-stone-500">Upgrade Crumble's speed, sniffing radar, and bag capacity!</p>
             </div>
           </div>
-          <button class="modal-close-btn w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">✕</button>
+          <button
+            class="modal-close-btn w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">✕</button>
         </div>
 
         <div id="shop-items-list" class="overflow-y-auto py-3 space-y-2.5 flex-1">
@@ -241,9 +278,11 @@
     <!-- ========================================================================= -->
     <!-- MODAL: CRUMBLE'S WARDROBE & PROFILE                                       -->
     <!-- ========================================================================= -->
-    <div id="modal-wardrobe" class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
+    <div id="modal-wardrobe"
+      class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
       <div class="bg-white rounded-3xl p-5 md:p-6 max-w-md w-full shadow-2xl border-4 border-pink-300 text-center">
-        <div class="w-16 h-16 mx-auto bg-pink-100 rounded-full border-2 border-pink-400 flex items-center justify-center text-3xl shadow-inner mb-2">
+        <div
+          class="w-16 h-16 mx-auto bg-pink-100 rounded-full border-2 border-pink-400 flex items-center justify-center text-3xl shadow-inner mb-2">
           🐩
         </div>
         <h2 class="text-xl font-extrabold text-stone-800">Crumble's Wardrobe</h2>
@@ -253,7 +292,8 @@
           <!-- Dynamically generated outfits -->
         </div>
 
-        <button class="modal-close-btn w-full py-2.5 bg-stone-800 text-white font-bold rounded-xl text-xs hover:bg-stone-900">
+        <button
+          class="modal-close-btn w-full py-2.5 bg-stone-800 text-white font-bold rounded-xl text-xs hover:bg-stone-900">
           Back to Adventure
         </button>
       </div>
@@ -1229,7 +1269,7 @@
       document.getElementById('owners-count-badge').textContent = `${adoptedCount}/4`;
     }
 
-    window.adoptOwner = function(ownerId) {
+    window.adoptOwner = function (ownerId) {
       const owner = STATE.owners.find(o => o.id === ownerId);
       if (!owner || owner.adopted) return;
 
@@ -1249,7 +1289,7 @@
       }
     };
 
-    window.equipOutfit = function(outfitKey) {
+    window.equipOutfit = function (outfitKey) {
       STATE.player.equippedOutfit = outfitKey;
       audio.playPop();
       updateProfileBadge();
@@ -1318,7 +1358,7 @@
       });
     }
 
-    window.buildYardUpgrade = function(key) {
+    window.buildYardUpgrade = function (key) {
       const upgradeCosts = {
         hasFirepit: { biscuits: 6, pinecones: 4 },
         hasHeartFountain: { biscuits: 10, hearts: 3 },
@@ -1415,7 +1455,7 @@
       });
     }
 
-    window.buyShopUpgrade = function(key, cost) {
+    window.buyShopUpgrade = function (key, cost) {
       if (STATE.resources.biscuits >= cost) {
         STATE.resources.biscuits -= cost;
         STATE.upgrades[key]++;
@@ -1590,4 +1630,5 @@
     requestAnimationFrame(gameLoop);
   </script>
 </body>
+
 </html>
