@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vault CRM – Web — Design System Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+  --color-accent-brand: #F8972B;
+  --color-ui-action: #0066CC;
+  --color-ui-border: #CCCCCC;
+  --color-ui-divider: #EEEEEE;
+  --color-text-primary: #303030;
+  --color-text-secondary: #808080;
+  --color-text-placeholder: #CCCCCC;
+  --color-text-inverse: #FFFFFF;
+  --color-nav-background: #223354;
+  --color-nav-border: #EEEEEE;
+  --color-nav-borderActive: #F8972B;
+  --color-nav-textActive: #F8972B;
+  --color-sidebar-background: #F8F8F8;
+  --color-sidebar-border: #CCCCCC;
+  --color-sidebar-textPrimary: #303030;
+  --color-sidebar-textActive: #303030;
+  --color-sidebar-backgroundHover: #DADADA;
+  --color-sidebar-backgroundActive: #E3EDFC;
+  --color-tabs-borderActive: #1453B8;
+  --color-tabs-textActive: #303030;
+  --color-table-backgroundHeader: #DADADA;
+  --color-table-backgroundRow: #FFFFFF;
+  --color-status-released: #E0F3E0;
+  --color-status-inProgress: #E3EDFC;
+  --color-status-planned: #F8F8F8;
+  --color-status-updateNeeded: #FFEFD5;
+  --color-status-deprecated: #FFE2E2;
+  --color-callout-info: #E3EDFC;
+  --color-callout-success: #E0F3E0;
+  --color-callout-warning: #FFEFD5;
+  --color-callout-error: #FFE2E2;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --rounded-sm: 4px;
+  --rounded-md: 8px;
+      --preview-sidebar-bg: #f8f9fa;
+      --preview-border: #dadada;
+      --preview-text-main: #1d1d1d;
+      --preview-text-muted: #646464;
+      --preview-content-bg: #fcfcfc;
+      --preview-card-bg: #ffffff;
+      --ink: #1d1d1d;
+      --muted: #646464;
+    }
+    html { font-size: 12px; } /* CRM root: 1rem = 12px */
+    body.dark-theme {
+      --preview-sidebar-bg: #16161a;
+      --preview-border: #2d2d34;
+      --preview-text-main: #ffffff;
+      --preview-text-muted: #a0a0a0;
+      --preview-content-bg: #121214;
+      --preview-card-bg: #1e1e24;
+      --ink: #ffffff;
+      --muted: #a0a0a0;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:1.5; color:var(--preview-text-main); background:var(--preview-content-bg); display:flex; height:100vh; overflow:hidden; transition:background .2s,color .2s; }
+    .preview-sidebar { width:260px; background:var(--preview-sidebar-bg); border-right:1px solid var(--preview-border); display:flex; flex-direction:column; height:100%; flex-shrink:0; }
+    .preview-sidebar-header { padding:24px; border-bottom:1px solid var(--preview-border); }
+    .preview-sidebar-title { font-size:18px; font-weight:700; color:var(--ink); margin:0 0 12px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .preview-sidebar-title span { background:#e3edfc; color:#1453b8; font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
+    .preview-sidebar-desc { font-size:11px; color:var(--preview-text-muted); margin:0; line-height:1.4; }
+    .standalone-badge { display:inline-block; margin-top:10px; font-size:10px; font-weight:600; color:#8a5a00; background:#ffefd5; border-radius:4px; padding:2px 6px; }
+    .preview-sidebar-nav { flex:1; overflow-y:auto; padding:16px 12px; }
+    .nav-item { display:flex; align-items:center; padding:8px 12px; color:var(--preview-text-main); border-radius:8px; font-size:13px; font-weight:500; margin-bottom:2px; cursor:pointer; transition:all .15s; }
+    .nav-item:hover { background:rgba(0,0,0,.04); }
+    body.dark-theme .nav-item:hover { background:rgba(255,255,255,.06); }
+    .nav-item.active { background:#e3edfc; color:#1453b8; }
+    body.dark-theme .nav-item.active { background:#1a2b4a; color:#9cc0f5; }
+    .theme-toggle-btn { width:100%; background:var(--preview-card-bg); color:var(--preview-text-main); border:1px solid var(--preview-border); border-radius:4px; font-family:inherit; font-size:11px; font-weight:600; padding:8px 12px; cursor:pointer; margin-top:12px; }
+    .preview-content { flex:1; height:100%; overflow-y:auto; padding:40px; }
+    .preview-section { display:none; max-width:1000px; margin-bottom:80px; }
+    .preview-section.active { display:block; }
+    .section-header { border-bottom:2px solid var(--color-accent-brand, #888); padding-bottom:12px; margin-bottom:28px; }
+    .section-title { font-size:24px; font-weight:700; color:var(--ink); margin:0 0 8px; }
+    .section-desc { font-size:13px; color:var(--muted); margin:0; }
+    .sub-title { font-size:13px; font-weight:700; color:var(--ink); margin:24px 0 12px; text-transform:capitalize; }
+    .sub-note { font-size:12px; color:var(--muted); margin-top:12px; }
+    .grid-swatches { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; }
+    .swatch-card { background:var(--preview-card-bg); border:1px solid var(--preview-border); border-radius:8px; overflow:hidden; cursor:pointer; transition:transform .15s,box-shadow .15s; }
+    .swatch-card:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.1); }
+    .swatch-color { height:72px; width:100%; }
+    .swatch-info { padding:12px; }
+    .swatch-name { font-size:12px; font-weight:700; color:var(--ink); margin-bottom:4px; }
+    .swatch-value { font-family:'Roboto Mono',monospace; font-size:11px; color:var(--muted); text-transform:uppercase; }
+    .typo-table, .prop-table { width:100%; border-collapse:collapse; background:var(--preview-card-bg); border:1px solid var(--preview-border); border-radius:8px; overflow:hidden; }
+    .typo-table th, .typo-table td, .prop-table td { padding:16px; text-align:left; border-bottom:1px solid var(--preview-border); }
+    .typo-table th { background:rgba(0,0,0,.03); font-size:10px; text-transform:uppercase; font-weight:700; letter-spacing:.08em; color:var(--muted); }
+    .typo-specimen-name { font-weight:700; font-size:13px; color:var(--ink); }
+    .typo-specimen-meta { font-family:'Roboto Mono',monospace; font-size:11px; color:var(--muted); margin-top:4px; }
+    .prop-table { margin-top:0; }
+    .prop-table td { padding:8px 12px; font-size:12px; }
+    .prop-key { font-family:'Roboto Mono',monospace; color:var(--muted); width:30%; }
+    .prop-val { font-family:'Roboto Mono',monospace; color:var(--ink); }
+    .spacing-container { background:var(--preview-card-bg); border:1px solid var(--preview-border); border-radius:8px; padding:24px; }
+    .spacing-row { display:flex; align-items:center; margin-bottom:14px; }
+    .spacing-label { width:80px; font-weight:600; color:var(--muted); font-size:12px; }
+    .spacing-bar-container { flex:1; display:flex; align-items:center; }
+    .spacing-bar { height:16px; background:var(--color-ui-action, #0066cc); border-radius:2px; }
+    .spacing-value-label { margin-left:12px; font-family:'Roboto Mono',monospace; font-size:11px; color:var(--ink); }
+    .shapes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:16px; }
+    .shape-card { background:var(--preview-card-bg); border:1px solid var(--preview-border); border-radius:8px; padding:20px; display:flex; flex-direction:column; align-items:center; }
+    .shape-demo { width:72px; height:72px; background:var(--color-nav-background, var(--color-accent-brand, #888)); margin-bottom:16px; }
+    .shape-label { font-size:12px; font-weight:700; color:var(--ink); margin-bottom:4px; }
+    .shape-value { font-family:'Roboto Mono',monospace; font-size:11px; color:var(--muted); }
+    .specimen-group { background:var(--preview-card-bg); border:1px solid var(--preview-border); border-radius:8px; padding:24px; margin-bottom:24px; }
+    .specimen-group-title { font-size:15px; font-weight:700; color:var(--ink); margin:0 0 16px; border-bottom:1px dashed var(--preview-border); padding-bottom:8px; font-family:'Roboto Mono',monospace; }
+    .specimen-row { display:flex; flex-wrap:wrap; gap:16px; align-items:center; }
+    .copied-toast { position:fixed; bottom:24px; right:24px; background:#1d1d1d; color:#fff; padding:8px 16px; border-radius:4px; font-size:12px; font-weight:500; opacity:0; transform:translateY(10px); transition:all .2s; z-index:1000; pointer-events:none; }
+    .copied-toast.show { opacity:1; transform:translateY(0); }
+
+    /* ---- Generated component specimen classes ---- */
+.spec-comp-button-primary {
+  background-color: #0066CC;
+  color: #FFFFFF;
+  font-family: {typography.fontFamily};
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 8px 16px;
+}
+
+.spec-comp-nav-item {
+  background-color: #223354;
+  color: #FFFFFF;
+  font-family: {typography.fontFamily};
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.spec-comp-nav-item-active {
+  color: #F8972B;
+  border-color: #F8972B;
+}
+
+.spec-comp-sidebar-item-active {
+  background-color: #E3EDFC;
+  color: #303030;
+  border-radius: 4px;
+}
+
+.spec-comp-data-grid-header {
+  background-color: #DADADA;
+  border-color: #CCCCCC;
+}
+
+.spec-comp-callout-info {
+  background-color: #E3EDFC;
+  border-color: #CCCCCC;
+  padding: 16px;
+}
+    /* Make every component specimen render as a visible inline chip even with no box props */
+    [class^="spec-comp-"] { display:inline-flex; align-items:center; justify-content:center; min-height:28px; padding:6px 12px; cursor:default; }
+  </style>
+</head>
+<body>
+  <div class="preview-sidebar">
+    <div class="preview-sidebar-header">
+      <h1 class="preview-sidebar-title">Vault CRM – Web<span>v1</span></h1>
+      <p class="preview-sidebar-desc">Veeva Vault CRM Web Design System, optimized for clinical, commercial, and enterprise life science applications.</p>
+      <div class="standalone-badge">STANDALONE SYSTEM</div>
+      <button class="theme-toggle-btn" onclick="toggleTheme()"><span id="theme-btn-text">Switch to Dark Mode</span></button>
+    </div>
+    <nav class="preview-sidebar-nav">
+      <div class="nav-group-title"></div>
+      <div class="nav-item active" onclick="showSection('colors', this)">Colors</div>
+      <div class="nav-item" onclick="showSection('typography', this)">Typography</div>
+      <div class="nav-item" onclick="showSection('shapes-spacing', this)">Spacing & Shapes</div>
+      <div class="nav-item" onclick="showSection('components', this)">Components</div>
+    </nav>
+  </div>
+  <div class="preview-content">
+
+    <div id="section-colors" class="preview-section active">
+      <div class="section-header"><h2 class="section-title">Colors</h2><p class="section-desc">Semantic color roles defined by this system. Click any swatch to copy its CSS variable.</p></div>
+      <h3 class="sub-title">Brand Accent</h3><div class="grid-swatches">
+            <div class="swatch-card" onclick="copyValue('--color-accent-brand', '#F8972B')" title="Click to copy --color-accent-brand">
+              <div class="swatch-color" style="background:#F8972B; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">accent.brand</div>
+                <div class="swatch-value">#F8972B</div>
+              </div>
+            </div></div><h3 class="sub-title">UI</h3><div class="grid-swatches">
+            <div class="swatch-card" onclick="copyValue('--color-ui-action', '#0066CC')" title="Click to copy --color-ui-action">
+              <div class="swatch-color" style="background:#0066CC; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">ui.action</div>
+                <div class="swatch-value">#0066CC</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-ui-border', '#CCCCCC')" title="Click to copy --color-ui-border">
+              <div class="swatch-color" style="background:#CCCCCC; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">ui.border</div>
+                <div class="swatch-value">#CCCCCC</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-ui-divider', '#EEEEEE')" title="Click to copy --color-ui-divider">
+              <div class="swatch-color" style="background:#EEEEEE; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">ui.divider</div>
+                <div class="swatch-value">#EEEEEE</div>
+              </div>
+            </div></div><h3 class="sub-title">Text</h3><div class="grid-swatches">
+            <div class="swatch-card" onclick="copyValue('--color-text-primary', '#303030')" title="Click to copy --color-text-primary">
+              <div class="swatch-color" style="background:#303030; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">text.primary</div>
+                <div class="swatch-value">#303030</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-text-secondary', '#808080')" title="Click to copy --color-text-secondary">
+              <div class="swatch-color" style="background:#808080; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">text.secondary</div>
+                <div class="swatch-value">#808080</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-text-placeholder', '#CCCCCC')" title="Click to copy --color-text-placeholder">
+              <div class="swatch-color" style="background:#CCCCCC; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">text.placeholder</div>
+                <div class="swatch-value">#CCCCCC</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-text-inverse', '#FFFFFF')" title="Click to copy --color-text-inverse">
+              <div class="swatch-color" style="background:#FFFFFF; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">text.inverse</div>
+                <div class="swatch-value">#FFFFFF</div>
+              </div>
+            </div></div><h3 class="sub-title">Global Nav</h3><div class="grid-swatches">
+            <div class="swatch-card" onclick="copyValue('--color-nav-background', '#223354')" title="Click to copy --color-nav-background">
+              <div class="swatch-color" style="background:#223354; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">nav.background</div>
+                <div class="swatch-value">#223354</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-nav-border', '#EEEEEE')" title="Click to copy --color-nav-border">
+              <div class="swatch-color" style="background:#EEEEEE; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">nav.border</div>
+                <div class="swatch-value">#EEEEEE</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-nav-borderActive', '#F8972B')" title="Click to copy --color-nav-borderActive">
+              <div class="swatch-color" style="background:#F8972B; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">nav.borderActive</div>
+                <div class="swatch-value">#F8972B</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-nav-textActive', '#F8972B')" title="Click to copy --color-nav-textActive">
+              <div class="swatch-color" style="background:#F8972B; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">nav.textActive</div>
+                <div class="swatch-value">#F8972B</div>
+              </div>
+            </div></div><h3 class="sub-title">Sidebar</h3><div class="grid-swatches">
+            <div class="swatch-card" onclick="copyValue('--color-sidebar-background', '#F8F8F8')" title="Click to copy --color-sidebar-background">
+              <div class="swatch-color" style="background:#F8F8F8; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">sidebar.background</div>
+                <div class="swatch-value">#F8F8F8</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-sidebar-border', '#CCCCCC')" title="Click to copy --color-sidebar-border">
+              <div class="swatch-color" style="background:#CCCCCC; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">sidebar.border</div>
+                <div class="swatch-value">#CCCCCC</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-sidebar-textPrimary', '#303030')" title="Click to copy --color-sidebar-textPrimary">
+              <div class="swatch-color" style="background:#303030; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">sidebar.textPrimary</div>
+                <div class="swatch-value">#303030</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-sidebar-textActive', '#303030')" title="Click to copy --color-sidebar-textActive">
+              <div class="swatch-color" style="background:#303030; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">sidebar.textActive</div>
+                <div class="swatch-value">#303030</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-sidebar-backgroundHover', '#DADADA')" title="Click to copy --color-sidebar-backgroundHover">
+              <div class="swatch-color" style="background:#DADADA; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">sidebar.backgroundHover</div>
+                <div class="swatch-value">#DADADA</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-sidebar-backgroundActive', '#E3EDFC')" title="Click to copy --color-sidebar-backgroundActive">
+              <div class="swatch-color" style="background:#E3EDFC; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">sidebar.backgroundActive</div>
+                <div class="swatch-value">#E3EDFC</div>
+              </div>
+            </div></div><h3 class="sub-title">Tabs</h3><div class="grid-swatches">
+            <div class="swatch-card" onclick="copyValue('--color-tabs-borderActive', '#1453B8')" title="Click to copy --color-tabs-borderActive">
+              <div class="swatch-color" style="background:#1453B8; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">tabs.borderActive</div>
+                <div class="swatch-value">#1453B8</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-tabs-textActive', '#303030')" title="Click to copy --color-tabs-textActive">
+              <div class="swatch-color" style="background:#303030; "></div>
+              <div class="swatch-info">
+                <div class="swatch-name">tabs.textActive</div>
+                <div class="swatch-value">#303030</div>
+              </div>
+            </div></div><h3 class="sub-title">Data Grid</h3><div class="grid-swatches">
+            <div class="swatch-card" onclick="copyValue('--color-table-backgroundHeader', '#DADADA')" title="Click to copy --color-table-backgroundHeader">
+              <div class="swatch-color" style="background:#DADADA; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">table.backgroundHeader</div>
+                <div class="swatch-value">#DADADA</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-table-backgroundRow', '#FFFFFF')" title="Click to copy --color-table-backgroundRow">
+              <div class="swatch-color" style="background:#FFFFFF; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">table.backgroundRow</div>
+                <div class="swatch-value">#FFFFFF</div>
+              </div>
+            </div></div><h3 class="sub-title">Status</h3><div class="grid-swatches">
+            <div class="swatch-card" onclick="copyValue('--color-status-released', '#E0F3E0')" title="Click to copy --color-status-released">
+              <div class="swatch-color" style="background:#E0F3E0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">status.released</div>
+                <div class="swatch-value">#E0F3E0</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-status-inProgress', '#E3EDFC')" title="Click to copy --color-status-inProgress">
+              <div class="swatch-color" style="background:#E3EDFC; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">status.inProgress</div>
+                <div class="swatch-value">#E3EDFC</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-status-planned', '#F8F8F8')" title="Click to copy --color-status-planned">
+              <div class="swatch-color" style="background:#F8F8F8; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">status.planned</div>
+                <div class="swatch-value">#F8F8F8</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-status-updateNeeded', '#FFEFD5')" title="Click to copy --color-status-updateNeeded">
+              <div class="swatch-color" style="background:#FFEFD5; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">status.updateNeeded</div>
+                <div class="swatch-value">#FFEFD5</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-status-deprecated', '#FFE2E2')" title="Click to copy --color-status-deprecated">
+              <div class="swatch-color" style="background:#FFE2E2; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">status.deprecated</div>
+                <div class="swatch-value">#FFE2E2</div>
+              </div>
+            </div></div><h3 class="sub-title">Callouts</h3><div class="grid-swatches">
+            <div class="swatch-card" onclick="copyValue('--color-callout-info', '#E3EDFC')" title="Click to copy --color-callout-info">
+              <div class="swatch-color" style="background:#E3EDFC; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">callout.info</div>
+                <div class="swatch-value">#E3EDFC</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-callout-success', '#E0F3E0')" title="Click to copy --color-callout-success">
+              <div class="swatch-color" style="background:#E0F3E0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">callout.success</div>
+                <div class="swatch-value">#E0F3E0</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-callout-warning', '#FFEFD5')" title="Click to copy --color-callout-warning">
+              <div class="swatch-color" style="background:#FFEFD5; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">callout.warning</div>
+                <div class="swatch-value">#FFEFD5</div>
+              </div>
+            </div>
+            <div class="swatch-card" onclick="copyValue('--color-callout-error', '#FFE2E2')" title="Click to copy --color-callout-error">
+              <div class="swatch-color" style="background:#FFE2E2; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);"></div>
+              <div class="swatch-info">
+                <div class="swatch-name">callout.error</div>
+                <div class="swatch-value">#FFE2E2</div>
+              </div>
+            </div></div>
+    </div>
+
+    <div id="section-typography" class="preview-section">
+      <div class="section-header"><h2 class="section-title">Typography</h2><p class="section-desc">Type ramp defined by this system.</p></div>
+      <table class="typo-table"><thead><tr><th>Token</th><th>Specimen</th></tr></thead><tbody>
+          <tr>
+            <td style="width:40%"><div class="typo-specimen-name">h1</div><div class="typo-specimen-meta">fontSize: 2rem · fontWeight: 700 · lineHeight: 1.2</div></td>
+            <td><span style="font-family:Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:2rem;font-weight:700;line-height:1.2">The quick brown fox</span></td>
+          </tr>
+          <tr>
+            <td style="width:40%"><div class="typo-specimen-name">body-md</div><div class="typo-specimen-meta">fontSize: 1rem · fontWeight: 400 · lineHeight: 1.5</div></td>
+            <td><span style="font-family:Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:1rem;font-weight:400;line-height:1.5">The quick brown fox</span></td>
+          </tr>
+          <tr>
+            <td style="width:40%"><div class="typo-specimen-name">label</div><div class="typo-specimen-meta">fontSize: 0.75rem · fontWeight: 600</div></td>
+            <td><span style="font-family:Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:0.75rem;font-weight:600">The quick brown fox</span></td>
+          </tr></tbody></table><p class="sub-note">Primary family: <code>Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif</code>. Root size is configured at <code>12px</code> = <code>1rem</code>, so the rem-based specimens above render at their true scale.</p>
+    </div>
+
+    <div id="section-shapes-spacing" class="preview-section">
+      <div class="section-header"><h2 class="section-title">Spacing & Shapes</h2><p class="section-desc">Spacing increments and corner radii.</p></div>
+      <h3 class="sub-title">Spacing scale</h3><div class="spacing-container"><div class="spacing-row"><div class="spacing-label">xs</div><div class="spacing-bar-container"><div class="spacing-bar" style="width:4px"></div><span class="spacing-value-label">4px</span></div></div><div class="spacing-row"><div class="spacing-label">sm</div><div class="spacing-bar-container"><div class="spacing-bar" style="width:8px"></div><span class="spacing-value-label">8px</span></div></div><div class="spacing-row"><div class="spacing-label">md</div><div class="spacing-bar-container"><div class="spacing-bar" style="width:12px"></div><span class="spacing-value-label">12px</span></div></div><div class="spacing-row"><div class="spacing-label">lg</div><div class="spacing-bar-container"><div class="spacing-bar" style="width:16px"></div><span class="spacing-value-label">16px</span></div></div><div class="spacing-row"><div class="spacing-label">xl</div><div class="spacing-bar-container"><div class="spacing-bar" style="width:24px"></div><span class="spacing-value-label">24px</span></div></div></div><h3 class="sub-title">Corner radii</h3><div class="shapes-grid">
+          <div class="shape-card">
+            <div class="shape-demo" style="border-radius:4px"></div>
+            <div class="shape-label">sm</div>
+            <div class="shape-value">4px</div>
+          </div>
+          <div class="shape-card">
+            <div class="shape-demo" style="border-radius:8px"></div>
+            <div class="shape-label">md</div>
+            <div class="shape-value">8px</div>
+          </div></div>
+    </div>
+
+    <div id="section-components" class="preview-section">
+      <div class="section-header"><h2 class="section-title">Components</h2><p class="section-desc">6 component tokens defined by this system. Each specimen applies the generated class; the table lists its resolved properties.</p></div>
+      
+          <div class="specimen-group">
+            <div class="specimen-group-title">button-primary</div>
+            <div class="specimen-row" style="margin-bottom:16px">
+              <span class="spec-comp-button-primary">button primary</span>
+            </div>
+            <table class="prop-table"><tbody><tr><td class="prop-key">backgroundColor</td><td class="prop-val">#0066CC</td></tr><tr><td class="prop-key">textColor</td><td class="prop-val">#FFFFFF</td></tr><tr><td class="prop-key">typography</td><td class="prop-val">fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif · fontSize: 0.75rem · fontWeight: 600</td></tr><tr><td class="prop-key">rounded</td><td class="prop-val">4px</td></tr><tr><td class="prop-key">padding</td><td class="prop-val">8px 16px</td></tr></tbody></table>
+          </div>
+          <div class="specimen-group">
+            <div class="specimen-group-title">nav-item</div>
+            <div class="specimen-row" style="margin-bottom:16px">
+              <span class="spec-comp-nav-item">nav item</span>
+            </div>
+            <table class="prop-table"><tbody><tr><td class="prop-key">backgroundColor</td><td class="prop-val">#223354</td></tr><tr><td class="prop-key">textColor</td><td class="prop-val">#FFFFFF</td></tr><tr><td class="prop-key">typography</td><td class="prop-val">fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif · fontSize: 0.75rem · fontWeight: 600</td></tr></tbody></table>
+          </div>
+          <div class="specimen-group">
+            <div class="specimen-group-title">nav-item-active</div>
+            <div class="specimen-row" style="margin-bottom:16px">
+              <span class="spec-comp-nav-item-active">nav item active</span>
+            </div>
+            <table class="prop-table"><tbody><tr><td class="prop-key">textColor</td><td class="prop-val">#F8972B</td></tr><tr><td class="prop-key">borderColor</td><td class="prop-val">#F8972B</td></tr></tbody></table>
+          </div>
+          <div class="specimen-group">
+            <div class="specimen-group-title">sidebar-item-active</div>
+            <div class="specimen-row" style="margin-bottom:16px">
+              <span class="spec-comp-sidebar-item-active">sidebar item active</span>
+            </div>
+            <table class="prop-table"><tbody><tr><td class="prop-key">backgroundColor</td><td class="prop-val">#E3EDFC</td></tr><tr><td class="prop-key">textColor</td><td class="prop-val">#303030</td></tr><tr><td class="prop-key">rounded</td><td class="prop-val">4px</td></tr></tbody></table>
+          </div>
+          <div class="specimen-group">
+            <div class="specimen-group-title">data-grid-header</div>
+            <div class="specimen-row" style="margin-bottom:16px">
+              <span class="spec-comp-data-grid-header">data grid header</span>
+            </div>
+            <table class="prop-table"><tbody><tr><td class="prop-key">backgroundColor</td><td class="prop-val">#DADADA</td></tr><tr><td class="prop-key">borderColor</td><td class="prop-val">#CCCCCC</td></tr></tbody></table>
+          </div>
+          <div class="specimen-group">
+            <div class="specimen-group-title">callout-info</div>
+            <div class="specimen-row" style="margin-bottom:16px">
+              <span class="spec-comp-callout-info">callout info</span>
+            </div>
+            <table class="prop-table"><tbody><tr><td class="prop-key">backgroundColor</td><td class="prop-val">#E3EDFC</td></tr><tr><td class="prop-key">borderColor</td><td class="prop-val">#CCCCCC</td></tr><tr><td class="prop-key">padding</td><td class="prop-val">16px</td></tr></tbody></table>
+          </div>
+    </div>
+  </div>
+  <div id="copied-toast" class="copied-toast">Copied!</div>
+  <script>
+    function showSection(sectionId, clickedItem) {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      if (clickedItem) clickedItem.classList.add('active');
+      document.querySelectorAll('.preview-section').forEach(s => {
+        s.classList.toggle('active', s.id === 'section-' + sectionId);
+      });
+      document.querySelector('.preview-content').scrollTop = 0;
+    }
+    function copyValue(varName, value) {
+      const text = 'var(' + varName + ')';
+      navigator.clipboard.writeText(text).then(() => {
+        const t = document.getElementById('copied-toast');
+        t.innerText = 'Copied: ' + text + ' (' + value + ')';
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 1500);
+      });
+    }
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle('dark-theme');
+      document.getElementById('theme-btn-text').innerText = isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Crumble's Cozy Town: Paws & Homes 🐾</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicks/and:wght@600;700&display=swap');
+    
+    * {
+      font-family: 'Fredoka', 'Quicksand', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-color: #1e1b18;
+    }
+
+    /* Floating UI styles */
+    .bubble-btn {
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    .bubble-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #f472b6;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+  <!-- Main Game Frame -->
+  <div class="relative w-full h-full max-w-5xl max-h-[760px] md:rounded-3xl shadow-2xl overflow-hidden bg-stone-900 border-4 border-amber-200/50 flex flex-col">
+    
+    <!-- Top HUD Bar -->
+    <header class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-3 md:px-5 py-2.5 bg-white/80 backdrop-blur-md border-b border-amber-200/60 text-stone-800">
+      
+      <!-- Crumble Profile -->
+      <div class="flex items-center gap-2.5">
+        <div class="relative">
+          <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-pink-100 border-2 border-pink-400 flex items-center justify-center text-2xl shadow-inner cursor-pointer active:scale-95 transition" id="hud-profile-btn" title="View Crumble Stats">
+            🐩
+          </div>
+          <span id="equipped-indicator" class="absolute -bottom-1 -right-1 text-xs bg-pink-500 text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">💖</span>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold text-stone-900 text-sm md:text-base leading-none">Crumble</span>
+            <span id="hud-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 font-bold border border-pink-200">Scruffy Pup</span>
+          </div>
+          <div class="flex items-center gap-2 mt-1 text-[11px] text-stone-600 font-semibold">
+            <span>Energy:</span>
+            <div class="w-16 md:w-24 h-2 bg-stone-200 rounded-full overflow-hidden border border-emerald-200">
+              <div id="hud-energy-bar" class="h-full bg-emerald-500 w-full transition-all duration-300"></div>
+            </div>
+            <span id="hud-energy-text">100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resources Inventory Pill -->
+      <div class="flex items-center gap-2 md:gap-3 bg-amber-50/90 border border-amber-200 px-3 py-1.5 rounded-2xl shadow-sm text-xs md:text-sm font-bold">
+        <div class="flex items-center gap-1" title="Biscuits / Currency">
+          <span>🦴</span>
+          <span id="res-biscuits" class="text-amber-900">0</span>
+        </div>
+        <div class="flex items-center gap-1" title="Fresh Tomatoes">
+          <span>🍅</span>
+          <span id="res-tomatoes" class="text-rose-600">0</span>
+        </div>
+        <div class="flex items-center gap-1" title="Heart Charms">
+          <span>💖</span>
+          <span id="res-hearts" class="text-pink-600">0</span>
+        </div>
+        <div class="flex items-center gap-1" title="Pinecones">
+          <span>🌲</span>
+          <span id="res-pinecones" class="text-amber-700">0</span>
+        </div>
+      </div>
+
+      <!-- Action & Modal Buttons -->
+      <div class="flex items-center gap-2">
+        <button id="btn-open-home" class="bubble-btn px-2.5 py-1.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs flex items-center gap-1 shadow-md">
+          <span>🏡</span>
+          <span class="hidden sm:inline">Home</span>
+        </button>
+        <button id="btn-open-owners" class="bubble-btn px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1 shadow-md">
+          <span>👥</span>
+          <span class="hidden sm:inline">Owners</span>
+          <span id="owners-count-badge" class="bg-amber-700 text-white text-[9px] px-1 rounded-full">0/4</span>
+        </button>
+        <button id="btn-open-shop" class="bubble-btn px-2.5 py-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs flex items-center gap-1 shadow-md">
+          <span>🛒</span>
+          <span class="hidden sm:inline">Upgrades</span>
+        </button>
+        <button id="audio-btn" class="w-8 h-8 rounded-xl bg-white text-stone-700 border border-stone-200 flex items-center justify-center text-sm shadow-sm">
+          🔊
+        </button>
+      </div>
+    </header>
+
+    <!-- Game Viewport Canvas -->
+    <canvas id="gameWorld" class="w-full h-full block cursor-crosshair"></canvas>
+
+    <!-- Bottom Alert / Interaction Toast Banner -->
+    <div id="interaction-prompt" class="absolute bottom-16 md:bottom-6 left-1/2 -translate-x-1/2 z-20 bg-stone-900/85 backdrop-blur-md text-white px-4 py-2 rounded-2xl border border-amber-300/40 text-xs md:text-sm font-semibold shadow-xl flex items-center gap-2 pointer-events-none transition-all duration-200 opacity-0 translate-y-3">
+      <span id="prompt-icon" class="text-lg">✨</span>
+      <span id="prompt-text">Press SPACE or Tap Action to interact</span>
+    </div>
+
+    <!-- Virtual Touch Joystick & Action Buttons for Mobile -->
+    <div id="touch-controls" class="absolute bottom-4 left-4 right-4 z-20 flex justify-between items-end pointer-events-none md:hidden">
+      <!-- D-Pad Controls -->
+      <div class="pointer-events-auto grid grid-cols-3 gap-1 w-32 h-32 bg-white/70 backdrop-blur-md p-1 rounded-3xl border border-amber-200 shadow-xl">
+        <div></div>
+        <button id="dpad-up" class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">▲</button>
+        <div></div>
+        <button id="dpad-left" class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">◀</button>
+        <div class="flex items-center justify-center text-[10px] text-stone-500 font-bold">🐾</div>
+        <button id="dpad-right" class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">▶</button>
+        <div></div>
+        <button id="dpad-down" class="bubble-btn bg-stone-800 active:bg-stone-900 text-white font-black rounded-xl flex items-center justify-center text-lg">▼</button>
+        <div></div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pointer-events-auto flex flex-col gap-2">
+        <button id="touch-sniff-btn" class="bubble-btn w-14 h-14 bg-gradient-to-tr from-amber-400 to-amber-500 text-amber-950 font-black rounded-2xl shadow-lg border border-amber-300 flex flex-col items-center justify-center text-xs">
+          <span class="text-base">👃</span>
+          <span>Sniff</span>
+        </button>
+        <button id="touch-action-btn" class="bubble-btn w-14 h-14 bg-gradient-to-tr from-pink-500 to-rose-500 text-white font-black rounded-2xl shadow-lg border border-pink-300 flex flex-col items-center justify-center text-xs">
+          <span class="text-base">🐾</span>
+          <span>Interact</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL: HOME CUSTOMIZER & UPGRADES                                         -->
+    <!-- ========================================================================= -->
+    <div id="modal-home" class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
+      <div class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[85%] flex flex-col shadow-2xl border-4 border-pink-300">
+        <div class="flex items-center justify-between pb-3 border-b border-stone-200">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🏡</span>
+            <div>
+              <h2 class="text-lg md:text-xl font-black text-stone-800">Crumble's Cozy Cottage</h2>
+              <p class="text-xs text-stone-500">Upgrade your home and rest your paws!</p>
+            </div>
+          </div>
+          <button class="modal-close-btn w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">✕</button>
+        </div>
+
+        <div class="overflow-y-auto py-3 space-y-3 flex-1">
+          <!-- Nap & Rest Card -->
+          <div class="bg-pink-50 p-3.5 rounded-2xl border border-pink-200 flex items-center justify-between">
+            <div>
+              <h3 class="font-extrabold text-stone-800 text-sm">🛏️ Take a Scruffy Nap</h3>
+              <p class="text-xs text-stone-600">Rest inside your dog bed to fully replenish Energy!</p>
+            </div>
+            <button id="btn-rest-home" class="bubble-btn px-3 py-2 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-xs shadow">
+              Nap (Rest)
+            </button>
+          </div>
+
+          <!-- Yard / House Upgrades list -->
+          <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider mt-2">Yard Upgrades</h4>
+          <div id="home-upgrades-list" class="space-y-2">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL: OWNERS / ADOPTION SYSTEM                                           -->
+    <!-- ========================================================================= -->
+    <div id="modal-owners" class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
+      <div class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[85%] flex flex-col shadow-2xl border-4 border-amber-300">
+        <div class="flex items-center justify-between pb-3 border-b border-stone-200">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">👥</span>
+            <div>
+              <h2 class="text-lg md:text-xl font-black text-stone-800">Crumble's Human Friends & Owners</h2>
+              <p class="text-xs text-stone-500">Befriend townspeople to earn loving owners and exclusive outfits!</p>
+            </div>
+          </div>
+          <button class="modal-close-btn w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">✕</button>
+        </div>
+
+        <div id="owners-list" class="overflow-y-auto py-3 space-y-3 flex-1">
+          <!-- Dynamically populated owners -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL: UPGRADE SHOP & MERCHANT                                            -->
+    <!-- ========================================================================= -->
+    <div id="modal-shop" class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
+      <div class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[85%] flex flex-col shadow-2xl border-4 border-indigo-300">
+        <div class="flex items-center justify-between pb-3 border-b border-stone-200">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🛒</span>
+            <div>
+              <h2 class="text-lg md:text-xl font-black text-stone-800">Town Merchant & Upgrades</h2>
+              <p class="text-xs text-stone-500">Upgrade Crumble's speed, sniffing radar, and bag capacity!</p>
+            </div>
+          </div>
+          <button class="modal-close-btn w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">✕</button>
+        </div>
+
+        <div id="shop-items-list" class="overflow-y-auto py-3 space-y-2.5 flex-1">
+          <!-- Dynamically populated shop items -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL: CRUMBLE'S WARDROBE & PROFILE                                       -->
+    <!-- ========================================================================= -->
+    <div id="modal-wardrobe" class="absolute inset-0 z-40 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
+      <div class="bg-white rounded-3xl p-5 md:p-6 max-w-md w-full shadow-2xl border-4 border-pink-300 text-center">
+        <div class="w-16 h-16 mx-auto bg-pink-100 rounded-full border-2 border-pink-400 flex items-center justify-center text-3xl shadow-inner mb-2">
+          🐩
+        </div>
+        <h2 class="text-xl font-extrabold text-stone-800">Crumble's Wardrobe</h2>
+        <p class="text-xs text-stone-500 mb-4">Choose your scruffy style! (Unlocks from owners)</p>
+
+        <div id="wardrobe-grid" class="grid grid-cols-2 gap-2.5 mb-4 text-left">
+          <!-- Dynamically generated outfits -->
+        </div>
+
+        <button class="modal-close-btn w-full py-2.5 bg-stone-800 text-white font-bold rounded-xl text-xs hover:bg-stone-900">
+          Back to Adventure
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ==========================================================================
+       AUDIO SYNTHESIZER (WEB AUDIO API)
+       ========================================================================== */
+    class CozyAudio {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playChime() {
+        if (this.muted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.06);
+          gain.gain.setValueAtTime(0.2, now + i * 0.06);
+          gain.gain.linearRampToValueAtTime(0.001, now + (i + 1) * 0.1);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.06);
+          osc.stop(now + (i + 1) * 0.1);
+        });
+      }
+      playPop() {
+        if (this.muted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(700, now + 0.08);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      }
+      playBark() {
+        if (this.muted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(290, now);
+        osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.12);
+      }
+      playSniff() {
+        if (this.muted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(450, now);
+        osc.frequency.linearRampToValueAtTime(300, now + 0.07);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.07);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      }
+    }
+    const audio = new CozyAudio();
+
+    /* ==========================================================================
+       GAME STATE & DATA MODELS
+       ========================================================================== */
+    const STATE = {
+      // Crumble Attributes & Stats
+      player: {
+        x: 650,
+        y: 650,
+        targetX: 650,
+        targetY: 650,
+        speed: 3.2,
+        baseSpeed: 3.2,
+        energy: 100,
+        maxEnergy: 100,
+        facing: 'down',
+        runCycle: 0,
+        isMoving: false,
+        sniffRadius: 180,
+        sniffActiveTimer: 0,
+        equippedOutfit: 'classic', // classic, sunhat, flannel, chef, beret
+        unlockedOutfits: ['classic']
+      },
+
+      // Resources / Inventory
+      resources: {
+        biscuits: 8,
+        tomatoes: 0,
+        hearts: 1,
+        pinecones: 0
+      },
+
+      // Upgrades Purchased
+      upgrades: {
+        zoomPaws: 0,     // Speed boost
+        superSniffer: 0, // Reveals rare items & wider radar
+        fluffyPocket: 0, // Multiplies resource collection
+        cozyMat: 0       // Slower energy drain
+      },
+
+      // Home Decor & Yard Upgrades
+      home: {
+        level: 1,
+        bedType: 'Fluffy Scruffy Cushion',
+        hasGardenBed: false,
+        hasFirepit: false,
+        hasHeartFountain: false,
+        hasSunUmbrella: false
+      },
+
+      // Potential & Adopted Owners
+      owners: [
+        {
+          id: 'maya',
+          name: 'Maya the Gardener',
+          avatar: '👩‍🌾',
+          role: 'Backyard Enthusiast',
+          location: 'Garden Area',
+          x: 280,
+          y: 350,
+          dialogue: 'Hello Crumble! If you help me find 4 prize tomatoes, I will officially adopt you and give you my canvas sunhat!',
+          completedDialogue: 'Good girl, Crumble! You are always welcome in my tomato garden!',
+          rewardOutfit: 'sunhat',
+          rewardName: 'Canvas Sunhat 👒',
+          requirement: { type: 'tomatoes', count: 4 },
+          adopted: false,
+          color: 'emerald'
+        },
+        {
+          id: 'liam',
+          name: 'Liam the Camper',
+          avatar: '🧔‍♂️',
+          role: 'Pine Woods Hiker',
+          location: 'Campfire Woods',
+          x: 1450,
+          y: 400,
+          dialogue: 'Hey scruffy buddy! Gather 5 pinecones from the woods so we can kindle the campfire, and I will share my oversized flannel!',
+          completedDialogue: 'You are the best camping companion ever, Crumble!',
+          rewardOutfit: 'flannel',
+          rewardName: 'Camp Flannel 🏕️',
+          requirement: { type: 'pinecones', count: 5 },
+          adopted: false,
+          color: 'amber'
+        },
+        {
+          id: 'oliver',
+          name: 'Chef Oliver',
+          avatar: '👨‍🍳',
+          role: 'Town Bakery Owner',
+          location: 'Town Market',
+          x: 1050,
+          y: 1100,
+          dialogue: 'Bonjour Crumble! I lost 12 golden dog biscuits in the market! Help me gather them and you will become my favorite culinary pup!',
+          completedDialogue: 'Merci Crumble! The bakery treats are yours forever!',
+          rewardOutfit: 'chef',
+          rewardName: 'Chef Scarf 🥖',
+          requirement: { type: 'biscuits', count: 12 },
+          adopted: false,
+          color: 'indigo'
+        },
+        {
+          id: 'lily',
+          name: 'Lily the Artist',
+          avatar: '🎨',
+          role: 'Park Painter',
+          location: 'Park Fountain',
+          x: 400,
+          y: 1250,
+          dialogue: 'Oh Crumble, your curls are pure art! Bring me 3 glowing pink heart charms so I can finish painting your portrait!',
+          completedDialogue: 'Magnificent! You look adorable in your pink artist beret!',
+          rewardOutfit: 'beret',
+          rewardName: 'Artist Beret 🎨',
+          requirement: { type: 'hearts', count: 3 },
+          adopted: false,
+          color: 'pink'
+        }
+      ],
+
+      // World Items to Collect (Respawnable nodes)
+      collectibles: [],
+      particles: [],
+      sniffRipples: []
+    };
+
+    /* ==========================================================================
+       WORLD MAP DEFINITIONS (Large 2000x2000 World)
+       ========================================================================== */
+    const WORLD = {
+      width: 1800,
+      height: 1800,
+      zones: [
+        { name: 'Crumble’s Home Yard', x: 450, y: 450, w: 450, h: 450, color: '#bbf7d0', label: '🏡 Home Yard' },
+        { name: 'Backyard Tomato Garden', x: 50, y: 150, w: 400, h: 450, color: '#86efac', label: '🍅 Garden' },
+        { name: 'Campfire Pine Woods', x: 1100, y: 150, w: 650, h: 600, color: '#a7f3d0', label: '🌲 Pine Woods' },
+        { name: 'Town Market Square', x: 850, y: 900, w: 600, h: 550, color: '#fef08a', label: '🛒 Town Market' },
+        { name: 'Sunny Park & Pond', x: 150, y: 950, w: 650, h: 650, color: '#bae6fd', label: '⛲ Blossom Park' }
+      ],
+      trees: [],
+      houses: [
+        { x: 620, y: 550, w: 140, h: 110, type: 'crumble_cottage' },
+        { x: 220, y: 240, w: 120, h: 100, type: 'garden_shed' },
+        { x: 1000, y: 980, w: 150, h: 120, type: 'bakery' },
+        { x: 1350, y: 320, w: 130, h: 100, type: 'cabin' }
+      ]
+    };
+
+    // Pre-populate decorative trees
+    for (let i = 0; i < 60; i++) {
+      WORLD.trees.push({
+        x: Math.random() * (WORLD.width - 100) + 50,
+        y: Math.random() * (WORLD.height - 100) + 50,
+        size: 24 + Math.random() * 16,
+        isPine: Math.random() > 0.45
+      });
+    }
+
+    // Spawn Collectibles in World
+    function spawnCollectibles() {
+      STATE.collectibles = [];
+      const itemTypes = [
+        { type: 'biscuits', icon: '🦴', weight: 14, zone: 'all' },
+        { type: 'tomatoes', icon: '🍅', weight: 10, zone: 'garden' },
+        { type: 'pinecones', icon: '🌲', weight: 10, zone: 'woods' },
+        { type: 'hearts', icon: '💖', weight: 8, zone: 'all' }
+      ];
+
+      for (let i = 0; i < 48; i++) {
+        const itemType = itemTypes[Math.floor(Math.random() * itemTypes.length)];
+        let x, y;
+        if (itemType.zone === 'garden') {
+          x = 100 + Math.random() * 320;
+          y = 200 + Math.random() * 350;
+        } else if (itemType.zone === 'woods') {
+          x = 1150 + Math.random() * 550;
+          y = 200 + Math.random() * 500;
+        } else {
+          x = 100 + Math.random() * (WORLD.width - 200);
+          y = 100 + Math.random() * (WORLD.height - 200);
+        }
+
+        STATE.collectibles.push({
+          id: Math.random(),
+          type: itemType.type,
+          x,
+          y,
+          floatOffset: Math.random() * Math.PI * 2,
+          respawnTimer: 0
+        });
+      }
+    }
+    spawnCollectibles();
+
+    /* ==========================================================================
+       CANVAS & RENDERING ENGINE
+       ========================================================================== */
+    const canvas = document.getElementById('gameWorld');
+    const ctx = canvas.getContext('2d');
+
+    // Camera object
+    const camera = {
+      x: 0,
+      y: 0,
+      update(targetX, targetY) {
+        this.x = targetX - canvas.width / 2;
+        this.y = targetY - canvas.height / 2;
+        this.x = Math.max(0, Math.min(this.x, WORLD.width - canvas.width));
+        this.y = Math.max(0, Math.min(this.y, WORLD.height - canvas.height));
+      }
+    };
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    /* ==========================================================================
+       DRAWING ROUTINES: CRUMBLE (THE WHITE POODLE MIX)
+       ========================================================================== */
+    function drawCrumble(ctx, player) {
+      ctx.save();
+      ctx.translate(player.x, player.y);
+
+      // Movement bounce & wag
+      const bob = player.isMoving ? Math.sin(player.runCycle) * 3 : 0;
+      const legOffset = player.isMoving ? Math.sin(player.runCycle) * 6 : 0;
+      const tailWag = Math.sin(player.runCycle * 1.5) * 8;
+
+      // Soft Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+      ctx.beginPath();
+      ctx.ellipse(0, 16, 20, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // --- TAIL (Curled fluffy scruffy tail) ---
+      ctx.fillStyle = '#faf8f5';
+      ctx.beginPath();
+      ctx.arc(-14 + tailWag * 0.2, 0 - bob, 7, 0, Math.PI * 2);
+      ctx.arc(-19 + tailWag * 0.3, -4 - bob, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // --- BACK LEGS ---
+      ctx.fillStyle = '#f0eee8';
+      ctx.beginPath();
+      ctx.roundRect(-10, 8 - legOffset, 7, 14 + legOffset, 3);
+      ctx.roundRect(5, 8 + legOffset, 7, 14 - legOffset, 3);
+      ctx.fill();
+
+      // --- BODY (Medium sized, scruffy white poodle mix) ---
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.roundRect(-16, -10 - bob, 32, 22, 11);
+      ctx.fill();
+
+      // Fluffy Curls / Scruffy Tufts
+      ctx.fillStyle = '#fcfbfa';
+      [[-12, -8], [-4, -12], [4, -12], [12, -8], [-12, 6], [-2, 8], [8, 8], [12, 4]].forEach(([tx, ty]) => {
+        ctx.beginPath();
+        ctx.arc(tx, ty - bob, 6, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // --- OUTFIT BODY OVERLAYS ---
+      if (player.equippedOutfit === 'flannel') {
+        // Red Plaid Flannel
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.roundRect(-12, -8 - bob, 24, 18, 6);
+        ctx.fill();
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-4, -8 - bob); ctx.lineTo(-4, 10 - bob);
+        ctx.moveTo(4, -8 - bob); ctx.lineTo(4, 10 - bob);
+        ctx.moveTo(-12, 0 - bob); ctx.lineTo(12, 0 - bob);
+        ctx.stroke();
+      } else if (player.equippedOutfit === 'chef') {
+        // Red Chef Scarf
+        ctx.fillStyle = '#ea580c';
+        ctx.beginPath();
+        ctx.roundRect(-8, -4 - bob, 16, 8, 4);
+        ctx.fill();
+      }
+
+      // --- FRONT LEGS ---
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.roundRect(-8, 8 + legOffset, 7, 14 - legOffset, 3);
+      ctx.roundRect(7, 8 - legOffset, 7, 14 + legOffset, 3);
+      ctx.fill();
+
+      // --- SIGNATURE PINK HEART BRACELET (On Front Right Paw) ---
+      const frontPawY = 16 + legOffset;
+      ctx.fillStyle = '#f43f5e';
+      ctx.fillRect(6, frontPawY, 9, 3.5);
+      // Dangling pink heart charm
+      ctx.fillStyle = '#ff2a70';
+      ctx.beginPath();
+      const hx = 13, hy = frontPawY + 4;
+      ctx.moveTo(hx, hy);
+      ctx.bezierCurveTo(hx - 2, hy - 3, hx - 4, hy, hx, hy + 4);
+      ctx.bezierCurveTo(hx + 4, hy, hx + 2, hy - 3, hx, hy);
+      ctx.fill();
+
+      // --- HEAD (Scruffy fluffy curls, expressive dark eyes, centered smile) ---
+      const headX = player.facing === 'left' ? -6 : (player.facing === 'right' ? 6 : 0);
+      const headY = -16 - bob;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(headX, headY, 15, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Curls on Top
+      ctx.fillStyle = '#fcfbfa';
+      [[-6, -10], [0, -12], [6, -10], [-8, -4], [8, -4]].forEach(([cx, cy]) => {
+        ctx.beginPath();
+        ctx.arc(headX + cx, headY + cy, 5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Fluffy Droopy Ears
+      ctx.fillStyle = '#f3f0e6';
+      ctx.beginPath();
+      ctx.ellipse(headX - 11, headY + 1, 5, 9, 0.2, 0, Math.PI * 2);
+      ctx.ellipse(headX + 11, headY + 1, 5, 9, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Large Dark Expressive Forward-Facing Eyes
+      ctx.fillStyle = '#18181b';
+      ctx.beginPath();
+      ctx.arc(headX - 4, headY - 1, 3.5, 0, Math.PI * 2);
+      ctx.arc(headX + 4, headY - 1, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eye Catchlights
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(headX - 5, headY - 2.5, 1.3, 0, Math.PI * 2);
+      ctx.arc(headX + 3, headY - 2.5, 1.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Black Nose
+      ctx.fillStyle = '#1c1917';
+      ctx.beginPath();
+      ctx.ellipse(headX, headY + 4, 2.8, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Endearing Centered Smile
+      ctx.strokeStyle = '#27272a';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(headX - 2, headY + 6, 2.5, 0, Math.PI);
+      ctx.arc(headX + 2, headY + 6, 2.5, 0, Math.PI);
+      ctx.stroke();
+
+      // Happy pink tongue
+      ctx.fillStyle = '#fb7185';
+      ctx.beginPath();
+      ctx.arc(headX, headY + 8.5, 2.2, 0, Math.PI);
+      ctx.fill();
+
+      // --- OUTFIT HEAD ACCESSORIES ---
+      if (player.equippedOutfit === 'sunhat') {
+        // Straw Sunhat
+        ctx.fillStyle = '#fde68a';
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.ellipse(headX, headY - 10, 18, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(headX, headY - 11, 9, Math.PI, 0);
+        ctx.fill();
+        ctx.stroke();
+        // Emerald ribbon
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(headX - 8, headY - 12, 16, 2.5);
+
+        // Cute speck of dirt on nose!
+        ctx.fillStyle = 'rgba(120, 53, 15, 0.7)';
+        ctx.beginPath();
+        ctx.arc(headX + 1.2, headY + 2.8, 1.3, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (player.equippedOutfit === 'beret') {
+        // Artist Pink Beret
+        ctx.fillStyle = '#ec4899';
+        ctx.beginPath();
+        ctx.ellipse(headX - 4, headY - 10, 11, 5, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillRect(headX - 4, headY - 13, 2, 3);
+      }
+
+      ctx.restore();
+    }
+
+    /* ==========================================================================
+       MAIN RENDER PIPELINE
+       ========================================================================== */
+    function render() {
+      // Clear viewport
+      ctx.fillStyle = '#86efac';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.save();
+      ctx.translate(-camera.x, -camera.y);
+
+      // 1. Draw Ground Zones
+      for (const z of WORLD.zones) {
+        ctx.fillStyle = z.color;
+        ctx.fillRect(z.x, z.y, z.w, z.h);
+        ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(z.x, z.y, z.w, z.h);
+
+        // Zone Name banner on ground
+        ctx.fillStyle = 'rgba(0,0,0,0.18)';
+        ctx.font = 'bold 16px Fredoka, sans-serif';
+        ctx.fillText(z.label, z.x + 15, z.y + 30);
+      }
+
+      // 2. Draw Decorative Cobblestone Paths
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(450, 400, 450, 30);
+      ctx.fillRect(870, 400, 30, 500);
+      ctx.fillRect(450, 600, 30, 450);
+
+      // 3. Draw Home Yard Upgrades (Firepit, Fountain, Garden Planters)
+      if (STATE.home.hasFirepit) {
+        ctx.fillStyle = '#78350f';
+        ctx.beginPath();
+        ctx.arc(550, 720, 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#f97316';
+        ctx.beginPath();
+        ctx.arc(550, 718, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(550, 717, 6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (STATE.home.hasHeartFountain) {
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(750, 720, 26, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ec4899';
+        ctx.font = '18px sans-serif';
+        ctx.fillText('💖', 742, 726);
+      }
+      if (STATE.home.hasGardenBed) {
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(520, 480, 80, 35);
+        for (let i = 0; i < 4; i++) {
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath();
+          ctx.arc(530 + i * 20, 498, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // 4. Draw Buildings & Cottages
+      for (const h of WORLD.houses) {
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(h.x, h.y, h.w, h.h, 12);
+        ctx.fill();
+        ctx.stroke();
+
+        // Roof
+        ctx.fillStyle = h.type === 'crumble_cottage' ? '#f472b6' : (h.type === 'bakery' ? '#f59e0b' : '#10b981');
+        ctx.beginPath();
+        ctx.roundRect(h.x - 6, h.y - 14, h.w + 12, 24, 8);
+        ctx.fill();
+
+        // House Label / Door
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(h.x + h.w / 2 - 12, h.y + h.h - 32, 24, 32);
+
+        // Cottage Emblem
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px Fredoka, sans-serif';
+        const label = h.type === 'crumble_cottage' ? "🐾 Crumble's Home" : (h.type === 'bakery' ? "🥖 Bakery" : "🏡 Cottage");
+        ctx.fillText(label, h.x + 8, h.y + 30);
+      }
+
+      // 5. Draw Sniff Radar Ripples
+      for (let i = STATE.sniffRipples.length - 1; i >= 0; i--) {
+        const rip = STATE.sniffRipples[i];
+        ctx.strokeStyle = `rgba(244, 114, 182, ${rip.alpha})`;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
+        ctx.stroke();
+        rip.radius += 4;
+        rip.alpha -= 0.025;
+        if (rip.alpha <= 0) STATE.sniffRipples.splice(i, 1);
+      }
+
+      // 6. Draw Collectible Resources
+      for (const item of STATE.collectibles) {
+        const floatY = item.y + Math.sin(item.floatOffset) * 4;
+        item.floatOffset += 0.05;
+
+        // Sniff Glow when player is close or sniffed
+        const dist = Math.hypot(STATE.player.x - item.x, STATE.player.y - item.y);
+        if (dist < STATE.player.sniffRadius) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          ctx.beginPath();
+          ctx.arc(item.x, floatY, 16, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Scent trail particles to Crumble
+          if (STATE.player.sniffActiveTimer > 0 && Math.random() > 0.6) {
+            ctx.fillStyle = '#f472b6';
+            ctx.beginPath();
+            ctx.arc(item.x + (Math.random() - 0.5) * 10, floatY + (Math.random() - 0.5) * 10, 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // Draw Icon
+        ctx.font = '20px sans-serif';
+        let icon = '🦴';
+        if (item.type === 'tomatoes') icon = '🍅';
+        if (item.type === 'hearts') icon = '💖';
+        if (item.type === 'pinecones') icon = '🌲';
+        ctx.fillText(icon, item.x - 10, floatY + 7);
+      }
+
+      // 7. Draw Humans / Potential Owners
+      for (const owner of STATE.owners) {
+        // Owner Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.beginPath();
+        ctx.ellipse(owner.x, owner.y + 16, 16, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Owner Avatar
+        ctx.font = '32px sans-serif';
+        ctx.fillText(owner.avatar, owner.x - 16, owner.y + 10);
+
+        // Name tag & Heart Status
+        ctx.fillStyle = 'rgba(0,0,0,0.75)';
+        ctx.beginPath();
+        ctx.roundRect(owner.x - 45, owner.y - 36, 90, 20, 6);
+        ctx.fill();
+
+        ctx.fillStyle = owner.adopted ? '#f472b6' : '#ffffff';
+        ctx.font = 'bold 10px Fredoka, sans-serif';
+        const statusText = owner.adopted ? `❤️ ${owner.name.split(' ')[0]}` : `❓ ${owner.name.split(' ')[0]}`;
+        ctx.fillText(statusText, owner.x - 38, owner.y - 22);
+
+        // Interaction exclamation / Heart indicator
+        if (!owner.adopted) {
+          ctx.fillStyle = '#fbbf24';
+          ctx.beginPath();
+          ctx.arc(owner.x + 28, owner.y - 20, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#000000';
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillText('!', owner.x + 26, owner.y - 17);
+        }
+      }
+
+      // 8. Draw Nature Trees
+      for (const t of WORLD.trees) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+        ctx.beginPath();
+        ctx.ellipse(t.x, t.y + t.size * 0.8, t.size * 0.8, t.size * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (t.isPine) {
+          // Pine Tree
+          ctx.fillStyle = '#92400e';
+          ctx.fillRect(t.x - 4, t.y, 8, t.size * 0.9);
+          ctx.fillStyle = '#166534';
+          ctx.beginPath();
+          ctx.moveTo(t.x, t.y - t.size * 1.5);
+          ctx.lineTo(t.x - t.size, t.y + t.size * 0.3);
+          ctx.lineTo(t.x + t.size, t.y + t.size * 0.3);
+          ctx.fill();
+        } else {
+          // Fluffy Garden Bush / Deciduous
+          ctx.fillStyle = '#b45309';
+          ctx.fillRect(t.x - 3, t.y, 6, t.size * 0.8);
+          ctx.fillStyle = '#22c55e';
+          ctx.beginPath();
+          ctx.arc(t.x, t.y - t.size * 0.4, t.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // 9. Draw Player: Crumble
+      drawCrumble(ctx, STATE.player);
+
+      // 10. Floating Text / Collect Particles
+      for (let i = STATE.particles.length - 1; i >= 0; i--) {
+        const p = STATE.particles[i];
+        ctx.save();
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.font = 'bold 14px Fredoka, sans-serif';
+        ctx.fillText(p.text, p.x, p.y);
+        ctx.restore();
+        p.y -= 1.2;
+        p.life -= 0.03;
+        if (p.life <= 0) STATE.particles.splice(i, 1);
+      }
+
+      ctx.restore();
+    }
+
+    /* ==========================================================================
+       GAME LOOP & LOGIC
+       ========================================================================== */
+    let lastTime = performance.now();
+    const activeKeys = {};
+
+    function gameLoop(time) {
+      const dt = Math.min((time - lastTime) / 1000, 0.1);
+      lastTime = time;
+
+      updatePlayer(dt);
+      updateInteractionPrompt();
+      camera.update(STATE.player.x, STATE.player.y);
+      render();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function updatePlayer(dt) {
+      const p = STATE.player;
+
+      // Calculate speed based on upgrades
+      const speedMultiplier = 1 + (STATE.upgrades.zoomPaws * 0.25);
+      const currentSpeed = p.baseSpeed * speedMultiplier * (p.energy > 0 ? 1 : 0.4);
+
+      let dx = 0;
+      let dy = 0;
+
+      if (activeKeys['ArrowUp'] || activeKeys['KeyW']) { dy -= 1; p.facing = 'up'; }
+      if (activeKeys['ArrowDown'] || activeKeys['KeyS']) { dy += 1; p.facing = 'down'; }
+      if (activeKeys['ArrowLeft'] || activeKeys['KeyA']) { dx -= 1; p.facing = 'left'; }
+      if (activeKeys['ArrowRight'] || activeKeys['KeyD']) { dx += 1; p.facing = 'right'; }
+
+      // Touch target movement
+      if (touchTarget) {
+        const tDist = Math.hypot(touchTarget.x - p.x, touchTarget.y - p.y);
+        if (tDist > 10) {
+          dx = (touchTarget.x - p.x) / tDist;
+          dy = (touchTarget.y - p.y) / tDist;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            p.facing = dx > 0 ? 'right' : 'left';
+          } else {
+            p.facing = dy > 0 ? 'down' : 'up';
+          }
+        } else {
+          touchTarget = null;
+        }
+      }
+
+      // Normalize vector
+      if (dx !== 0 && dy !== 0) {
+        dx *= 0.7071;
+        dy *= 0.7071;
+      }
+
+      if (dx !== 0 || dy !== 0) {
+        p.isMoving = true;
+        p.x += dx * currentSpeed;
+        p.y += dy * currentSpeed;
+        p.runCycle += 0.25;
+
+        // Energy drain slightly when moving
+        const drainRate = STATE.upgrades.cozyMat ? 0.015 : 0.03;
+        p.energy = Math.max(0, p.energy - drainRate);
+        updateEnergyHUD();
+      } else {
+        p.isMoving = false;
+      }
+
+      // Boundaries
+      p.x = Math.max(40, Math.min(WORLD.width - 40, p.x));
+      p.y = Math.max(40, Math.min(WORLD.height - 40, p.y));
+
+      // Sniff Active timer
+      if (p.sniffActiveTimer > 0) {
+        p.sniffActiveTimer -= dt;
+      }
+
+      // Collect item check
+      for (let i = STATE.collectibles.length - 1; i >= 0; i--) {
+        const item = STATE.collectibles[i];
+        const dist = Math.hypot(p.x - item.x, p.y - item.y);
+        if (dist < 32) {
+          collectItem(item, i);
+        }
+      }
+    }
+
+    function collectItem(item, index) {
+      STATE.collectibles.splice(index, 1);
+      const mult = STATE.upgrades.fluffyPocket ? 2 : 1;
+      STATE.resources[item.type] += mult;
+      audio.playPop();
+
+      // Spawn floating score particle
+      const icons = { biscuits: '+🦴', tomatoes: '+🍅', hearts: '+💖', pinecones: '+🌲' };
+      STATE.particles.push({
+        x: item.x,
+        y: item.y,
+        text: `${icons[item.type]} x${mult}`,
+        color: '#f472b6',
+        life: 1.0
+      });
+
+      updateResourcesHUD();
+
+      // Respawn after 8 seconds
+      setTimeout(() => {
+        STATE.collectibles.push({
+          id: Math.random(),
+          type: item.type,
+          x: Math.max(60, Math.min(WORLD.width - 60, item.x + (Math.random() - 0.5) * 100)),
+          y: Math.max(60, Math.min(WORLD.height - 60, item.y + (Math.random() - 0.5) * 100)),
+          floatOffset: Math.random() * Math.PI * 2
+        });
+      }, 8000);
+    }
+
+    // Trigger Crumble's Sniff Radar
+    function triggerSniff() {
+      audio.init();
+      audio.playSniff();
+      STATE.player.sniffActiveTimer = 3.5;
+      STATE.sniffRipples.push({
+        x: STATE.player.x,
+        y: STATE.player.y,
+        radius: 10,
+        alpha: 0.9
+      });
+      showToast('👃 *Sniff Sniff!* Scent trails uncovered nearby!', '✨');
+    }
+
+    /* ==========================================================================
+       INTERACTION & MODALS
+       ========================================================================== */
+    const promptEl = document.getElementById('interaction-prompt');
+    const promptText = document.getElementById('prompt-text');
+    const promptIcon = document.getElementById('prompt-icon');
+
+    function checkNearbyInteractable() {
+      const p = STATE.player;
+
+      // 1. Check Owners
+      for (const owner of STATE.owners) {
+        const dist = Math.hypot(p.x - owner.x, p.y - owner.y);
+        if (dist < 55) {
+          return { type: 'owner', data: owner };
+        }
+      }
+
+      // 2. Check Crumble's Cottage
+      const homeDist = Math.hypot(p.x - 690, p.y - 620);
+      if (homeDist < 70) {
+        return { type: 'home' };
+      }
+
+      // 3. Check Bakery / Shop
+      const shopDist = Math.hypot(p.x - 1075, p.y - 1040);
+      if (shopDist < 75) {
+        return { type: 'shop' };
+      }
+
+      return null;
+    }
+
+    function updateInteractionPrompt() {
+      const nearby = checkNearbyInteractable();
+      if (nearby) {
+        promptEl.classList.remove('opacity-0', 'translate-y-3');
+        if (nearby.type === 'owner') {
+          promptIcon.textContent = nearby.data.avatar;
+          promptText.textContent = `Talk with ${nearby.data.name}`;
+        } else if (nearby.type === 'home') {
+          promptIcon.textContent = '🏡';
+          promptText.textContent = 'Enter Crumble’s Cozy Home';
+        } else if (nearby.type === 'shop') {
+          promptIcon.textContent = '🛒';
+          promptText.textContent = 'Open Merchant Upgrades';
+        }
+      } else {
+        promptEl.classList.add('opacity-0', 'translate-y-3');
+      }
+    }
+
+    function handleInteract() {
+      audio.init();
+      const nearby = checkNearbyInteractable();
+      if (!nearby) {
+        triggerSniff();
+        return;
+      }
+
+      if (nearby.type === 'owner') {
+        openOwnerDialogue(nearby.data);
+      } else if (nearby.type === 'home') {
+        openHomeModal();
+      } else if (nearby.type === 'shop') {
+        openShopModal();
+      }
+    }
+
+    function showToast(msg, icon = '💖') {
+      promptIcon.textContent = icon;
+      promptText.textContent = msg;
+      promptEl.classList.remove('opacity-0', 'translate-y-3');
+      setTimeout(() => {
+        promptEl.classList.add('opacity-0', 'translate-y-3');
+      }, 2500);
+    }
+
+    /* ==========================================================================
+       OWNERS ADOPTION SYSTEM
+       ========================================================================== */
+    function openOwnerDialogue(owner) {
+      audio.playBark();
+      document.getElementById('modal-owners').classList.remove('hidden');
+      renderOwnersModal(owner.id);
+    }
+
+    function renderOwnersModal(highlightId = null) {
+      const container = document.getElementById('owners-list');
+      container.innerHTML = '';
+
+      STATE.owners.forEach(owner => {
+        const hasReq = STATE.resources[owner.requirement.type] >= owner.requirement.count;
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-2xl border-2 transition-all ${owner.adopted ? 'bg-pink-50 border-pink-300' : 'bg-stone-50 border-stone-200'} ${highlightId === owner.id ? 'ring-2 ring-amber-400' : ''}`;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <div class="text-3xl bg-white p-2 rounded-2xl shadow-sm border border-stone-200">${owner.avatar}</div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h3 class="font-extrabold text-stone-900 text-sm md:text-base">${owner.name}</h3>
+                  ${owner.adopted ? '<span class="text-xs bg-pink-500 text-white font-bold px-2 py-0.5 rounded-full">Owner ❤️</span>' : ''}
+                </div>
+                <p class="text-xs text-stone-500 font-medium">${owner.role} • ${owner.location}</p>
+                <p class="text-xs text-stone-700 mt-2 bg-white/70 p-2.5 rounded-xl border border-stone-100 italic">
+                  "${owner.adopted ? owner.completedDialogue : owner.dialogue}"
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-stone-200/80 flex items-center justify-between">
+            <div class="text-xs font-bold text-stone-600">
+              Reward Outfit: <span class="text-pink-600">${owner.rewardName}</span>
+            </div>
+            ${owner.adopted ? `
+              <button class="bubble-btn px-3 py-1.5 bg-pink-500 text-white font-bold rounded-xl text-xs" onclick="equipOutfit('${owner.rewardOutfit}')">
+                Wear Outfit 👒
+              </button>
+            ` : `
+              <button class="bubble-btn px-3.5 py-1.5 ${hasReq ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-stone-200 text-stone-400 cursor-not-allowed'} font-extrabold rounded-xl text-xs shadow-md transition" onclick="adoptOwner('${owner.id}')">
+                Adopt Crumble! (${STATE.resources[owner.requirement.type]}/${owner.requirement.count} ${owner.requirement.type})
+              </button>
+            `}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      // Update badge
+      const adoptedCount = STATE.owners.filter(o => o.adopted).length;
+      document.getElementById('owners-count-badge').textContent = `${adoptedCount}/4`;
+    }
+
+    window.adoptOwner = function(ownerId) {
+      const owner = STATE.owners.find(o => o.id === ownerId);
+      if (!owner || owner.adopted) return;
+
+      if (STATE.resources[owner.requirement.type] >= owner.requirement.count) {
+        STATE.resources[owner.requirement.type] -= owner.requirement.count;
+        owner.adopted = true;
+        STATE.player.unlockedOutfits.push(owner.rewardOutfit);
+        STATE.player.equippedOutfit = owner.rewardOutfit;
+
+        audio.playChime();
+        showToast(`🎉 ${owner.name} adopted Crumble!`, '💖');
+        updateResourcesHUD();
+        updateProfileBadge();
+        renderOwnersModal();
+      } else {
+        showToast(`Need more ${owner.requirement.type}! Explore and forage!`, '❌');
+      }
+    };
+
+    window.equipOutfit = function(outfitKey) {
+      STATE.player.equippedOutfit = outfitKey;
+      audio.playPop();
+      updateProfileBadge();
+      showToast(`Crumble is now wearing: ${outfitKey.toUpperCase()}!`, '🐩');
+      document.querySelectorAll('.modal-close-btn').forEach(b => b.closest('.absolute').classList.add('hidden'));
+    };
+
+    /* ==========================================================================
+       HOME UPGRADES & RESTING
+       ========================================================================== */
+    function openHomeModal() {
+      audio.playBark();
+      document.getElementById('modal-home').classList.remove('hidden');
+      renderHomeUpgrades();
+    }
+
+    function renderHomeUpgrades() {
+      const container = document.getElementById('home-upgrades-list');
+      container.innerHTML = '';
+
+      const upgrades = [
+        {
+          key: 'hasFirepit',
+          name: 'Cozy Stone Firepit 🔥',
+          desc: 'Warm campfire in the yard for roasting sweet dog biscuits.',
+          cost: { biscuits: 6, pinecones: 4 },
+          owned: STATE.home.hasFirepit
+        },
+        {
+          key: 'hasHeartFountain',
+          name: 'Sparkling Heart Fountain ⛲',
+          desc: 'A gorgeous pink stone fountain that delights town visitors.',
+          cost: { biscuits: 10, hearts: 3 },
+          owned: STATE.home.hasHeartFountain
+        },
+        {
+          key: 'hasGardenBed',
+          name: 'Backyard Planter Box 🍅',
+          desc: 'Grow fresh tomatoes right outside your cottage door!',
+          cost: { biscuits: 5, tomatoes: 4 },
+          owned: STATE.home.hasGardenBed
+        }
+      ];
+
+      upgrades.forEach(u => {
+        const canAfford = Object.keys(u.cost).every(res => STATE.resources[res] >= u.cost[res]);
+        const costLabel = Object.entries(u.cost).map(([k, v]) => `${v} ${k}`).join(', ');
+
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-2xl border flex items-center justify-between ${u.owned ? 'bg-emerald-50 border-emerald-200' : 'bg-stone-50 border-stone-200'}`;
+        item.innerHTML = `
+          <div>
+            <h4 class="font-bold text-stone-800 text-xs md:text-sm">${u.name}</h4>
+            <p class="text-[11px] text-stone-500">${u.desc}</p>
+            <span class="text-[10px] font-extrabold text-amber-800">Cost: ${costLabel}</span>
+          </div>
+          ${u.owned ? `
+            <span class="text-xs text-emerald-600 font-bold px-2 py-1 bg-emerald-100 rounded-lg">Built ✨</span>
+          ` : `
+            <button class="bubble-btn px-3 py-1.5 ${canAfford ? 'bg-pink-500 hover:bg-pink-600 text-white' : 'bg-stone-200 text-stone-400 cursor-not-allowed'} font-bold rounded-xl text-xs" onclick="buildYardUpgrade('${u.key}')">
+              Build
+            </button>
+          `}
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    window.buildYardUpgrade = function(key) {
+      const upgradeCosts = {
+        hasFirepit: { biscuits: 6, pinecones: 4 },
+        hasHeartFountain: { biscuits: 10, hearts: 3 },
+        hasGardenBed: { biscuits: 5, tomatoes: 4 }
+      };
+      const cost = upgradeCosts[key];
+      if (!cost || STATE.home[key]) return;
+
+      const canAfford = Object.keys(cost).every(res => STATE.resources[res] >= cost[res]);
+      if (canAfford) {
+        Object.keys(cost).forEach(res => STATE.resources[res] -= cost[res]);
+        STATE.home[key] = true;
+        audio.playChime();
+        updateResourcesHUD();
+        renderHomeUpgrades();
+        showToast('🏡 Yard upgraded successfully!', '✨');
+      } else {
+        showToast('Not enough materials!', '❌');
+      }
+    };
+
+    document.getElementById('btn-rest-home').addEventListener('click', () => {
+      STATE.player.energy = STATE.player.maxEnergy;
+      updateEnergyHUD();
+      audio.playChime();
+      showToast('💤 Crumble had a cozy scruffy nap! Energy 100%', '💖');
+      document.getElementById('modal-home').classList.add('hidden');
+    });
+
+    /* ==========================================================================
+       SHOP / ATTRIBUTE UPGRADES
+       ========================================================================== */
+    function openShopModal() {
+      audio.playBark();
+      document.getElementById('modal-shop').classList.remove('hidden');
+      renderShopModal();
+    }
+
+    function renderShopModal() {
+      const container = document.getElementById('shop-items-list');
+      container.innerHTML = '';
+
+      const items = [
+        {
+          key: 'zoomPaws',
+          name: 'Zoomie Paws 🐾 (Speed)',
+          desc: 'Increases Crumble’s movement sprint speed permanently.',
+          cost: 6 + STATE.upgrades.zoomPaws * 4,
+          level: STATE.upgrades.zoomPaws,
+          max: 4
+        },
+        {
+          key: 'fluffyPocket',
+          name: 'Fluffy Pockets 🎒 (x2 Harvest)',
+          desc: 'Collect 2x items whenever foraging resources.',
+          cost: 10,
+          level: STATE.upgrades.fluffyPocket,
+          max: 1
+        },
+        {
+          key: 'cozyMat',
+          name: 'Scruffy Endurance ⚡',
+          desc: 'Reduces energy depletion while exploring.',
+          cost: 8,
+          level: STATE.upgrades.cozyMat,
+          max: 1
+        }
+      ];
+
+      items.forEach(it => {
+        const canAfford = STATE.resources.biscuits >= it.cost;
+        const isMax = it.level >= it.max;
+
+        const row = document.createElement('div');
+        row.className = 'p-3 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-between';
+        row.innerHTML = `
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h4 class="font-bold text-stone-900 text-xs md:text-sm">${it.name}</h4>
+              <span class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-bold">Lvl ${it.level}/${it.max}</span>
+            </div>
+            <p class="text-[11px] text-stone-500">${it.desc}</p>
+            <span class="text-xs font-extrabold text-amber-700">Cost: ${it.cost} 🦴</span>
+          </div>
+          ${isMax ? `
+            <span class="text-xs text-indigo-600 font-bold px-2 py-1 bg-indigo-50 rounded-lg">MAX</span>
+          ` : `
+            <button class="bubble-btn px-3 py-1.5 ${canAfford ? 'bg-indigo-500 hover:bg-indigo-600 text-white' : 'bg-stone-200 text-stone-400 cursor-not-allowed'} font-bold rounded-xl text-xs" onclick="buyShopUpgrade('${it.key}', ${it.cost})">
+              Upgrade
+            </button>
+          `}
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    window.buyShopUpgrade = function(key, cost) {
+      if (STATE.resources.biscuits >= cost) {
+        STATE.resources.biscuits -= cost;
+        STATE.upgrades[key]++;
+        audio.playChime();
+        updateResourcesHUD();
+        renderShopModal();
+        showToast('Upgraded Crumble!', '⚡');
+      } else {
+        showToast('Need more biscuits 🦴!', '❌');
+      }
+    };
+
+    /* ==========================================================================
+       WARDROBE & PROFILE MODAL
+       ========================================================================== */
+    function openWardrobeModal() {
+      audio.playBark();
+      document.getElementById('modal-wardrobe').classList.remove('hidden');
+      const grid = document.getElementById('wardrobe-grid');
+      grid.innerHTML = '';
+
+      const allOutfits = [
+        { key: 'classic', name: 'Classic Scruff', icon: '🐩', desc: 'Her natural scruffy curls and pink bracelet.' },
+        { key: 'sunhat', name: 'Canvas Sunhat', icon: '👒', desc: 'Farmer sunhat with garden dirt on nose.' },
+        { key: 'flannel', name: 'Camp Flannel', icon: '🏕️', desc: 'Cozy red plaid oversized shirt.' },
+        { key: 'chef', name: 'Chef Scarf', icon: '👨‍🍳', desc: 'Bakery treat tasting bandana.' },
+        { key: 'beret', name: 'Artist Beret', icon: '🎨', desc: 'Pink beret for portrait painting.' }
+      ];
+
+      allOutfits.forEach(outfit => {
+        const isUnlocked = STATE.player.unlockedOutfits.includes(outfit.key);
+        const isEquipped = STATE.player.equippedOutfit === outfit.key;
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-2xl border-2 transition ${isEquipped ? 'bg-pink-100 border-pink-500 shadow-sm' : (isUnlocked ? 'bg-stone-50 border-stone-200 hover:bg-pink-50' : 'bg-stone-100 border-stone-200 opacity-60')}`;
+        card.innerHTML = `
+          <div class="text-2xl mb-1">${outfit.icon}</div>
+          <div class="font-bold text-xs text-stone-900">${outfit.name}</div>
+          <p class="text-[10px] text-stone-500 mb-2">${outfit.desc}</p>
+          ${isUnlocked ? `
+            <button class="bubble-btn w-full py-1 rounded-lg text-[11px] font-bold ${isEquipped ? 'bg-pink-500 text-white' : 'bg-stone-800 text-white'}" onclick="equipOutfit('${outfit.key}')">
+              ${isEquipped ? 'Wearing ❤️' : 'Equip'}
+            </button>
+          ` : `
+            <span class="text-[10px] text-stone-400 font-bold">Locked (Earn from Owner)</span>
+          `}
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    /* ==========================================================================
+       HUD & UI UPDATERS
+       ========================================================================== */
+    function updateResourcesHUD() {
+      document.getElementById('res-biscuits').textContent = STATE.resources.biscuits;
+      document.getElementById('res-tomatoes').textContent = STATE.resources.tomatoes;
+      document.getElementById('res-hearts').textContent = STATE.resources.hearts;
+      document.getElementById('res-pinecones').textContent = STATE.resources.pinecones;
+    }
+
+    function updateEnergyHUD() {
+      const bar = document.getElementById('hud-energy-bar');
+      const text = document.getElementById('hud-energy-text');
+      const pct = Math.floor((STATE.player.energy / STATE.player.maxEnergy) * 100);
+      bar.style.width = `${pct}%`;
+      text.textContent = `${pct}%`;
+
+      if (pct < 25) {
+        bar.className = 'h-full bg-rose-500 transition-all duration-300';
+      } else {
+        bar.className = 'h-full bg-emerald-500 transition-all duration-300';
+      }
+    }
+
+    function updateProfileBadge() {
+      const labels = {
+        classic: 'Scruffy Pup',
+        sunhat: 'Tomato Gardener',
+        flannel: 'Camp Explorer',
+        chef: 'Bakery Inspector',
+        beret: 'Master Painter'
+      };
+      document.getElementById('hud-badge').textContent = labels[STATE.player.equippedOutfit] || 'Scruffy Pup';
+    }
+
+    /* ==========================================================================
+       USER INPUT HANDLERS (KEYBOARD & TOUCH)
+       ========================================================================== */
+    window.addEventListener('keydown', (e) => {
+      activeKeys[e.code] = true;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        handleInteract();
+      }
+      if (e.code === 'KeyE') {
+        triggerSniff();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      activeKeys[e.code] = false;
+    });
+
+    // Touch click on canvas to walk
+    let touchTarget = null;
+    canvas.addEventListener('pointerdown', (e) => {
+      audio.init();
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left + camera.x;
+      const clickY = e.clientY - rect.top + camera.y;
+
+      // Check if clicked close to an interactable
+      const nearby = checkNearbyInteractable();
+      if (nearby) {
+        handleInteract();
+      } else {
+        touchTarget = { x: clickX, y: clickY };
+      }
+    });
+
+    // Virtual D-Pad Touch Listeners
+    const dpadButtons = [
+      { id: 'dpad-up', code: 'ArrowUp' },
+      { id: 'dpad-down', code: 'ArrowDown' },
+      { id: 'dpad-left', code: 'ArrowLeft' },
+      { id: 'dpad-right', code: 'ArrowRight' }
+    ];
+    dpadButtons.forEach(btn => {
+      const el = document.getElementById(btn.id);
+      el.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        audio.init();
+        activeKeys[btn.code] = true;
+      });
+      el.addEventListener('pointerup', () => { activeKeys[btn.code] = false; });
+      el.addEventListener('pointerleave', () => { activeKeys[btn.code] = false; });
+    });
+
+    document.getElementById('touch-action-btn').addEventListener('click', () => {
+      handleInteract();
+    });
+
+    document.getElementById('touch-sniff-btn').addEventListener('click', () => {
+      triggerSniff();
+    });
+
+    // Modal Triggers
+    document.getElementById('btn-open-home').addEventListener('click', openHomeModal);
+    document.getElementById('btn-open-owners').addEventListener('click', () => renderOwnersModal() || document.getElementById('modal-owners').classList.remove('hidden'));
+    document.getElementById('btn-open-shop').addEventListener('click', openShopModal);
+    document.getElementById('hud-profile-btn').addEventListener('click', openWardrobeModal);
+
+    // Modal Close Buttons
+    document.querySelectorAll('.modal-close-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.absolute').classList.add('hidden');
+      });
+    });
+
+    // Audio Toggle
+    const audioBtn = document.getElementById('audio-btn');
+    audioBtn.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      audioBtn.textContent = audio.muted ? '🔇' : '🔊';
+      if (!audio.muted) audio.init();
+    });
+
+    // Start Loop
+    updateResourcesHUD();
+    updateEnergyHUD();
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
